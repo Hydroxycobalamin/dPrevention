@@ -333,13 +333,14 @@ dPrevention_check_intersections:
     - define cuboids <[world].flag[dPrevention.areas.cuboids].if_null[<list>].parse[as_cuboid].exclude[<[cuboid]>]>
     - define ellipsoids <[world].flag[dPrevention.areas.ellipsoids].if_null[<list>].parse[as_ellipsoid.bounding_box]>
     - define polygons <[world].flag[dPrevention.areas.polygons].if_null[<list>].parse[as_polygon.bounding_box]>
-    #Check intersections, if its intersect another area, stop the script.
     - define intersections <[cuboids].include[<[ellipsoids]>].include[<[polygons]>].filter_tag[<[filter_value].intersects[<[selection]>]>]>
+    - define owned_areas <[intersections].filter_tag[<[filter_value].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>]>
+    - define intersections <[intersections].exclude[<[owned_areas]>]>
+    #If the selection intersects another claim which he the player doesn't own, he's not allowed to claim.
     - if !<[intersections].is_empty>:
         - narrate "Your selection intersects <[intersections].size> other claims." format:dPrevention_format
         - playeffect effect:BARRIER at:<[intersections].parse[bounding_box.outline].combine> offset:0,0,0 targets:<player>
         - stop
-    #TODO: add more complex logic to let it intersect cuboids owned, MAYBE, ONLY MAAAAAAYBE
 dPrevention_get_areas:
     type: procedure
     definitions: location
