@@ -126,16 +126,16 @@ dPrevention_generic_flag_handlers:
         #water spread
         on liquid spreads type:water in:area_flagged:dPrevention.flags.water-spread priority:100:
         - determine cancelled
+        #TODO: use prespawn, wait for denizen discord confess to tacos.
         #monster ban
-        #TODO: fix that up, wait for denizen discord confess to tacos.
-        on entity prespawns:
+        on monster spawns in:world_flagged:dPrevention.flags.spawn-monster priority:100:
         - determine cancelled
-       # on monster spawns:
-       # - announce we
+        on monster spawns in:area_flagged:dPrevention.flags.spawn-monster priority:50:
+        - determine cancelled
         #living ban
-        on living prespawns in:world_flagged:dPrevention.flags.spawn-living priority:100:
+        on living spawns in:world_flagged:dPrevention.flags.spawn-living priority:100:
         - determine cancelled
-        on living prespawns in:area_flagged:dPrevention.flags.spawn-living priority:50:
+        on living spawns in:area_flagged:dPrevention.flags.spawn-living priority:50:
         - determine cancelled
 dPrevention_prevent_piston_grief:
     type: task
@@ -314,10 +314,13 @@ dPrevention_area_creation:
         flags:
             - block-break
             - block-place
+        #Default priority that will be set on the area upon creation.
+        priority: 1
     definitions: area|owner
     script:
     - foreach <script.data_key[data.flags]> as:flag:
         - flag <[area]> dPrevention.flags.<[flag]>
+    - flag <[area]> dPrevention.priority:<script.data_key[data.priority]>
     - if <[owner].exists>:
         - narrate "Owner set"
         - flag <[area]> dPrevention.owners:->:<[owner]>
