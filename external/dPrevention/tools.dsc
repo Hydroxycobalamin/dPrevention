@@ -72,7 +72,7 @@ dPrevention_tool_handler:
                 - flag <player> dPrevention.selection:<player.flag[dPrevention.selection].include[<context.location.with_y[255]>]>
                 - define selection <player.flag[dPrevention.selection]>
                 - inject dPrevention_check_intersections
-                #Check if the user can afford this region.
+                #If the player can't afford the region, stop. Else define the costs.
                 - ~run dPrevention_check_affordability def:<list_single[<[selection]>].include[claim]> save:queue
                 - if <entry[queue].created_queue.has_flag[stop]>:
                     - narrate "You can't afford that." format:dPrevention_format
@@ -81,21 +81,22 @@ dPrevention_tool_handler:
                     - define costs <entry[queue].created_queue.determination.first>
                 - flag <player> dPrevention.blocks.amount.in_use:+:<[costs]>
                 - flag <player> dPrevention.areas.count:++
+                #Note the selection.
                 - define name <player.uuid>_cuboid_<player.flag[dPrevention.areas.count]>
                 - note <player.flag[dPrevention.selection]> as:<[name]>
-                #tracking
-                #for use in player commands(checking owned claims)
+                #Link the area to the player and the cuboids world.
                 - flag <player> dPrevention.areas.cuboids:->:<[name]>
-                #for use in intersection checking
-                - flag <player.world> dPrevention.areas.cuboids:->:<[name]>
-                #
+                - flag <cuboid[<[name]>].world> dPrevention.areas.cuboids:->:<[name]>
                 - narrate "Selection claimed" format:dPrevention_format
                 - playeffect effect:BARRIER at:<player.flag[dPrevention.selection].outline.parse[center]> offset:0,0,0 visibility:100
+                #Make the area to a dPrevention area. Add the player as owner.
                 - run dPrevention_area_creation def:<list.include[<cuboid[<[name]>]>].include[<player.uuid>]>
+                #Remove claim mode.
                 - flag <player> dPrevention.selection:!
                 - flag <player> dPrevention.claim_mode:!
         on player clicks block with:dPrevention_tool flagged:dPrevention.expand_mode priority:-1:
         - determine passively cancelled
+        #If the player sneaks while he clicks a block, expand mode will be removed.
         - if <player.is_sneaking>:
             - flag <player> dPrevention.expand_mode:!
             - flag <player> dPrevention.location:!
@@ -108,6 +109,7 @@ dPrevention_tool_handler:
                 - if !<context.location.has_flag[dPrevention.expandable_corner]>:
                     - narrate "You must select a corner first." format:dPrevention_format
                     - stop
+                #Prevent the player from expanding a claim that he doesn't own.
                 - if <context.location.flag[dPrevention.expandable_corner]> != <player.uuid>:
                     - narrate "You're not allowed to do that." format:dPrevention_format
                     - stop
@@ -121,26 +123,33 @@ dPrevention_tool_handler:
                 - if <player.flag[dPrevention.location].world.name> != <context.location.world.name>:
                     - narrate "World's doesnt match. Please don't change worlds while expanding your cuboid." format:dPrevention_format
                     - stop
+                #Read data from the cuboid linked to the expand mode for later use(red)
                 - define cuboid <player.flag[dPrevention.expand_mode]>
+                - definemap data dPrevention:<[cuboid].flag[dPrevention]>
                 - define name <[cuboid].note_name>
-                - define data <[cuboid].flag[dPrevention]>
                 - define selection <player.flag[dPrevention.location].to_cuboid[<context.location.with_y[255]>]>
-                ##
                 - inject dPrevention_check_intersections
+                #If the player can't afford the region, stop. Else define the costs.
                 - ~run dPrevention_check_affordability def:<list_single[<[selection]>].include[expand].include_single[<[cuboid]>]> save:queue
                 - if <entry[queue].created_queue.has_flag[stop]>:
                     - narrate "You can't afford that." format:dPrevention_format
                     - stop
                 - else:
                     - define costs <entry[queue].created_queue.determination.first>
+                    #Check if the cuboid is smaller or larger, to take or give him blocks back.
                     - if <[costs]> < 0:
                         - flag <player> dPrevention.blocks.amount.in_use:-:<[costs]>
                     - else:
                         - flag <player> dPrevention.blocks.amount.in_use:+:<[costs]>
+                #Note the selection.
                 - note <[selection]> as:<[name]>
                 - define new_cuboid <cuboid[<[name]>]>
-                - flag <[new_cuboid]> dPrevention:<[data]>
+                #Pass data to the new cuboid.
+                ##If you use your own area flags, make sure to pass them aswell. You can add them to the data map defined above.
+                - foreach <[data]> key:type as:flags:
+                    - flag <[new_cuboid]> <[type]>:<[data]>
                 - playeffect effect:LIGHT at:<[new_cuboid].outline.parse[center]> offset:0,0,0 visibility:90
+                #Remove expand mode.
                 - showfake cancel <player.flag[dPrevention.show_fake_locations]>
                 - flag <player> dPrevention.show_fake_locations:!
                 - flag <player> dPrevention.expand_mode:!
@@ -164,6 +173,7 @@ dPrevention_expand_mode:
     - flag <player> dPrevention.show_fake_locations:<[locations].values>
     - foreach <[locations]> key:direction as:location:
         - showfake glowstone <[location]> duration:120s
+        #Flag the location other players to expand the claim.
         - flag <[location]> dPrevention.expandable_corner:<player.uuid> duration:120s
         - choose <[direction]>:
             - case north_west:
