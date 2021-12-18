@@ -36,6 +36,9 @@ dPrevention_item_blocks:
         hides: ENCHANTS
     enchantments:
     - durability:1
+    flags:
+        dPrevention:
+            blocks: 50
 dPrevention_blocks_handler:
     type: world
     reached_max:
@@ -49,6 +52,7 @@ dPrevention_blocks_handler:
         - determine cancelled passively
         - wait 1t
         - take iteminhand
+        - narrate "You've received <context.item.flag[dPrevention.blocks]> blocks."
         - flag <player> dPrevention.blocks.amount.per_block:+:<context.item.flag[dPrevention.blocks]>
         after delta time minutely every:5:
         - define players <server.online_players.filter[has_flag[dPrevention.blocks.reached_max].not]>

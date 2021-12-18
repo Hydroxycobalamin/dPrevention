@@ -34,10 +34,10 @@ dPrevention_main:
         tools: Tools by mcmonkey<&co> <element[Polygon].on_click[https://forum.denizenscript.com/resources/polygon-selector-tool.2/].type[OPEN_URL]> <element[Ellipsoid].on_click[https://forum.denizenscript.com/resources/ellipsoid-selector-tool.3/].type[OPEN_URL]> <element[Cuboid].on_click[https://forum.denizenscript.com/resources/cuboid-selector-tool.1/].type[OPEN_URL]>
     name: dPrevention
     description: main command
-    usage: /dPrevention [cuboid/ellipsoid/polygon/tool]
+    usage: /dPrevention [cuboid/ellipsoid/polygon/tool/info]
     permission: dPrevention.command
     tab completions:
-        1: <player.has_permission[dPrevention.admin].if_true[cuboid|ellipsoid|polygon|tool].if_false[tool]>
+        1: <player.has_permission[dPrevention.admin].if_true[cuboid|ellipsoid|polygon|tool|info].if_false[tool|info]>
     script:
     - choose <context.args.size>:
         - case 1:
@@ -72,30 +72,36 @@ dPrevention_main:
                         - narrate "You can't hold the tool. Make some space."
                         - stop
                     - give dPrevention_tool slot:hand
+                - case info:
+                    - inventory open destination:dPrevention_menu
                 - default:
                     - narrate <script.data_key[usage]><n><script.parsed_key[data.tools]>
         - default:
             - narrate <script.data_key[usage]><n><script.parsed_key[data.tools]>
-dPrevention_info:
-    type: command
-    name: info
-    description: lists details about owned claims and current blocks
-    usage: /info
-    tab completions:
-        1: blocks|claims
-    script:
-    - define argument <context.args.first.if_null[null]>
-    - choose <[argument]>:
-        - case null:
-            - narrate "From play: <player.flag[dPrevention.blocks.amount.per_time].if_null[0]><n>From blocks:<player.flag[dPrevention.blocks.amount.per_blocks].if_null[0]><n><proc[dPrevention_info_formatter]>"
-        - case blocks:
-            - narrate "From play: <player.flag[dPrevention.blocks.amount.per_time].if_null[0]><n>From blocks:<player.flag[dPrevention.blocks.amount.per_blocks].if_null[0]>"
-        - case claims:
-            - narrate <proc[dPrevention_info_formatter]>
 dPrevention_info_formatter:
     type: procedure
+    data:
+        format:
+        - Size: <[data.min_x]>,<[data.min_z]> to <[data.max_x]>,<[data.max_z]> in <[data.world]>
+        - Costs: <[data.costs]>
     script:
-    - foreach <player.flag[dPrevention.areas.cuboids].parse[as_cuboid].sort_by_value[world.name]> as:cuboid:
+    - foreach <player.flag[dPrevention.areas.cuboids].parse[as_cuboid].sort_by_value[world.name].if_null[<list>]> as:cuboid:
         - definemap data min_x:<[cuboid].min.x> min_z:<[cuboid].min.z> max_x:<[cuboid].max.x> max_z:<[cuboid].max.z> world:<[cuboid].world.name> costs:<[cuboid].proc[dPrevention_get_costs]>
-        - define "format:->:Size: <[data.min_x]>,<[data.min_z]> to <[data.max_x]>,<[data.max_z]> in <[data.world]> Costs: <[data.costs]>"
-    - determine <[format].separated_by[<n>]>
+        - define item:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.format]>]>
+    - determine <[item]>
+dPrevention_menu:
+    type: inventory
+    inventory: CHEST
+    title: Menu
+    gui: true
+    definitions:
+        blocks: "<item[dPrevention_menu_item].with[lore=From play: <player.flag[dPrevention.blocks.amount.per_time].if_null[0]>|From blocks: <player.flag[dPrevention.blocks.amount.per_block].if_null[0]>]>"
+    procedural items:
+    - determine <proc[dPrevention_info_formatter]>
+    slots:
+    - [] [] [] [] [] [] [] [] []
+    - [] [] [] [] [] [] [] [] []
+    - [] [] [] [] [blocks] [] [] [] []
+dPrevention_menu_item:
+    type: item
+    material: grass_block
