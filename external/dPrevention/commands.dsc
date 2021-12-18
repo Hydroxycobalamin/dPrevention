@@ -73,22 +73,33 @@ dPrevention_main:
                         - stop
                     - give dPrevention_tool slot:hand
                 - case info:
-                    - inventory open destination:dPrevention_menu
+                    - inject dPrevention_info_formatter
                 - default:
                     - narrate <script.data_key[usage]><n><script.parsed_key[data.tools]>
         - default:
             - narrate <script.data_key[usage]><n><script.parsed_key[data.tools]>
-dPrevention_info_formatter:
+dPrevention_info_data:
     type: procedure
     data:
         format:
         - Size: <[data.min_x]>,<[data.min_z]> to <[data.max_x]>,<[data.max_z]> in <[data.world]>
         - Costs: <[data.costs]>
     script:
-    - foreach <player.flag[dPrevention.areas.cuboids].parse[as_cuboid].sort_by_value[world.name].if_null[<list>]> as:cuboid:
+    - define page 1
+    - foreach <player.flag[dPrevention.areas.cuboids].parse[as_cuboid].sort_by_value[world.name].if_null[<list>].exclude[null]> as:cuboid:
         - definemap data min_x:<[cuboid].min.x> min_z:<[cuboid].min.z> max_x:<[cuboid].max.x> max_z:<[cuboid].max.z> world:<[cuboid].world.name> costs:<[cuboid].proc[dPrevention_get_costs]>
-        - define item:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.format]>]>
-    - determine <[item]>
+        - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.format]>]>
+        - if <[loop_index].mod[45]> == 0:
+            - define page:++
+    - determine <[inventory_menu]>
+dPrevention_info_formatter:
+    type: task
+    script:
+    - define data <proc[dPrevention_info_data]>
+    - flag <player> dPrevention.inventory_menu:<[data]>
+    - inventory open destination:dPrevention_menu
+    - wait 1t
+    - inventory set origin:<[data.pages.1]> destination:<player.open_inventory>
 dPrevention_menu:
     type: inventory
     inventory: CHEST
@@ -96,12 +107,34 @@ dPrevention_menu:
     gui: true
     definitions:
         blocks: "<item[dPrevention_menu_item].with[lore=From play: <player.flag[dPrevention.blocks.amount.per_time].if_null[0]>|From blocks: <player.flag[dPrevention.blocks.amount.per_block].if_null[0]>]>"
-    procedural items:
-    - determine <proc[dPrevention_info_formatter]>
+        page: "<item[dPrevention_page_item].with[lore=Current Page:1/<player.flag[dPrevention.inventory_menu.pages].keys.highest>].with_flag[page:1]>"
     slots:
     - [] [] [] [] [] [] [] [] []
     - [] [] [] [] [] [] [] [] []
-    - [] [] [] [] [blocks] [] [] [] []
+    - [] [] [] [] [] [] [] [] []
+    - [] [] [] [] [] [] [] [] []
+    - [] [] [] [] [] [] [] [] []
+    - [] [] [] [] [blocks] [] [] [page] []
 dPrevention_menu_item:
     type: item
     material: grass_block
+dPrevention_page_item:
+    type: item
+    material: stone
+dPrevention_menu_handler:
+    type: world
+    debug: false
+    pager:
+    - define max <player.flag[dPrevention.inventory_menu.pages].keys.highest>
+    - if !<player.has_flag[dPrevention.inventory_menu.pages.<[page]>]>:
+        - stop
+    - inventory set origin:<player.flag[dPrevention.inventory_menu.pages.<[page]>]> destination:<player.open_inventory>
+    - inventory flag slot:<context.slot> page:<[page]> destination:<player.open_inventory>
+    - inventory set "origin:<context.item.with[lore=Current Page:<[page]>/<[max]>].with_flag[page:<[page]>]>" slot:<context.slot> destination:<player.open_inventory>
+    events:
+        after player left clicks dPrevention_page_item in dPrevention_menu:
+        - define page <context.item.flag[page].add[1]>
+        - inject <script> path:pager
+        after player right clicks dPrevention_page_item in dPrevention_menu:
+        - define page <context.item.flag[page].sub[1]>
+        - inject <script> path:pager
