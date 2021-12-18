@@ -30,43 +30,29 @@ dPrevention_tool_handler:
         - if <player.has_flag[dPrevention.claim_mode]> || <player.has_flag[dPrevention.expand_mode]>:
             - stop
         - define location <player.location>
-        - define areas <[location].proc[dPrevention_get_areas]>
-        - if <[areas].is_empty>:
+        - define cuboids <[location].cuboids>
+        #If the player is not inside an area, set the player in claim mode.
+        - if <[cuboids].is_empty>:
             - flag <player> dPrevention.claim_mode expire:120s
             - narrate "Activating claim_mode" format:dPrevention_format
             - stop
-        - define ownership <[areas].filter_tag[<[filter_value].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>]>
-        - if <[ownership].is_empty>:
+        #If he isn't owner of any area, he's not allowed.
+        - define owned_areas <[cuboids].filter_tag[<[filter_value].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>]>
+        - if <[owned_areas].is_empty>:
             - narrate "You're not allowed to do that" format:dPrevention_format
             - stop
-        - flag <player> dPrevention.expand_mode:<[areas].first> expire:120s
-        - narrate "Activating expand_mode" format:dPrevention_format
-        #TODO: Check for MultiCuboids(priority)
-        - playeffect effect:BARRIER at:<[location].cuboids.first.outline_2d[<[location].y>].parse[center]> offset:0,0,0 visibility:100
-        - define cuboid_2d <[location].cuboids.first.outline_2d[<[location].y>]>
-        - definemap l min_x:<[cuboid_2d].lowest[x].x> max_x:<[cuboid_2d].highest[x].x> min_z:<[cuboid_2d].lowest[z].z> max_z:<[cuboid_2d].highest[z].z>
-        #TODO: fix definemap up, monkey will answer in discord soon
-        ##Clean it up icey, i know you can do
-      #  - definemap map 1:<context.location.with_x[<[l.min_x]>].with_z[<[l.min_z]>].highest> 2:<context.location.with_x[<[l.max_x]>].with_z[<[l.max_z]>].highest> 3:<context.location.with_x[<[l.min_x]>].with_z[<[l.max_z]>].highest> 4:<context.location.with_x[<[l.max_x]>].with_z[<[l.min_z]>].highest>
-        - define locations:|:<location[<[l.min_x]>,<player.location.y>,<[l.min_z]>,<player.world.name>].highest>|<location[<[l.max_x]>,<player.location.y>,<[l.max_z]>,<player.world.name>].highest>|<location[<[l.min_x]>,<player.location.y>,<[l.max_z]>,<player.world.name>].highest>|<location[<[l.max_x]>,<player.location.y>,<[l.min_z]>,<player.world.name>].highest>
-        - flag <player> dPrevention.show_fake_locations:<[locations]>
-        - foreach <[locations]>:
-            - define map <[map].include[<map[<[loop_index]>=<[value]>]>].if_null[<map.include[<[loop_index]>=<[value]>]>]>
-        ##workaround for the mention above
-        - foreach <[map]> key:number as:location:
-            - showfake glowstone <[location]> duration:60s
-            - flag <[location]> dPrevention.expandable_corner:<player.uuid>
-            - choose <[number]>:
-                - case 1:
-                    - flag <[map.2]> dPrevention.location:<[location]>
-                - case 2:
-                    - flag <[map.1]> dPrevention.location:<[location]>
-                - case 3:
-                    - flag <[map.4]> dPrevention.location:<[location]>
-                - case 4:
-                    - flag <[map.3]> dPrevention.location:<[location]>
+        #If there are multiple areas which the player owns, select one.
+        - if <[owned_areas].size> > 1:
+            - foreach <[owned_areas]> as:cuboid:
+                - clickable dPrevention_expand_mode def:<list_single[<[cuboid]>].include[<[location]>]> for:<player> until:1m save:<[loop_index]>
+                - define clickables:->:<[cuboid].note_name.on_click[<entry[<[loop_index]>].command>].on_hover[<[cuboid].note_name>]>
+            - narrate <[clickables].space_separated> format:dPrevention_format
+            - stop
+        #If there's only a single area, set the player in expand mode.
+        - run dPrevention_expand_mode def:<list_single[<[owned_areas].first>].include[<[location]>]>
         on player clicks block with:dPrevention_tool flagged:dPrevention.claim_mode priority:-1:
         - determine passively cancelled
+        #If the player sneaks while he clicks a block, claim mode will be removed.
         - if <player.is_sneaking>:
             - flag <player> dPrevention.claim_mode:!
             - flag <player> dPrevention.selection:!
@@ -164,3 +150,27 @@ dPrevention_tool_handler:
         on delta time secondly every:2:
         - actionbar "<gold>Mode: <yellow>Claim" targets:<server.online_players_flagged[dPrevention.claim_mode]>
         - actionbar "<gold>Mode: <yellow>Expand" targets:<server.online_players_flagged[dPrevention.expand_mode]>
+dPrevention_expand_mode:
+    type: task
+    definitions: cuboid|location
+    script:
+    - narrate "Activating expand_mode" format:dPrevention_format
+    - flag <player> dPrevention.expand_mode:<[cuboid]> expire:120s
+    - playeffect effect:BARRIER at:<[cuboid].outline_2d[<[location].y>].parse[center]> offset:0,0,0 visibility:100
+    #Define the fake_block locations and mark them.
+    - define cuboid_2d <[cuboid].outline_2d[<[location].y>]>
+    - definemap l min_x:<[cuboid_2d].lowest[x].x> max_x:<[cuboid_2d].highest[x].x> min_z:<[cuboid_2d].lowest[z].z> max_z:<[cuboid_2d].highest[z].z>
+    - definemap locations north_west:<[location].with_x[<[l.min_x]>].with_z[<[l.min_z]>].highest> south_east:<[location].with_x[<[l.max_x]>].with_z[<[l.max_z]>].highest> south_west:<[location].with_x[<[l.min_x]>].with_z[<[l.max_z]>].highest> north_east:<[location].with_x[<[l.max_x]>].with_z[<[l.min_z]>].highest>
+    - flag <player> dPrevention.show_fake_locations:<[locations].values>
+    - foreach <[locations]> key:direction as:location:
+        - showfake glowstone <[location]> duration:120s
+        - flag <[location]> dPrevention.expandable_corner:<player.uuid> duration:120s
+        - choose <[direction]>:
+            - case north_west:
+                - flag <[locations.south_east]> dPrevention.location:<[location]>
+            - case south_east:
+                - flag <[locations.north_west]> dPrevention.location:<[location]>
+            - case south_west:
+                - flag <[locations.north_east]> dPrevention.location:<[location]>
+            - case north_east:
+                - flag <[locations.south_west]> dPrevention.location:<[location]>
