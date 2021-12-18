@@ -159,6 +159,8 @@ dPrevention_tool_handler:
                 - flag <player> dPrevention.show_fake_locations:!
                 - flag <player> dPrevention.expand_mode:!
                 - flag <player> dPrevention.location:!
+        after player drops dPrevention_tool:
+        - remove <context.entity>
         on delta time secondly every:2:
         - actionbar "<gold>Mode: <yellow>Claim" targets:<server.online_players_flagged[dPrevention.claim_mode]>
         - actionbar "<gold>Mode: <yellow>Expand" targets:<server.online_players_flagged[dPrevention.expand_mode]>
