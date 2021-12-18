@@ -191,7 +191,7 @@ dPrevention_check_membership:
         - stop
     #Check if player is inside an Area
     - define areas <[location].proc[dPrevention_get_areas]>
-    #If he is not in an area, check the worlds flags
+    #If he is not inside an area, check the worlds flags.
     - if <[areas].is_empty>:
         - define areas:->:<player.location.world>
         - inject dPrevention_check_flag
@@ -215,14 +215,14 @@ dPrevention_check_flag:
     script:
     - define priority <[areas].sort_by_number[flag[dPrevention.priority]]>
     - foreach <[priority]> as:area:
-        #if the user has permission to bypass the flag, allow it
+        #If the user is whitelisted in this area to bypass the flag, allow it.
         - if <[area].flag[dPrevention.permissions.<[flag]>].contains[<player.uuid>].if_null[false]>:
             - flag <[queue].if_null[<queue>]> allow
             - stop
-        #if an area doesn't allow it, stop
+        #If an area doesn't allow it, stop
         - if <[area].has_flag[dPrevention.flags.<[flag]>]>:
             - stop
-    #if a region allows, flag the queue to allow
+    #Allow it.
     - flag <[queue].if_null[<queue>]> allow
 dPrevention_flag_GUI_handler:
     type: world
@@ -232,15 +232,18 @@ dPrevention_flag_GUI_handler:
         - define area <player.flag[dPrevention.flaggui]>
         - define flag <context.item.flag[flag]>
         - define value <context.item.flag[value]>
+        #If the flag is set to false, display true.
         - if !<[value]>:
             - flag <[area]> dPrevention.flags.<[flag]>:!
             - inventory adjust slot:<context.slot> "lore:<dark_gray>Status<&co> <green>true" destination:<player.open_inventory>
             - inventory flag slot:<context.slot> value:true destination:<player.open_inventory>
+        #Else display false.
         - else:
             - flag <[area]> dPrevention.flags.<[flag]>
             - inventory adjust slot:<context.slot> "lore:<dark_gray>Status<&co> <red>false" destination:<player.open_inventory>
             - inventory flag slot:<context.slot> value:false destination:<player.open_inventory>
         after player shift_right clicks item_flagged:flag in dPrevention_flag_GUI:
+        #Checks for all users which are whitelisted on this claim to bypass the flag.
         - define flag <context.item.flag[flag]>
         - define users <player.flag[dPrevention.flaggui].flag[dPrevention.permissions.<[flag]>].if_null[<list>].parse[as_player]>
         - if <[users].is_empty>:
@@ -385,7 +388,7 @@ dPrevention_create_claim:
 dPrevention_area_creation:
     type: task
     data:
-        #flags that will set up by default to prevent grief
+        #List of flags that will be added to the area upon creation.
         flags:
             - block-break
             - block-place
@@ -398,12 +401,14 @@ dPrevention_area_creation:
         - flag <[area]> dPrevention.owners:->:<[owner]>
 dPrevention_check_intersections:
     type: task
+    #This task script is usually injected via inject command.
+    definitions: cuboid|selection
     script:
     - define world <player.world>
     - define cuboids <[world].flag[dPrevention.areas.cuboids].if_null[<list>].parse[as_cuboid].exclude[<[cuboid]>]>
     - define ellipsoids <[world].flag[dPrevention.areas.ellipsoids].if_null[<list>].parse[as_ellipsoid.bounding_box]>
     - define polygons <[world].flag[dPrevention.areas.polygons].if_null[<list>].parse[as_polygon.bounding_box]>
-    #Check intersections
+    #Check intersections, if its intersect another area, stop the script.
     - define intersections <[cuboids].include[<[ellipsoids]>].include[<[polygons]>].filter_tag[<[filter_value].intersects[<[selection]>]>]>
     - if !<[intersections].is_empty>:
         - narrate "Your selection intersects <[intersections].size> other claims."
