@@ -178,7 +178,7 @@ dPrevention_initial_check:
         - stop
     - determine cancelled passively
     - ratelimit <player> 2s
-    - narrate <[arguments.reason]>
+    - narrate <[arguments.reason]> format:dPrevention_format
 dPrevention_check_membership:
     type: task
     debug: false
@@ -247,22 +247,22 @@ dPrevention_flag_GUI_handler:
         - define flag <context.item.flag[flag]>
         - define users <player.flag[dPrevention.flaggui].flag[dPrevention.permissions.<[flag]>].if_null[<list>].parse[as_player]>
         - if <[users].is_empty>:
-            - narrate "The are no players whitelisted for <[flag]>"
+            - narrate "The are no players whitelisted for <[flag]>" format:dPrevention_format
             - inventory close
             - stop
-        - narrate <[users].parse[name].space_separated>
+        - narrate <[users].parse[name].space_separated> format:dPrevention_format
         - inventory close
         after player shift_left clicks item_flagged:flag in dPrevention_flag_GUI:
         - flag <player> dPrevention.add_bypass_user.area:<player.flag[dPrevention.flaggui]> expire:30s
         - flag <player> dPrevention.add_bypass_user.flag:<context.item.flag[flag]>
-        - narrate "Type the name of the player into the chat, to add or remove him. Write cancel, to cancel it."
+        - narrate "Type the name of the player into the chat, to add or remove him. Write cancel, to cancel it." format:dPrevention_format
         - inventory close
         on player chats flagged:dPrevention.add_bypass_user:
         - determine cancelled passively
         - define message <context.message.split.first>
         - if <[message]> == cancel:
             - flag <player> dPrevention.add_bypass_user:!
-            - narrate "Adding user cancelled"
+            - narrate "Adding user cancelled" format:dPrevention_format
             - stop
         - define player <server.match_offline_player[<[message]>].if_null[null]>
         - if <[player]> == null:
@@ -271,11 +271,11 @@ dPrevention_flag_GUI_handler:
             - stop
         - if <[player].is_within[dPrevention.permissions.<player.flag[dPrevention.add_bypass_user.flag]>]>:
             - flag <player.flag[dPrevention.add_bypass_user.area]> dPrevention.permissions.<player.flag[dPrevention.add_bypass_user.flag]>:<-:<[player].uuid>
-            - narrate "<player.name> isn't whitelisted to bypass <player.flag[dPrevention.add_bypass_user.flag]> anymore."
+            - narrate "<player.name> isn't whitelisted to bypass <player.flag[dPrevention.add_bypass_user.flag]> anymore." format:dPrevention_format
             - flag <player> dPrevention.add_bypass_user:!
             - stop
         - flag <player.flag[dPrevention.add_bypass_user.area]> dPrevention.permissions.<player.flag[dPrevention.add_bypass_user.flag]>:->:<[player].uuid>
-        - narrate "<player.name> is whitelisted to bypass <player.flag[dPrevention.add_bypass_user.flag]>"
+        - narrate "<player.name> is whitelisted to bypass <player.flag[dPrevention.add_bypass_user.flag]>" format:dPrevention_format
         - flag <player> dPrevention.add_bypass_user:!
 dPrevention_flag_GUI:
     type: inventory
@@ -306,7 +306,7 @@ dPrevention_generate_clickables:
     - foreach <[areas]> as:area:
         - clickable dPrevention_fill_flag_GUI def:<[area]> for:<player> until:1m save:<[loop_index]>
         - define clickables:->:<[area].note_name.on_click[<entry[<[loop_index]>].command>].on_hover[<[area].note_name>]>
-    - narrate <[clickables].space_separated>
+    - narrate <[clickables].space_separated> format:dPrevention_format
 dPrevention_area_creation:
     type: task
     data:
@@ -322,7 +322,7 @@ dPrevention_area_creation:
         - flag <[area]> dPrevention.flags.<[flag]>
     - flag <[area]> dPrevention.priority:<script.data_key[data.priority]>
     - if <[owner].exists>:
-        - narrate "Owner set"
+        - narrate "Owner set" format:dPrevention_format
         - flag <[area]> dPrevention.owners:->:<[owner]>
 dPrevention_check_intersections:
     type: task
@@ -336,7 +336,7 @@ dPrevention_check_intersections:
     #Check intersections, if its intersect another area, stop the script.
     - define intersections <[cuboids].include[<[ellipsoids]>].include[<[polygons]>].filter_tag[<[filter_value].intersects[<[selection]>]>]>
     - if !<[intersections].is_empty>:
-        - narrate "Your selection intersects <[intersections].size> other claims."
+        - narrate "Your selection intersects <[intersections].size> other claims." format:dPrevention_format
         - playeffect effect:BARRIER at:<[intersections].parse[bounding_box.outline].combine> offset:0,0,0 targets:<player>
         - stop
     #TODO: add more complex logic to let it intersect cuboids owned, MAYBE, ONLY MAAAAAAYBE
@@ -345,3 +345,6 @@ dPrevention_get_areas:
     definitions: location
     script:
     - determine <[location].cuboids.include[<[location].ellipsoids>].include[<[location].polygons>]>
+dPrevention_format:
+    type: format
+    format: <element[[dPrevention]].color_gradient[from=#00ccff;to=#0066ff]> <&color[#d9d9d9]><[text]>

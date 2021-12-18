@@ -33,14 +33,14 @@ dPrevention_tool_handler:
         - define areas <[location].proc[dPrevention_get_areas]>
         - if <[areas].is_empty>:
             - flag <player> dPrevention.claim_mode expire:120s
-            - narrate "Activating claim_mode"
+            - narrate "Activating claim_mode" format:dPrevention_format
             - stop
         - define ownership <[areas].filter_tag[<[filter_value].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>]>
         - if <[ownership].is_empty>:
-            - narrate "You're not allowed to do that"
+            - narrate "You're not allowed to do that" format:dPrevention_format
             - stop
         - flag <player> dPrevention.expand_mode:<[areas].first> expire:120s
-        - narrate "Activating expand_mode"
+        - narrate "Activating expand_mode" format:dPrevention_format
         #TODO: Check for MultiCuboids(priority)
         - playeffect effect:BARRIER at:<[location].cuboids.first.outline_2d[<[location].y>].parse[center]> offset:0,0,0 visibility:100
         - define cuboid_2d <[location].cuboids.first.outline_2d[<[location].y>]>
@@ -70,18 +70,18 @@ dPrevention_tool_handler:
         - if <player.is_sneaking>:
             - flag <player> dPrevention.claim_mode:!
             - flag <player> dPrevention.selection:!
-            - narrate "Claim_Mode Cancelled"
+            - narrate "Claim_Mode Cancelled" format:dPrevention_format
             - stop
         - choose <context.click_type>:
             - case LEFT_CLICK_BLOCK:
                 - flag <player> dPrevention.selection:<context.location.with_y[<script[dPrevention_config].data_key[claims.depth]>].to_cuboid[<context.location>]>
-                - narrate "Selection start set on <context.location.simple>"
+                - narrate "Selection start set on <context.location.simple>" format:dPrevention_format
             - case RIGHT_CLICK_BLOCK:
                 - if !<player.has_flag[dPrevention.selection]>:
-                    - narrate "You must start your selection by left clicking first."
+                    - narrate "You must start your selection by left clicking first." format:dPrevention_format
                     - stop
                 - if <player.flag[dPrevention.selection].world.name> != <context.location.world.name>:
-                    - narrate "Worlds doesn't match. Please restart your selection by left clicking."
+                    - narrate "Worlds doesn't match. Please restart your selection by left clicking." format:dPrevention_format
                     - stop
                 - flag <player> dPrevention.selection:<player.flag[dPrevention.selection].include[<context.location.with_y[255]>]>
                 - define selection <player.flag[dPrevention.selection]>
@@ -89,7 +89,7 @@ dPrevention_tool_handler:
                 #Check if the user can afford this region.
                 - ~run dPrevention_check_affordability def:<list_single[<[selection]>].include[claim]> save:queue
                 - if <entry[queue].created_queue.has_flag[stop]>:
-                    - narrate "You can't afford that."
+                    - narrate "You can't afford that." format:dPrevention_format
                     - stop
                 - else:
                     - define costs <entry[queue].created_queue.determination.first>
@@ -103,7 +103,7 @@ dPrevention_tool_handler:
                 #for use in intersection checking
                 - flag <player.world> dPrevention.areas.cuboids:->:<[name]>
                 #
-                - narrate "Selection claimed"
+                - narrate "Selection claimed" format:dPrevention_format
                 - playeffect effect:BARRIER at:<player.flag[dPrevention.selection].outline.parse[center]> offset:0,0,0 visibility:100
                 - run dPrevention_area_creation def:<list.include[<cuboid[<[name]>]>].include[<player.uuid>]>
                 - flag <player> dPrevention.selection:!
@@ -115,25 +115,25 @@ dPrevention_tool_handler:
             - flag <player> dPrevention.location:!
             - showfake cancel <player.flag[dPrevention.show_fake_locations]>
             - flag <player> dPrevention.show_fake_locations:!
-            - narrate "Expand_mode cancelled"
+            - narrate "Expand_mode cancelled" format:dPrevention_format
             - stop
         - choose <context.click_type>:
             - case LEFT_CLICK_BLOCK:
                 - if !<context.location.has_flag[dPrevention.expandable_corner]>:
-                    - narrate "You must select a corner first."
+                    - narrate "You must select a corner first." format:dPrevention_format
                     - stop
                 - if <context.location.flag[dPrevention.expandable_corner]> != <player.uuid>:
-                    - narrate "You're not allowed to do that."
+                    - narrate "You're not allowed to do that." format:dPrevention_format
                     - stop
                 - flag <player> dPrevention.location:<context.location.flag[dPrevention.location].with_y[0]>
-                - narrate "Selection start set on <context.location.flag[dPrevention.location].simple>"
+                - narrate "Selection start set on <context.location.flag[dPrevention.location].simple>" format:dPrevention_format
                 - stop
             - case RIGHT_CLICK_BLOCK:
                 - if !<player.has_flag[dPrevention.location]>:
-                    - narrate "You must select a corner first."
+                    - narrate "You must select a corner first." format:dPrevention_format
                     - stop
                 - if <player.flag[dPrevention.location].world.name> != <context.location.world.name>:
-                    - narrate "World's doesnt match. Please don't change worlds while expanding your cuboid."
+                    - narrate "World's doesnt match. Please don't change worlds while expanding your cuboid." format:dPrevention_format
                     - stop
                 - define cuboid <player.flag[dPrevention.expand_mode]>
                 - define name <[cuboid].note_name>
@@ -143,7 +143,7 @@ dPrevention_tool_handler:
                 - inject dPrevention_check_intersections
                 - ~run dPrevention_check_affordability def:<list_single[<[selection]>].include[expand].include_single[<[cuboid]>]> save:queue
                 - if <entry[queue].created_queue.has_flag[stop]>:
-                    - narrate "You can't afford that."
+                    - narrate "You can't afford that." format:dPrevention_format
                     - stop
                 - else:
                     - define costs <entry[queue].created_queue.determination.first>
