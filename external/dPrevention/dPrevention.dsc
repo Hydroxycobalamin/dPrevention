@@ -1,3 +1,4 @@
+#TODO: allow admins to bypass any restriction
 dPrevention_config:
     type: data
     claims:
@@ -113,12 +114,12 @@ dPrevention_generic_flag_handlers:
         - determine cancelled
         #piston extends
         on piston extends priority:100:
-        - define areas <context.location.proc[dPrevention_get_areas]>
-        - define blocks <context.blocks.include[<context.location.add[<context.direction>]>]>
+        - define location <context.location>
+        - define blocks <context.blocks.include[<[location].add[<context.direction>]>].include[<[location]>]>
         - inject dPrevention_prevent_piston_grief
         on piston retracts priority:100:
-        - define areas <context.location.proc[dPrevention_get_areas]>
-        - define blocks <context.blocks>
+        - define location <context.location>
+        - define blocks <context.blocks.include[<context.location>]>
         - inject dPrevention_prevent_piston_grief
         #lava spread
         on liquid spreads type:lava in:world_flagged:dPrevention.flags.lava-spread priority:100:
@@ -140,14 +141,18 @@ dPrevention_generic_flag_handlers:
 dPrevention_prevent_piston_grief:
     type: task
     script:
-    - foreach <[blocks]> as:location:
-        - define loc_area <[location].proc[dPrevention_get_areas]>
-        - if <[loc_area].is_empty>:
-            - if <[location].world.has_flag[dPrevention.flags.piston]>:
-                - determine cancelled
-        - foreach <[loc_area]> as:area:
-            - if <[area].has_flag[dPrevention.flags.piston]>:
-                - determine cancelled
+    - define location_areas <[location].proc[dPrevention_get_areas]>
+    - define modified_areas <[blocks].parse_tag[<[parse_value].proc[dPrevention_get_areas]>].combine.deduplicate>
+    #If the piston makes changes in another area, cancel it.
+    - if <[modified_areas].size> > 1:
+        - determine cancelled
+    #If the piston makes changes in another area and is not inside an area cancel it.
+    - if <[modified_areas].size> == 1 && <[location_areas].is_empty>:
+        - determine cancelled
+    #If the cuboid allows pistons, allow it.
+    - ~run dPrevention_check_flag def:<list_single[<[location_areas]>].include[piston].include[<queue>]>
+    - if <queue.has_flag[allow]>:
+        - stop
 dPrevention_flag_data:
     type: data
     flags:
@@ -210,13 +215,13 @@ dPrevention_check_membership:
     - flag <player> dPrevention.allow.<[flag]> expire:1t
 dPrevention_check_flag:
     type: task
-    debug: false
+    debug: true
     definitions: areas|flag|queue
     script:
     - define priority <[areas].sort_by_number[flag[dPrevention.priority]]>
     - foreach <[priority]> as:area:
         #If the user is whitelisted in this area to bypass the flag, allow it.
-        - if <[area].flag[dPrevention.permissions.<[flag]>].contains[<player.uuid>].if_null[false]>:
+        - if <[area].flag[dPrevention.permissions.<[flag]>].contains[<player.uuid.if_null[null]>].if_null[false]>:
             - flag <[queue].if_null[<queue>]> allow
             - stop
         #If an area doesn't allow it, stop
@@ -228,6 +233,7 @@ dPrevention_flag_GUI_handler:
     type: world
     debug: true
     events:
+    #TODO: extended flag support for flags such as entities, or commands
         after player left clicks item_flagged:flag in dPrevention_flag_GUI:
         - define area <player.flag[dPrevention.flaggui]>
         - define flag <context.item.flag[flag]>

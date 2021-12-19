@@ -138,3 +138,4 @@ dPrevention_menu_handler:
         after player right clicks dPrevention_page_item in dPrevention_menu:
         - define page <context.item.flag[page].sub[1]>
         - inject <script> path:pager
+#TODO: Access claim flags from this GUI.
