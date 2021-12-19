@@ -1,7 +1,9 @@
 dPrevention
 -----------
 
-###Installation
+dPrevention is a script which prevents grief and let your players claim their land, written in dScript.
+
+### Installation
 
 1. Install the dependencies listed below.
 2. Download dPrevention and drop the external folder into your /plugins/Denizen/scripts folder.
