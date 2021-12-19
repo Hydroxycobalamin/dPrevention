@@ -34,7 +34,7 @@ dPrevention_tool_handler:
         #If the player is not inside an area, set the player in claim mode.
         - if <[cuboids].is_empty>:
             - flag <player> dPrevention.claim_mode expire:120s
-            - narrate "Activating claim_mode" format:dPrevention_format
+            - narrate "Claim mode activated" format:dPrevention_format
             - stop
         #If he isn't owner of any area, he's not allowed.
         - define owned_areas <[cuboids].filter_tag[<[filter_value].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>]>
@@ -56,7 +56,7 @@ dPrevention_tool_handler:
         - if <player.is_sneaking>:
             - flag <player> dPrevention.claim_mode:!
             - flag <player> dPrevention.selection:!
-            - narrate "Claim_Mode Cancelled" format:dPrevention_format
+            - narrate "Claim mode cancelled" format:dPrevention_format
             - stop
         - choose <context.click_type>:
             - case LEFT_CLICK_BLOCK:
@@ -102,7 +102,7 @@ dPrevention_tool_handler:
             - flag <player> dPrevention.location:!
             - showfake cancel <player.flag[dPrevention.show_fake_locations]>
             - flag <player> dPrevention.show_fake_locations:!
-            - narrate "Expand_mode cancelled" format:dPrevention_format
+            - narrate "Expand mode cancelled" format:dPrevention_format
             - stop
         - choose <context.click_type>:
             - case LEFT_CLICK_BLOCK:
@@ -163,7 +163,7 @@ dPrevention_expand_mode:
     type: task
     definitions: cuboid|location
     script:
-    - narrate "Activating expand_mode" format:dPrevention_format
+    - narrate "Expand mode activated" format:dPrevention_format
     - flag <player> dPrevention.expand_mode:<[cuboid]> expire:120s
     - playeffect effect:BARRIER at:<[cuboid].outline_2d[<[location].y>].parse[center]> offset:0,0,0 visibility:100
     #Define the fake_block locations and mark them.

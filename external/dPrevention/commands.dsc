@@ -11,7 +11,7 @@ dPrevention_open_gui:
             - define areas <[location].proc[dPrevention_get_areas]>
             - if <player.has_permission[dPrevention.admin]>:
                 - if <[areas].is_empty>:
-                    - narrate "Not inside a region. Default to world: <player.location.world.name.custom_color[dpkey]>" format:dPrevention_format
+                    - narrate "You're not inside an area. Default to world: <player.location.world.name.custom_color[dpkey]>" format:dPrevention_format
                     - run dPrevention_fill_flag_GUI def:<player.location.world>
                     - stop
                 - if <[areas].size> > 1:
@@ -21,7 +21,7 @@ dPrevention_open_gui:
                 - stop
             - define ownership <[areas].filter_tag[<[filter_value].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>]>
             - if <[ownership].size> > 1:
-                - narrate "There are multiple regions, with ownerships at your location, please choose one." format:dPrevention_format
+                - narrate "There are multiple areas with ownerships at your location, please choose one." format:dPrevention_format
                 - foreach <[ownership]> as:area:
                     - clickable dPrevention_fill_flag_GUI def:<[area]> for:<player> until:1m save:<[loop_index]>
                     - define clickables:->:<[area].note_name.on_click[<entry[<[loop_index]>].command>].on_hover[<[area].note_name>]>
@@ -45,7 +45,7 @@ dPrevention_main:
             - choose <[argument]>:
                 - case cuboid:
                     - if !<player.has_flag[ctool_selection]>:
-                        - narrate "You don't have any ellipsoid selected." format:dPrevention_format
+                        - narrate "You don't have any cuboid selected." format:dPrevention_format
                         - stop
                     - define uuid <util.random_uuid>
                     - flag <player.world> dPrevention.areas.cuboids:->:<[uuid]>
@@ -61,7 +61,7 @@ dPrevention_main:
                     - run dPrevention_area_creation def:<list.include[<ellipsoid[<[uuid]>]>]>
                 - case polygon:
                     - if !<player.has_flag[ptool_selection]>:
-                        - narrate "You don't have any ellipsoid selected." format:dPrevention_format
+                        - narrate "You don't have any polygon selected." format:dPrevention_format
                         - stop
                     - define uuid <util.random_uuid>
                     - flag <player.world> dPrevention.areas.polygons:->:<[uuid]>

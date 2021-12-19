@@ -319,22 +319,23 @@ dPrevention_flag_GUI_handler:
         on player chats flagged:dPrevention.add_bypass_user:
         - determine cancelled passively
         - define message <context.message.split.first>
+        - define flag <player.flag[dPrevention.add_bypass_user.flag]>
         - if <[message]> == cancel:
             - flag <player> dPrevention.add_bypass_user:!
-            - narrate "Adding user cancelled" format:dPrevention_format
+            - narrate "Add users to bypass <[flag]> cancelled." format:dPrevention_format
             - stop
         - define player <server.match_offline_player[<[message]>].if_null[null]>
         - if <[player]> == null:
             - narrate "This user doesn't exist." format:dPrevention_format
             - flag <player> dPrevention.add_bypass_user:!
             - stop
-        - if <[player].is_in[dPrevention.permissions.<player.flag[dPrevention.add_bypass_user.flag]>]>:
-            - flag <player.flag[dPrevention.add_bypass_user.area]> dPrevention.permissions.<player.flag[dPrevention.add_bypass_user.flag]>:<-:<[player].uuid>
-            - narrate "<player.name.custom_color[dpkey]> isn't whitelisted to bypass <player.flag[dPrevention.add_bypass_user.flag].custom_color[dpkey]> anymore." format:dPrevention_format
+        - if <[player].is_in[dPrevention.permissions.<[flag]>]>:
+            - flag <player.flag[dPrevention.add_bypass_user.area]> dPrevention.permissions.<[flag]>:<-:<[player].uuid>
+            - narrate "<player.name.custom_color[dpkey]> isn't whitelisted to bypass <[flag].custom_color[dpkey]> anymore." format:dPrevention_format
             - flag <player> dPrevention.add_bypass_user:!
             - stop
-        - flag <player.flag[dPrevention.add_bypass_user.area]> dPrevention.permissions.<player.flag[dPrevention.add_bypass_user.flag]>:->:<[player].uuid>
-        - narrate "<player.name.custom_color[dpkey]> is whitelisted to bypass <player.flag[dPrevention.add_bypass_user.flag].custom_color[dpkey]>" format:dPrevention_format
+        - flag <player.flag[dPrevention.add_bypass_user.area]> dPrevention.permissions.<[flag]>:->:<[player].uuid>
+        - narrate "<player.name.custom_color[dpkey]> is whitelisted to bypass <[flag].custom_color[dpkey]>" format:dPrevention_format
         - flag <player> dPrevention.add_bypass_user:!
 dPrevention_flag_GUI:
     type: inventory
@@ -387,7 +388,6 @@ dPrevention_area_creation:
         - flag <[area]> dPrevention.flags.<[flag]>:<[value]>
     - flag <[area]> dPrevention.priority:<script.data_key[data.priority]>
     - if <[owner].exists>:
-        - narrate "Owner set" format:dPrevention_format
         - flag <[area]> dPrevention.owners:->:<[owner]>
 dPrevention_check_intersections:
     type: task
