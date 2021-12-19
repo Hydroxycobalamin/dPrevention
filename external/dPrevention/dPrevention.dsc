@@ -141,7 +141,7 @@ dPrevention_generic_flag_handlers:
         on living spawns in:area_flagged:dPrevention.flags.spawn-living priority:50:
         - determine cancelled
         on entity prespawns in:world_flagged:dPrevention.flags.entities priority:100:
-        - if <context.location.cuboids.first.flag[dPrevention.flags.entities].contains[<context.entity.entity_type>]>:
+        - if <context.location.world.flag[dPrevention.flags.entities].contains[<context.entity.entity_type>]>:
             - determine cancelled
         on entity prespawns in:area_flagged:dPrevention.flags.entities priority:50:
         - if <context.location.cuboids.first.flag[dPrevention.flags.entities].contains[<context.entity.entity_type>]>:
