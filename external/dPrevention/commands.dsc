@@ -88,7 +88,7 @@ dPrevention_info_data:
     - define page 1
     - foreach <player.flag[dPrevention.areas.cuboids].parse[as_cuboid].sort_by_value[world.name].if_null[<list>].exclude[null]> as:cuboid:
         - definemap data min_x:<[cuboid].min.x> min_z:<[cuboid].min.z> max_x:<[cuboid].max.x> max_z:<[cuboid].max.z> world:<[cuboid].world.name> costs:<[cuboid].proc[dPrevention_get_costs]>
-        - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.format]>]>
+        - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.format]>].with_flag[claim:<[cuboid]>]>
         - if <[loop_index].mod[45]> == 0:
             - define page:++
     - determine <[inventory_menu]>
@@ -123,7 +123,7 @@ dPrevention_page_item:
     material: stone
 dPrevention_menu_handler:
     type: world
-    debug: false
+    debug: true
     pager:
     - define max <player.flag[dPrevention.inventory_menu.pages].keys.highest>
     - if !<player.has_flag[dPrevention.inventory_menu.pages.<[page]>]>:
@@ -138,4 +138,5 @@ dPrevention_menu_handler:
         after player right clicks dPrevention_page_item in dPrevention_menu:
         - define page <context.item.flag[page].sub[1]>
         - inject <script> path:pager
-#TODO: Access claim flags from this GUI.
+        after player left clicks dPrevention_menu_item in dPrevention_menu:
+        - run dPrevention_fill_flag_GUI def:<context.item.flag[claim]>
