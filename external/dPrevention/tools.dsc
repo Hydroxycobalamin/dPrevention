@@ -123,7 +123,7 @@ dPrevention_tool_handler:
                 - if <player.flag[dPrevention.location].world.name> != <context.location.world.name>:
                     - narrate "World's doesnt match. Please don't change worlds while expanding your cuboid." format:dPrevention_format
                     - stop
-                #Read data from the cuboid linked to the expand mode for later use(red)
+                #Read data from the cuboid linked to the expand mode for later use(read the read comment below).
                 - define cuboid <player.flag[dPrevention.expand_mode]>
                 - definemap data dPrevention:<[cuboid].flag[dPrevention]>
                 - define name <[cuboid].note_name>
@@ -147,7 +147,7 @@ dPrevention_tool_handler:
                 #Pass data to the new cuboid.
                 ##If you use your own area flags, make sure to pass them aswell. You can add them to the data map defined above.
                 - foreach <[data]> key:type as:flags:
-                    - flag <[new_cuboid]> <[type]>:<[data]>
+                    - flag <[new_cuboid]> <[type]>:<[flags]>
                 - playeffect effect:LIGHT at:<[new_cuboid].outline.parse[center]> offset:0,0,0 visibility:90
                 #Remove expand mode.
                 - showfake cancel <player.flag[dPrevention.show_fake_locations]>
