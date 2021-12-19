@@ -247,6 +247,10 @@ dPrevention_flag_GUI_handler:
     events:
         on player chats flagged:dPrevention.add_flag:
         - determine cancelled passively
+        - if <context.message.split.first> == cancel:
+            - narrate "Adding or removing flags cancelled." format:dPrevention_format
+            - flag <player> dPrevention.add_flag:!
+            - stop
         - define flag <player.flag[dPrevention.add_flag.flag]>
         - define area <player.flag[dPrevention.flaggui]>
         - choose <[flag]>:
@@ -254,7 +258,7 @@ dPrevention_flag_GUI_handler:
                 - foreach <context.message.split> as:entity:
                     #If an provided entity is not a valid entity, stop.
                     - if <entity[<[entity]>].if_null[null]> == null:
-                        - narrate "<[entity]> is not a valid entity. Try again or Type cancel. 30 Seconds."
+                        - narrate "<[entity].custom_color[dpkey]> is not a valid entity. Try again or Type cancel. 30 Seconds." format:dPrevention_format
                         - flag <player> dPrevention.add_flag.flag:<[flag]> expire:30s
                         - flag <player> dPrevention.add_flag.area:<[area]> expire:30s
                         - stop
@@ -267,10 +271,11 @@ dPrevention_flag_GUI_handler:
                 #If the list of entities is empty, remove the flag.
                 - if <[area].flag[dPrevention.flags.<[flag]>].is_empty>:
                     - flag <[area]> dPrevention.flags.<[flag]>:!
+                    - flag <player> dPrevention.add_flag:!
                     - narrate "This claims doesn't prevent any entity anymore."
                     - stop
+                - flag <player> dPrevention.add_flag:!
                 - narrate "This claim prevents <[area].flag[dPrevention.flags.<[flag]>].space_separated> from spawning."
-    #TODO: extended flag support for flags such as entities, or commands
         after player left clicks item_flagged:flag in dPrevention_flag_GUI:
         #If a flag needs separate input, stop here.
         - define flag <context.item.flag[flag]>
@@ -408,4 +413,4 @@ dPrevention_get_areas:
     - determine <[location].cuboids.include[<[location].ellipsoids>].include[<[location].polygons>]>
 dPrevention_format:
     type: format
-    format: <element[[dPrevention]].color_gradient[from=#00ccff;to=#0066ff]> <&color[#d9d9d9]><[text]>
+    format: <element[[dPrevention]].color_gradient[from=#00ccff;to=#0066ff]> <&[dptext]><[text]>
