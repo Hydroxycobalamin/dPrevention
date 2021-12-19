@@ -1,4 +1,6 @@
 #TODO: allow admins to bypass any restriction
+#TODO: clean useroutput (narrate / announce / actionbar)
+#TODO: dynmap support
 dPrevention_config:
     type: data
     claims:

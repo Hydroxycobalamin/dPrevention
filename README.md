@@ -1,6 +1,23 @@
 dPrevention
 -----------
 
+### Dependencies
+
+Denizen: https://www.spigotmc.org/resources/denizen.21039/
+
+Cuboid Selector Tool by mcmonkey: https://forum.denizenscript.com/resources/cuboid-selector-tool.1/
+To mark your cuboid shaped admin area. Use /dprevention cuboid after you selected the area, to create the claim.
+
+Polygon Selector Tool by mcmonkey: https://forum.denizenscript.com/resources/polygon-selector-tool.2/
+To mark your polygon shaped admin area. Use /dprevention polygon after you selected the area, to create the claim.
+
+Ellipsoid Selector Tool by mcmonkey: https://forum.denizenscript.com/resources/ellipsoid-selector-tool.3/
+To mark your ellipsoid shaped admin area. Use /dprevention ellipsoid after your selected the area, to create the claim.
+
+Vault: https://www.spigotmc.org/resources/vault.34315/
+
+Any permission plugin such as LuckPerms: https://www.spigotmc.org/resources/luckperms.28140/
+
 ### Licensing pre-note:
 
 This is an open source project, provided entirely freely, for everyone to use and contribute to.
