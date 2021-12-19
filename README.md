@@ -1,14 +1,29 @@
 dPrevention
 -----------
 
-### Dependencies
+###Installation
+
+1. Install the dependencies listed below.
+2. Download dPrevention and drop the external folder into your /plugins/Denizen/scripts folder.
+3. Add the following keys under the Colors key in the config.yml of Denizen. You can change the Hexcodes if you want different colors.
+```yaml
+Colors:
+  dpkey: <&color[#0066ff]>
+  dpblue: <&color[#00ccff]>
+  dptext: <&color[#d9d9d9]>
+```
+4. Join your Minecraft Server and type /ex reload to reload your scripts.
+
+### Dependencie
 
 Denizen: https://www.spigotmc.org/resources/denizen.21039/
 
 Cuboid Selector Tool by mcmonkey: https://forum.denizenscript.com/resources/cuboid-selector-tool.1/
+
 To mark your cuboid shaped admin area. Use /dprevention cuboid after you selected the area, to create the claim.
 
 Polygon Selector Tool by mcmonkey: https://forum.denizenscript.com/resources/polygon-selector-tool.2/
+
 To mark your polygon shaped admin area. Use /dprevention polygon after you selected the area, to create the claim.
 
 Ellipsoid Selector Tool by mcmonkey: https://forum.denizenscript.com/resources/ellipsoid-selector-tool.3/
