@@ -3,7 +3,7 @@ dPrevention_open_gui:
     name: flags
     description: opens the GUI for dPrevention claims
     usage: /flags
-    permission: dPrevention.flaggui
+    permission: dPrevention.command.flags
     script:
     - choose <context.args.size>:
         - case 0:
@@ -35,7 +35,7 @@ dPrevention_main:
     name: dPrevention
     description: main command
     usage: /dPrevention [cuboid/ellipsoid/polygon/tool/info]
-    permission: dPrevention.command
+    permission: dPrevention.command.main
     tab completions:
         1: <player.has_permission[dPrevention.admin].if_true[cuboid|ellipsoid|polygon|tool|info].if_false[tool|info]>
     script:
