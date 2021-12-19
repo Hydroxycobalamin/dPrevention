@@ -140,6 +140,12 @@ dPrevention_generic_flag_handlers:
         - determine cancelled
         on living spawns in:area_flagged:dPrevention.flags.spawn-living priority:50:
         - determine cancelled
+        on entity prespawns in:world_flagged:dPrevention.flags.entities priority:100:
+        - if <context.location.cuboids.first.flag[dPrevention.flags.entities].contains[<context.entity.entity_type>]>:
+            - determine cancelled
+        on entity prespawns in:area_flagged:dPrevention.flags.entities priority:50:
+        - if <context.location.cuboids.first.flag[dPrevention.flags.entities].contains[<context.entity.entity_type>]>:
+            - determine cancelled
 dPrevention_prevent_piston_grief:
     type: task
     script:
@@ -177,6 +183,7 @@ dPrevention_flag_data:
         lava_bucket: lava-spread
         zombie_head: spawn-monster
         leather_horse_armor: spawn-living
+        cow_spawn_egg: entities
 dPrevention_initial_check:
     type: task
     script:
@@ -234,11 +241,42 @@ dPrevention_check_flag:
 dPrevention_flag_GUI_handler:
     type: world
     debug: true
+    data:
+        chat_input:
+        - entities
     events:
+        on player chats flagged:dPrevention.add_flag:
+        - determine cancelled passively
+        - define flag <player.flag[dPrevention.add_flag.flag]>
+        - define area <player.flag[dPrevention.flaggui]>
+        - choose <[flag]>:
+            - case entities:
+                - foreach <context.message.split> as:entity:
+                    #If an provided entity is not a valid entity, stop.
+                    - if <entity[<[entity]>].if_null[null]> == null:
+                        - narrate "<[entity]> is not a valid entity. Try again or Type cancel. 30 Seconds."
+                        - flag <player> dPrevention.add_flag.flag:<[flag]> expire:30s
+                        - flag <player> dPrevention.add_flag.area:<[area]> expire:30s
+                        - stop
+                    #If the entity is already in the list, remove it.
+                    - if <[area].flag[dPrevention.flags.<[flag]>].if_null[<list>].contains[<[entity]>]>:
+                        - flag <[area]> dPrevention.flags.<[flag]>:<-:<[entity]>
+                        - foreach next
+                    #If the entity is not in the list, add it.
+                    - flag <[area]> dPrevention.flags.<[flag]>:->:<[entity]>
+                #If the list of entities is empty, remove the flag.
+                - if <[area].flag[dPrevention.flags.<[flag]>].is_empty>:
+                    - flag <[area]> dPrevention.flags.<[flag]>:!
+                    - narrate "This claims doesn't prevent any entity anymore."
+                    - stop
+                - narrate "This claim prevents <[area].flag[dPrevention.flags.<[flag]>].space_separated> from spawning."
     #TODO: extended flag support for flags such as entities, or commands
         after player left clicks item_flagged:flag in dPrevention_flag_GUI:
-        - define area <player.flag[dPrevention.flaggui]>
+        #If a flag needs separate input, stop here.
         - define flag <context.item.flag[flag]>
+        - if <script.data_key[data.chat_input].contains[<[flag]>]>:
+            - stop
+        - define area <player.flag[dPrevention.flaggui]>
         - define value <context.item.flag[value]>
         #If the flag is set to false, display true.
         - if !<[value]>:
@@ -261,8 +299,16 @@ dPrevention_flag_GUI_handler:
         - narrate <[users].parse[name].space_separated> format:dPrevention_format
         - inventory close
         after player shift_left clicks item_flagged:flag in dPrevention_flag_GUI:
+        - define flag <context.item.flag[flag]>
+        #If a flag needs separate input. Listen to the chat event.
+        - if <script.data_key[data.chat_input].contains[<[flag]>]>:
+            - flag <player> dPrevention.add_flag.area:<player.flag[dPrevention.flaggui]> expire:30s
+            - flag <player> dPrevention.add_flag.flag:<[flag]> expire:30s
+            - narrate "Type the strings. Seperate multiple by space. 30 Seconds."
+            - stop
+        #Listen to the Chat event, to allow specific players to bypass the player related flag.
         - flag <player> dPrevention.add_bypass_user.area:<player.flag[dPrevention.flaggui]> expire:30s
-        - flag <player> dPrevention.add_bypass_user.flag:<context.item.flag[flag]>
+        - flag <player> dPrevention.add_bypass_user.flag:<context.item.flag[flag]> expire:30s
         - narrate "Type the name of the player into the chat, to add or remove him. Write cancel, to cancel it." format:dPrevention_format
         - inventory close
         on player chats flagged:dPrevention.add_bypass_user:
@@ -277,7 +323,7 @@ dPrevention_flag_GUI_handler:
             - narrate "This user doesn't exist."
             - flag <player> dPrevention.add_bypass_user:!
             - stop
-        - if <[player].is_within[dPrevention.permissions.<player.flag[dPrevention.add_bypass_user.flag]>]>:
+        - if <[player].is_in[dPrevention.permissions.<player.flag[dPrevention.add_bypass_user.flag]>]>:
             - flag <player.flag[dPrevention.add_bypass_user.area]> dPrevention.permissions.<player.flag[dPrevention.add_bypass_user.flag]>:<-:<[player].uuid>
             - narrate "<player.name> isn't whitelisted to bypass <player.flag[dPrevention.add_bypass_user.flag]> anymore." format:dPrevention_format
             - flag <player> dPrevention.add_bypass_user:!
@@ -301,6 +347,9 @@ dPrevention_fill_flag_GUI:
         #true is false and false is truely true is the truth
         - if <[area].has_flag[dPrevention.flags.<[flag]>]>:
             - define bool false
+            #If the flag has a value, add it to the item.
+            - if <[flag].is_in[<script[dPrevention_flag_GUI_handler].data_key[data.chat_input]>]>:
+                - define bool <n><[area].flag[dPrevention.flags.<[flag]>].parse_tag[<red><[parse_value]>].separated_by[<n>]>
         - define "items:->:<item[<[item]>].with[display=<[flag].color[gray]>;lore=<dark_gray>Status: <[bool].color[red].if_null[<green>true]>;hides=ALL].with_flag[flag:<[flag]>].with_flag[value:<[bool].if_null[true]>]>"
         - define bool:!
     - flag <player> dPrevention.flaggui:<[area]>
@@ -318,16 +367,19 @@ dPrevention_generate_clickables:
 dPrevention_area_creation:
     type: task
     data:
-        #List of flags that will be added to the area upon creation.
+        #Map of flags that will be added to the area upon creation.
         flags:
-            - block-break
-            - block-place
+            block-break: true
+            block-place: true
+        ##If the flag has separate input, use a map with a list of values instead, format:
+            #entities:
+              #- COW
         #Default priority that will be set on the area upon creation.
         priority: 1
     definitions: area|owner
     script:
-    - foreach <script.data_key[data.flags]> as:flag:
-        - flag <[area]> dPrevention.flags.<[flag]>
+    - foreach <script.data_key[data.flags]> key:flag as:value:
+        - flag <[area]> dPrevention.flags.<[flag]>:<[value]>
     - flag <[area]> dPrevention.priority:<script.data_key[data.priority]>
     - if <[owner].exists>:
         - narrate "Owner set" format:dPrevention_format
