@@ -1,4 +1,3 @@
-#TODO: allow admins to bypass any restriction
 #TODO: clean useroutput (narrate / announce / actionbar)
 #TODO: dynmap support
 dPrevention_config:
@@ -187,6 +186,9 @@ dPrevention_flag_data:
 dPrevention_initial_check:
     type: task
     script:
+    #Allow players to bypass the flag, if they have the specific permission.
+    - if <player.has_permission[dPrevention.bypass.<[arguments.flag]>]>:
+        - stop
     - ~run dPrevention_check_membership def:<[arguments.location]>|<[arguments.flag]> save:queue
     - if <entry[queue].created_queue.has_flag[allow]>:
         - stop
