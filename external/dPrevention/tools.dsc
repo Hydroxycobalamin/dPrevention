@@ -46,7 +46,7 @@ dPrevention_tool_handler:
             - foreach <[owned_areas]> as:cuboid:
                 - clickable dPrevention_expand_mode def:<list_single[<[cuboid]>].include[<[location]>]> for:<player> until:1m save:<[loop_index]>
                 - define clickables:->:<[cuboid].note_name.on_click[<entry[<[loop_index]>].command>].on_hover[<[cuboid].note_name>]>
-            - narrate <[clickables].space_separated> format:dPrevention_format
+            - narrate <[clickables].space_separated.custom_color[dpkey]> format:dPrevention_format
             - stop
         #If there's only a single area, set the player in expand mode.
         - run dPrevention_expand_mode def:<list_single[<[owned_areas].first>].include[<[location]>]>
@@ -61,7 +61,7 @@ dPrevention_tool_handler:
         - choose <context.click_type>:
             - case LEFT_CLICK_BLOCK:
                 - flag <player> dPrevention.selection:<context.location.with_y[<script[dPrevention_config].data_key[claims.depth]>].to_cuboid[<context.location>]>
-                - narrate "Selection start set on <context.location.simple>" format:dPrevention_format
+                - narrate "Selection start set on <context.location.simple.custom_color[dpkey]>" format:dPrevention_format
             - case RIGHT_CLICK_BLOCK:
                 - if !<player.has_flag[dPrevention.selection]>:
                     - narrate "You must start your selection by left clicking first." format:dPrevention_format
@@ -114,7 +114,7 @@ dPrevention_tool_handler:
                     - narrate "You're not allowed to do that." format:dPrevention_format
                     - stop
                 - flag <player> dPrevention.location:<context.location.flag[dPrevention.location].with_y[0]>
-                - narrate "Selection start set on <context.location.flag[dPrevention.location].simple>" format:dPrevention_format
+                - narrate "Selection start set on <context.location.flag[dPrevention.location].simple.custom_color[dpkey]>" format:dPrevention_format
                 - stop
             - case RIGHT_CLICK_BLOCK:
                 - if !<player.has_flag[dPrevention.location]>:

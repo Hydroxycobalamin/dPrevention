@@ -272,10 +272,10 @@ dPrevention_flag_GUI_handler:
                 - if <[area].flag[dPrevention.flags.<[flag]>].is_empty>:
                     - flag <[area]> dPrevention.flags.<[flag]>:!
                     - flag <player> dPrevention.add_flag:!
-                    - narrate "This claims doesn't prevent any entity anymore."
+                    - narrate "This claims doesn't prevent any entity anymore." format:dPrevention_format
                     - stop
                 - flag <player> dPrevention.add_flag:!
-                - narrate "This claim prevents <[area].flag[dPrevention.flags.<[flag]>].space_separated> from spawning."
+                - narrate "This claim prevents <[area].flag[dPrevention.flags.<[flag]>].space_separated.to_titlecase.custom_color[dpkey]> from spawning." format:dPrevention_format
         after player left clicks item_flagged:flag in dPrevention_flag_GUI:
         #If a flag needs separate input, stop here.
         - define flag <context.item.flag[flag]>
@@ -298,10 +298,10 @@ dPrevention_flag_GUI_handler:
         - define flag <context.item.flag[flag]>
         - define users <player.flag[dPrevention.flaggui].flag[dPrevention.permissions.<[flag]>].if_null[<list>].parse[as_player]>
         - if <[users].is_empty>:
-            - narrate "The are no players whitelisted for <[flag]>" format:dPrevention_format
+            - narrate "The are no players whitelisted for <[flag].custom_color[dpkey]>" format:dPrevention_format
             - inventory close
             - stop
-        - narrate <[users].parse[name].space_separated> format:dPrevention_format
+        - narrate <[users].parse[name].space_separated.custom_color[dpkey]> format:dPrevention_format
         - inventory close
         after player shift_left clicks item_flagged:flag in dPrevention_flag_GUI:
         - define flag <context.item.flag[flag]>
@@ -325,16 +325,16 @@ dPrevention_flag_GUI_handler:
             - stop
         - define player <server.match_offline_player[<[message]>].if_null[null]>
         - if <[player]> == null:
-            - narrate "This user doesn't exist."
+            - narrate "This user doesn't exist." format:dPrevention_format
             - flag <player> dPrevention.add_bypass_user:!
             - stop
         - if <[player].is_in[dPrevention.permissions.<player.flag[dPrevention.add_bypass_user.flag]>]>:
             - flag <player.flag[dPrevention.add_bypass_user.area]> dPrevention.permissions.<player.flag[dPrevention.add_bypass_user.flag]>:<-:<[player].uuid>
-            - narrate "<player.name> isn't whitelisted to bypass <player.flag[dPrevention.add_bypass_user.flag]> anymore." format:dPrevention_format
+            - narrate "<player.name.custom_color[dpkey]> isn't whitelisted to bypass <player.flag[dPrevention.add_bypass_user.flag].custom_color[dpkey]> anymore." format:dPrevention_format
             - flag <player> dPrevention.add_bypass_user:!
             - stop
         - flag <player.flag[dPrevention.add_bypass_user.area]> dPrevention.permissions.<player.flag[dPrevention.add_bypass_user.flag]>:->:<[player].uuid>
-        - narrate "<player.name> is whitelisted to bypass <player.flag[dPrevention.add_bypass_user.flag]>" format:dPrevention_format
+        - narrate "<player.name.custom_color[dpkey]> is whitelisted to bypass <player.flag[dPrevention.add_bypass_user.flag].custom_color[dpkey]>" format:dPrevention_format
         - flag <player> dPrevention.add_bypass_user:!
 dPrevention_flag_GUI:
     type: inventory
@@ -368,7 +368,7 @@ dPrevention_generate_clickables:
     - foreach <[areas]> as:area:
         - clickable dPrevention_fill_flag_GUI def:<[area]> for:<player> until:1m save:<[loop_index]>
         - define clickables:->:<[area].note_name.on_click[<entry[<[loop_index]>].command>].on_hover[<[area].note_name>]>
-    - narrate <[clickables].space_separated> format:dPrevention_format
+    - narrate <[clickables].space_separated.custom_color[dpkey]> format:dPrevention_format
 dPrevention_area_creation:
     type: task
     data:
@@ -403,7 +403,7 @@ dPrevention_check_intersections:
     - define intersections <[intersections].exclude[<[owned_areas]>]>
     #If the selection intersects another claim which he the player doesn't own, he's not allowed to claim.
     - if !<[intersections].is_empty>:
-        - narrate "Your selection intersects <[intersections].size> other claims." format:dPrevention_format
+        - narrate "Your selection intersects <[intersections].size.custom_color[dpkey]> other claims." format:dPrevention_format
         - playeffect effect:BARRIER at:<[intersections].parse[bounding_box.outline].combine> offset:0,0,0 targets:<player>
         - stop
 dPrevention_get_areas:
