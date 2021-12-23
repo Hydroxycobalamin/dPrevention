@@ -82,12 +82,13 @@ dPrevention_info_data:
     type: procedure
     data:
         format:
-        - Size: <[data.min_x]>,<[data.min_z]> to <[data.max_x]>,<[data.max_z]> in <[data.world]>
-        - Costs: <[data.costs]>
+        - <&[dptext]>Location: <[data.min].custom_color[dpkey]> to <[data.max].custom_color[dpkey]> in <[data.world].custom_color[dpkey]>
+        - <&[dptext]>Size: <[data.size].custom_color[dpblue]>
+        - <&[dptext]>Costs: <[data.costs].color[#cc0066]>
     script:
     - define page 1
     - foreach <player.flag[dPrevention.areas.cuboids].parse[as_cuboid].sort_by_value[world.name].if_null[<list>].exclude[null]> as:cuboid:
-        - definemap data min_x:<[cuboid].min.x> min_z:<[cuboid].min.z> max_x:<[cuboid].max.x> max_z:<[cuboid].max.z> world:<[cuboid].world.name> costs:<[cuboid].proc[dPrevention_get_costs]>
+        - definemap data "min:<[cuboid].min.xyz.replace_text[,].with[ ]>" "max:<[cuboid].max.xyz.replace_text[,].with[ ]>" world:<[cuboid].world.name> "size:<[cuboid].size.xyz.replace_text[,].with[ ]>" costs:<[cuboid].proc[dPrevention_get_costs]>
         - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.format]>].with_flag[claim:<[cuboid]>]>
         - if <[loop_index].mod[45]> == 0:
             - define page:++
@@ -106,8 +107,8 @@ dPrevention_menu:
     title: Menu
     gui: true
     definitions:
-        blocks: "<item[dPrevention_menu_item].with[lore=From play: <player.flag[dPrevention.blocks.amount.per_time].if_null[0]>|From blocks: <player.flag[dPrevention.blocks.amount.per_block].if_null[0]>]>"
-        page: "<item[dPrevention_page_item].with[lore=Current Page:1/<player.flag[dPrevention.inventory_menu.pages].keys.highest>].with_flag[page:1]>"
+        blocks: "<item[dPrevention_menu_item].with[display=<white>Blocks;lore=<element[From play:].color_gradient[from=#009933;to=#00ff55]> <player.flag[dPrevention.blocks.amount.per_time].if_null[0]>|<element[From blocks:].color_gradient[from=#009933;to=#00ff55]> <player.flag[dPrevention.blocks.amount.per_block].if_null[0]>|<element[In Use:].color_gradient[from=#ff3399;to=#cc0066]> <player.flag[dPrevention.blocks.amount.in_use].if_null[0]>|<element[Left to spent:].color_gradient[from=#00ffff;to=#009999]> <player.proc[dPrevention_get_blocks]>]>"
+        page: "<item[dPrevention_page_item].with[display=<white>Page;lore=Current Page:1/<player.flag[dPrevention.inventory_menu.pages].keys.highest>].with_flag[page:1]>"
     slots:
     - [] [] [] [] [] [] [] [] []
     - [] [] [] [] [] [] [] [] []
@@ -118,6 +119,7 @@ dPrevention_menu:
 dPrevention_menu_item:
     type: item
     material: grass_block
+    display name: <white>Claim
 dPrevention_page_item:
     type: item
     material: stone

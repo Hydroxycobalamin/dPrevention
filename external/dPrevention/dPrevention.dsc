@@ -6,9 +6,9 @@ dPrevention_config:
         #Default depth of claims, claimed via dPrevention_tool.
         depth: 0
     user:
-        #Max blocks per time
+        #Max blocks obtainable per time
         max-blocks-per-time: 2000
-        #Blocks a user get every 5 minutes of online time
+        #Blocks a user gets, every 5 minutes of online time until max-blocks-per-time is reached.
         blocks-per-5-min: 25
 dPrevention_player_flag_handlers:
     type: world
@@ -213,7 +213,7 @@ dPrevention_check_membership:
         - inject dPrevention_check_flag
     #If he is inside an area, check for flags first.
     - define flagged_areas <[areas].filter_tag[<[filter_value].has_flag[dPrevention.flags.<[flag]>]>]>
-    - ~run dPrevention_check_flag def:<list_single[<[areas]>].include[<[flag]>|<queue>]>
+    - ~run dPrevention_check_flag def:<list_single[<[flagged_areas]>].include[<[flag]>|<queue>]>
     - if <queue.has_flag[allow]>:
         - stop
     #If he isn't owner of any region, stop the queue

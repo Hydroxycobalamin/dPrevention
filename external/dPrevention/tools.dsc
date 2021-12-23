@@ -4,23 +4,24 @@ dPrevention_tool:
     material: blaze_rod
     mechanisms:
         hides: ENCHANTS
-    display name: dPrevention Tool
+    display name: <white>dPrevention tool
     lore:
-    - Right click inside your claim to
-    - activate expand mode
-    - Right click outside your claim to
-    - activate claim mode
-    - Expand<&co>
-    - Left click a corner of your claim
-    - to start expanding your claim
-    - Right click a new location
-    - to expand your claim
-    - Claim<&co>
-    - Left click to start a selection
-    - Right click to end the selection
-    - and claim your area
-    - Cancel<&co>
-    - Sneak + Rightclick to cancel
+    - <gold>Modes<&co>
+    - <&[dptext]>Right click inside your claim to
+    - <&[dptext]>activate expand mode
+    - <&[dptext]>Right click outside your claim to
+    - <&[dptext]>activate claim mode
+    - <gold>Expand<&co>
+    - <&[dptext]>Left click a corner of your claim
+    - <&[dptext]>to start expanding your claim
+    - <&[dptext]>Right click a new location
+    - <&[dptext]>to expand your claim
+    - <gold>Claim<&co>
+    - <&[dptext]>Left click to start a selection
+    - <&[dptext]>Right click to end the selection
+    - <&[dptext]>and claim your area
+    - <gold>Cancel<&co>
+    - <&[dptext]>Sneak + Rightclick to cancel
 dPrevention_tool_handler:
     type: world
     debug: false
