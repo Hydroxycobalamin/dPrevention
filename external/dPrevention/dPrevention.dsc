@@ -128,16 +128,15 @@ dPrevention_generic_flag_handlers:
         #water spread
         on liquid spreads type:water in:area_flagged:dPrevention.flags.water-spread priority:100:
         - determine cancelled
-        #TODO: use prespawn, wait for denizen discord confess to tacos.
         #monster ban
-        on monster spawns in:world_flagged:dPrevention.flags.spawn-monster priority:100:
+        on monster prespawns in:world_flagged:dPrevention.flags.spawn-monster priority:100:
         - determine cancelled
-        on monster spawns in:area_flagged:dPrevention.flags.spawn-monster priority:50:
+        on monster prespawns in:area_flagged:dPrevention.flags.spawn-monster priority:50:
         - determine cancelled
         #living ban
-        on living spawns in:world_flagged:dPrevention.flags.spawn-living priority:100:
+        on living prespawns in:world_flagged:dPrevention.flags.spawn-living priority:100:
         - determine cancelled
-        on living spawns in:area_flagged:dPrevention.flags.spawn-living priority:50:
+        on living prespawns in:area_flagged:dPrevention.flags.spawn-living priority:50:
         - determine cancelled
         on entity prespawns in:world_flagged:dPrevention.flags.entities priority:100:
         - if <context.location.world.flag[dPrevention.flags.entities].contains[<context.entity.entity_type>]>:
