@@ -1,4 +1,3 @@
-#TODO: clean useroutput (narrate / announce / actionbar)
 #TODO: dynmap support
 dPrevention_config:
     type: data
@@ -278,8 +277,12 @@ dPrevention_flag_GUI_handler:
                 - flag <player> dPrevention.add_flag:!
                 - narrate "This claim prevents <[area].flag[dPrevention.flags.<[flag]>].space_separated.to_titlecase.custom_color[dpkey]> from spawning." format:dPrevention_format
         after player left clicks item_flagged:flag in dPrevention_flag_GUI:
-        #If a flag needs separate input, stop here.
         - define flag <context.item.flag[flag]>
+        #If the player doesn't have permission to change the flag stop.
+        - if !<player.has_permission[dPrevention.flag.<[flag]>]>:
+            - narrate "You don't have permission to change the <[flag].custom_color[dpkey]> flag." format:dPrevention_format
+            - stop
+        #If a flag needs separate input, stop here.
         - if <script.data_key[data.chat_input].contains[<[flag]>]>:
             - stop
         - define area <player.flag[dPrevention.flaggui]>
@@ -306,6 +309,10 @@ dPrevention_flag_GUI_handler:
         - inventory close
         after player shift_left clicks item_flagged:flag in dPrevention_flag_GUI:
         - define flag <context.item.flag[flag]>
+        #If the player doesn't have permission to change the flag stop.
+        - if !<player.has_permission[dPrevention.flag.<[flag]>]>:
+            - narrate "You don't have permission to change the <[flag].custom_color[dpkey]> flag." format:dPrevention_format
+            - stop
         #If a flag needs separate input. Listen to the chat event.
         - if <script.data_key[data.chat_input].contains[<[flag]>]>:
             - flag <player> dPrevention.add_flag.area:<player.flag[dPrevention.flaggui]> expire:30s
