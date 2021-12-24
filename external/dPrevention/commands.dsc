@@ -142,3 +142,23 @@ dPrevention_menu_handler:
         - inject <script> path:pager
         after player left clicks dPrevention_menu_item in dPrevention_menu:
         - run dPrevention_fill_flag_GUI def:<context.item.flag[claim]>
+        after player right clicks dPrevention_menu_item in dPrevention_menu:
+        - define costs <context.item.flag[claim].proc[dPrevention_get_costs]>
+        - flag <player> dPrevention.remove_cuboid:<context.item.flag[claim]> expire:30s
+        - inventory close
+        - narrate "Type 'delete' if want to remove your cuboid." format:dPrevention_format
+        on player chats flagged:dPrevention.remove_cuboid:
+        - determine cancelled passively
+        - if <context.message.split.first> != delete:
+            - narrate "Your claim was not removed."
+            - flag <player> dPrevention.remove_cuboid:!
+            - stop
+        - define cuboid <player.flag[dPrevention.remove_cuboid]>
+        - narrate "Your claim was removed. You received <[cuboid].proc[dPrevention_get_costs].custom_color[dpkey]> blocks back!" format:dPrevention_format
+        #TODO: Push below in a global task
+        - flag <[cuboid].world> dPrevention.areas.cuboids:<-:<[cuboid].note_name>
+        - flag <player> dPrevention.areas.cuboids:<-:<[cuboid].note_name>
+        - note remove as:<[cuboid].note_name>
+        - flag <player> dPrevention.blocks.amount.in_use:-:<[cuboid].proc[dPrevention_get_costs]>
+        #TODO: end
+        - flag <player> dPrevention.remove_cuboid:!
