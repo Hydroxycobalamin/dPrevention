@@ -155,10 +155,5 @@ dPrevention_menu_handler:
             - stop
         - define cuboid <player.flag[dPrevention.remove_cuboid]>
         - narrate "Your claim was removed. You received <[cuboid].proc[dPrevention_get_costs].custom_color[dpkey]> blocks back!" format:dPrevention_format
-        #TODO: Push below in a global task
-        - flag <[cuboid].world> dPrevention.areas.cuboids:<-:<[cuboid].note_name>
-        - flag <player> dPrevention.areas.cuboids:<-:<[cuboid].note_name>
-        - note remove as:<[cuboid].note_name>
-        - flag <player> dPrevention.blocks.amount.in_use:-:<[cuboid].proc[dPrevention_get_costs]>
-        #TODO: end
+        - run dPrevention_area_removal def:<[cuboid]>|<player>
         - flag <player> dPrevention.remove_cuboid:!

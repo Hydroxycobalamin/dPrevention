@@ -397,6 +397,14 @@ dPrevention_area_creation:
     - flag <[area]> dPrevention.priority:<script.data_key[data.priority]>
     - if <[owner].exists>:
         - flag <[area]> dPrevention.owners:->:<[owner]>
+dPrevention_area_removal:
+    type: task
+    definitions: cuboid|player
+    script:
+    - flag <[cuboid].world> dPrevention.areas.cuboids:<-:<[cuboid].note_name>
+    - flag <[player]> dPrevention.areas.cuboids:<-:<[cuboid].note_name>
+    - note remove as:<[cuboid].note_name>
+    - flag <[player]> dPrevention.blocks.amount.in_use:-:<[cuboid].proc[dPrevention_get_costs]>
 dPrevention_check_intersections:
     type: task
     #This task script is usually injected via inject command.
