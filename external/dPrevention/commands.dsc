@@ -1,5 +1,6 @@
 dPrevention_open_gui:
     type: command
+    debug: false
     name: flags
     description: opens the GUI for dPrevention claims
     usage: /flags
@@ -30,6 +31,7 @@ dPrevention_open_gui:
             - run dPrevention_fill_flag_GUI def:<[ownership].first>
 dPrevention_main:
     type: command
+    debug: false
     data:
         tools: Tools by mcmonkey<&co> <element[Polygon].on_click[https://forum.denizenscript.com/resources/polygon-selector-tool.2/].type[OPEN_URL]> <element[Ellipsoid].on_click[https://forum.denizenscript.com/resources/ellipsoid-selector-tool.3/].type[OPEN_URL]> <element[Cuboid].on_click[https://forum.denizenscript.com/resources/cuboid-selector-tool.1/].type[OPEN_URL]>
     name: dPrevention
@@ -80,6 +82,7 @@ dPrevention_main:
             - narrate <script.data_key[usage].custom_color[dpkey]><n><script.parsed_key[data.tools]> format:dPrevention_format
 dPrevention_info_data:
     type: procedure
+    debug: false
     data:
         format:
         - <&[dptext]>Location: <[data.min].custom_color[dpkey]> to <[data.max].custom_color[dpkey]> in <[data.world].custom_color[dpkey]>
@@ -94,6 +97,7 @@ dPrevention_info_data:
             - define page:++
     - determine <[inventory_menu]>
 dPrevention_info_formatter:
+    debug: false
     type: task
     script:
     - define data <proc[dPrevention_info_data]>
@@ -103,6 +107,7 @@ dPrevention_info_formatter:
     - inventory set origin:<[data.pages.1]> destination:<player.open_inventory>
 dPrevention_menu:
     type: inventory
+    debug: false
     inventory: CHEST
     title: Menu
     gui: true
@@ -118,14 +123,16 @@ dPrevention_menu:
     - [] [] [] [] [blocks] [] [] [page] []
 dPrevention_menu_item:
     type: item
+    debug: false
     material: grass_block
     display name: <white>Claim
 dPrevention_page_item:
     type: item
+    debug: false
     material: stone
 dPrevention_menu_handler:
     type: world
-    debug: true
+    debug: false
     pager:
     - define max <player.flag[dPrevention.inventory_menu.pages].keys.highest>
     - if !<player.has_flag[dPrevention.inventory_menu.pages.<[page]>]>:

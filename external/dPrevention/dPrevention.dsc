@@ -1,6 +1,7 @@
 #TODO: dynmap support
 dPrevention_config:
     type: data
+    debug: false
     claims:
         #Default depth of claims, claimed via dPrevention_tool.
         depth: 0
@@ -145,6 +146,7 @@ dPrevention_generic_flag_handlers:
             - determine cancelled
 dPrevention_prevent_piston_grief:
     type: task
+    debug: false
     script:
     - define location_areas <[location].proc[dPrevention_get_areas]>
     - define modified_areas <[blocks].parse_tag[<[parse_value].proc[dPrevention_get_areas]>].combine.deduplicate>
@@ -160,6 +162,7 @@ dPrevention_prevent_piston_grief:
         - stop
 dPrevention_flag_data:
     type: data
+    debug: false
     flags:
         iron_pickaxe: block-break
         grass_block: block-place
@@ -183,6 +186,7 @@ dPrevention_flag_data:
         cow_spawn_egg: entities
 dPrevention_initial_check:
     type: task
+    debug: false
     script:
     #Allow players to bypass the flag, if they have the specific permission.
     - if <player.has_permission[dPrevention.bypass.<[arguments.flag]>]>:
@@ -224,7 +228,7 @@ dPrevention_check_membership:
     - flag <player> dPrevention.allow.<[flag]> expire:1t
 dPrevention_check_flag:
     type: task
-    debug: true
+    debug: false
     definitions: areas|flag|queue
     script:
     - define priority <[areas].sort_by_number[flag[dPrevention.priority]]>
@@ -240,7 +244,7 @@ dPrevention_check_flag:
     - flag <[queue].if_null[<queue>]> allow
 dPrevention_flag_GUI_handler:
     type: world
-    debug: true
+    debug: false
     data:
         chat_input:
         - entities
@@ -347,13 +351,14 @@ dPrevention_flag_GUI_handler:
         - flag <player> dPrevention.add_bypass_user:!
 dPrevention_flag_GUI:
     type: inventory
+    debug: false
     inventory: CHEST
     title: Flags
     gui: true
     size: 27
 dPrevention_fill_flag_GUI:
     type: task
-    debug: true
+    debug: false
     definitions: area
     script:
     - foreach <script[dPrevention_flag_data].data_key[flags]> key:item as:flag:
@@ -372,6 +377,7 @@ dPrevention_fill_flag_GUI:
     - inventory set origin:<[items]> destination:<player.open_inventory>
 dPrevention_generate_clickables:
     type: task
+    debug: false
     definitions: areas
     script:
     - foreach <[areas]> as:area:
@@ -380,6 +386,7 @@ dPrevention_generate_clickables:
     - narrate <[clickables].space_separated.custom_color[dpkey]> format:dPrevention_format
 dPrevention_area_creation:
     type: task
+    debug: false
     data:
         #Map of flags that will be added to the area upon creation.
         flags:
@@ -399,6 +406,7 @@ dPrevention_area_creation:
         - flag <[area]> dPrevention.owners:->:<[owner]>
 dPrevention_area_removal:
     type: task
+    debug: false
     definitions: cuboid|player
     script:
     - flag <[cuboid].world> dPrevention.areas.cuboids:<-:<[cuboid].note_name>
@@ -407,6 +415,7 @@ dPrevention_area_removal:
     - flag <[player]> dPrevention.blocks.amount.in_use:-:<[cuboid].proc[dPrevention_get_costs]>
 dPrevention_check_intersections:
     type: task
+    debug: false
     #This task script is usually injected via inject command.
     definitions: cuboid|selection
     script:
@@ -424,9 +433,11 @@ dPrevention_check_intersections:
         - stop
 dPrevention_get_areas:
     type: procedure
+    debug: false
     definitions: location
     script:
     - determine <[location].cuboids.include[<[location].ellipsoids>].include[<[location].polygons>]>
 dPrevention_format:
     type: format
+    debug: false
     format: <element[[dPrevention]].color_gradient[from=#00ccff;to=#0066ff]> <&[dptext]><[text]>

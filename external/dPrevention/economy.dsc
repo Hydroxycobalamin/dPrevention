@@ -1,5 +1,6 @@
 dPrevention_get_costs:
     type: procedure
+    debug: false
     definitions: cuboid
     script:
     - define math <[cuboid].max.sub[<[cuboid].min>]>
@@ -7,11 +8,13 @@ dPrevention_get_costs:
     - determine <[costs]>
 dPrevention_get_blocks:
     type: procedure
+    debug: false
     script:
     - define free_amount <player.flag[dPrevention.blocks.amount.per_time].if_null[0].add[<player.flag[dPrevention.blocks.amount.per_block].if_null[0]>].sub[<player.flag[dPrevention.blocks.amount.in_use].if_null[0]>]>
     - determine <[free_amount]>
 dPrevention_check_affordability:
     type: task
+    debug: false
     definitions: cuboid|mode|old_cuboid
     script:
     - choose <[mode]>:
@@ -31,6 +34,7 @@ dPrevention_check_affordability:
             - determine <[costs]>
 dPrevention_item_blocks:
     type: item
+    debug: false
     material: grass_block
     mechanisms:
         hides: ENCHANTS
@@ -41,6 +45,7 @@ dPrevention_item_blocks:
             blocks: 50
 dPrevention_blocks_handler:
     type: world
+    debug: false
     reached_max:
     - if <[player].flag[dPrevention.blocks.amount.per_time].add[<[config.blocks-per-5-min]>].if_null[0]> > <[config.max-blocks-per-time]>:
         - flag <[player]> dPrevention.blocks.amount.per_time:<[config.max-blocks-per-time]>

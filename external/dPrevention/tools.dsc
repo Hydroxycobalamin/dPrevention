@@ -1,6 +1,7 @@
 ##userhandling below
 dPrevention_tool:
     type: item
+    debug: false
     material: blaze_rod
     mechanisms:
         hides: ENCHANTS
@@ -162,6 +163,7 @@ dPrevention_tool_handler:
         - actionbar "<gold>Mode: <yellow>Expand" targets:<server.online_players_flagged[dPrevention.expand_mode]>
 dPrevention_expand_mode:
     type: task
+    debug: false
     definitions: cuboid|location
     script:
     - narrate "Expand mode activated" format:dPrevention_format
