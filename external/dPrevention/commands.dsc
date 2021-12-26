@@ -39,43 +39,75 @@ dPrevention_main:
     usage: /dPrevention [cuboid/ellipsoid/polygon/tool/info]
     permission: dPrevention.command.main
     tab completions:
-        1: <player.has_permission[dPrevention.admin].if_true[cuboid|ellipsoid|polygon|tool|info].if_false[tool|info]>
+        1: <player.has_permission[dPrevention.admin].if_true[cuboid|ellipsoid|polygon|tool|info|admininfo].if_false[tool|info]>
     script:
     - choose <context.args.size>:
         - case 1:
-            - define argument <context.args.first>
-            - choose <[argument]>:
-                - case cuboid:
-                    - if !<player.has_flag[ctool_selection]>:
-                        - narrate "You don't have any cuboid selected." format:dPrevention_format
-                        - stop
-                    - define uuid <util.random_uuid>
-                    - flag <player.world> dPrevention.areas.cuboids:->:<[uuid]>
-                    - note <player.flag[ctool_selection]> as:<[uuid]>
-                    - run dPrevention_area_creation def:<list.include[<cuboid[<[uuid]>]>]>
-                - case ellipsoid:
-                    - if !<player.has_flag[elliptool_selection]>:
-                        - narrate "You don't have any ellipsoid selected." format:dPrevention_format
-                        - stop
-                    - define uuid <util.random_uuid>
-                    - flag <player.world> dPrevention.areas.ellipsoids:->:<[uuid]>
-                    - note <player.flag[elliptool_selection]> as:<[uuid]>
-                    - run dPrevention_area_creation def:<list.include[<ellipsoid[<[uuid]>]>]>
-                - case polygon:
-                    - if !<player.has_flag[ptool_selection]>:
-                        - narrate "You don't have any polygon selected." format:dPrevention_format
-                        - stop
-                    - define uuid <util.random_uuid>
-                    - flag <player.world> dPrevention.areas.polygons:->:<[uuid]>
-                    - note <player.flag[ptool_selection]> as:<[uuid]>
-                    - run dPrevention_area_creation def:<list.include[<polygon[<[uuid]>]>]>
+            - choose <context.args.first>:
                 - case tool:
                     - if !<player.inventory.can_fit[dPrevention_tool]>:
                         - narrate "You can't hold the tool. Make some space." format:dPrevention_format
                         - stop
                     - give dPrevention_tool slot:hand
                 - case info:
-                    - inject dPrevention_info_formatter
+                    - run dPrevention_info_formatter def.cuboids:<player.flag[dPrevention.areas.cuboids].parse[as_cuboid].sort_by_value[world.name].if_null[<list>].exclude[null]>
+                - case admininfo:
+                    - if !<player.has_permission[dPrevention.admin]>:
+                        - narrate "You don't have permission to do that" format:dPrevention_format
+                        - stop
+                    - foreach <server.worlds> as:world:
+                        - define data <[world].flag[dPrevention.areas.admin].if_null[null]>
+                        - if <[data]> == null:
+                            - foreach next
+                        - define cuboids <[cuboids].if_null[<list>].include[<[data.cuboids].parse[as_cuboid].if_null[<list>]>]>
+                        - define polygons <[polygons].if_null[<list>].include[<[data.polygons].parse[as_polygon].if_null[<list>]>]>
+                        - define ellipsoids <[ellipsoids].if_null[<list>].include[<[data.ellipsoids].parse[as_ellipsoid].if_null[<list>]>]>
+                    - run dPrevention_info_formatter def.cuboids:<[cuboids]> def.polygons:<[polygons]> def.ellipsoids:<[ellipsoids]>
+        - case 2:
+            - if !<player.has_permission[dPrevention.admin]>:
+                - narrate "You don't have permission to do that" format:dPrevention_format
+                - stop
+            - define argument <context.args.first>
+            - choose <[argument]>:
+                - case cuboid:
+                    - define area <player.flag[ctool_selection].if_null[null]>
+                    - if <[area]> == null:
+                        - narrate "You don't have cuboid area selected." format:dPrevention_format
+                        - stop
+                    - define id <context.args.get[2].trim_to_character_set[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890]>
+                    - if <[area].world.flag[dPrevention.areas.admin.cuboids].contains[<[id]>]>:
+                        - narrate "A cuboid with the id <[id].custom_color[dpkey]> exists already!" format:dPrevention_format
+                        - stop
+                    - flag <[area].world> dPrevention.areas.admin.cuboids:->:<[id]>
+                    - note <[area]> as:<[id]>
+                    - run dPrevention_area_creation def:<list.include[<cuboid[<[id]>]>]>
+                    - narrate "You've created an admin claim called <[id].custom_color[dpkey]>!"
+                - case ellipsoid:
+                    - define area <player.flag[elliptool_selection].if_null[null]>
+                    - if <[area]> == null:
+                        - narrate "You don't have any ellipsoid selected." format:dPrevention_format
+                        - stop
+                    - define id <context.args.get[2].trim_to_character_set[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890]>
+                    - if <[area].world.flag[dPrevention.areas.admin.ellipsoids].contains[<[id]>]>:
+                        - narrate "A ellipsoid with the name <[id].custom_color[dpkey]> exists already!" format:dPrevention_format
+                        - stop
+                    - flag <[area].world> dPrevention.areas.admin.ellipsoids:->:<[id]>
+                    - note <[area]> as:<[id]>
+                    - run dPrevention_area_creation def:<list.include[<ellipsoid[<[id]>]>]>
+                    - narrate "You've created an admin claim called <[id].custom_color[dpkey]>!"
+                - case polygon:
+                    - define area <player.flag[ptool_selection].if_null[null]>
+                    - if <[area]> == null:
+                        - narrate "You don't have any polygon selected." format:dPrevention_format
+                        - stop
+                    - define id <context.args.get[2].trim_to_character_set[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890]>
+                    - if <[area].world.flag[dPrevention.areas.admin.polygons].contains[<[id]>]>:
+                        - narrate "A ellipsoid with the name <[id].custom_color[dpkey]> exists already!" format:dPrevention_format
+                        - stop
+                    - flag <[area].world> dPrevention.areas.admin.polygons:->:<[id]>
+                    - note <[area]> as:<[id]>
+                    - run dPrevention_area_creation def:<list.include[<polygon[<[id]>]>]>
+                    - narrate "You've created an admin claim called <[id].custom_color[dpkey]>!"
                 - default:
                     - narrate <script.data_key[usage].custom_color[dpkey]><n><script.parsed_key[data.tools]> format:dPrevention_format
         - default:
@@ -84,23 +116,53 @@ dPrevention_info_data:
     type: procedure
     debug: false
     data:
-        format:
+        cuboid:
         - <&[dptext]>Location: <[data.min].custom_color[dpkey]> to <[data.max].custom_color[dpkey]> in <[data.world].custom_color[dpkey]>
         - <&[dptext]>Size: <[data.size].custom_color[dpblue]>
         - <&[dptext]>Costs: <[data.costs].color[#cc0066]>
+        polygon:
+        - <[data.corner].parse_tag[<&[dptext]>Corner: <[parse_value].custom_color[dpkey]>].separated_by[<n>]>
+        - <&[dptext]>World: <[data.world].custom_color[dpkey]>
+        - <&[dptext]>Height: <[data.min_y].custom_color[dpkey]> to <[data.max_y].custom_color[dpkey]>
+        ellipsoid:
+        - <&[dptext]>Location: <[data.location].custom_color[dpkey]> in <[data.world].custom_color[dpkey]>
+    definitions: areas
     script:
     - define page 1
-    - foreach <player.flag[dPrevention.areas.cuboids].parse[as_cuboid].sort_by_value[world.name].if_null[<list>].exclude[null]> as:cuboid:
-        - definemap data "min:<[cuboid].min.xyz.replace_text[,].with[ ]>" "max:<[cuboid].max.xyz.replace_text[,].with[ ]>" world:<[cuboid].world.name> "size:<[cuboid].size.xyz.replace_text[,].with[ ]>" costs:<[cuboid].proc[dPrevention_get_costs]>
-        - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.format]>].with_flag[claim:<[cuboid]>]>
-        - if <[loop_index].mod[45]> == 0:
-            - define page:++
+    - foreach <[areas]> key:type as:areas:
+        - choose <[type]>:
+            - case cuboids:
+                - repeat <[areas].size>:
+                    - define area <[areas].get[<[value]>]>
+                    - definemap data "min:<[area].min.xyz.replace_text[,].with[ ]>" "max:<[area].max.xyz.replace_text[,].with[ ]>" world:<[area].world.name> "size:<[area].size.xyz.replace_text[,].with[ ]>" costs:<[area].proc[dPrevention_get_costs]>
+                    - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.cuboid]>].with_flag[claim:<[area]>]>
+                    - if <[loop_index].mod[45]> == 0:
+                        - define page:++
+            - case polygons:
+                - repeat <[areas].size>:
+                    - define area <[areas].get[<[value]>]>
+                    - definemap data "corner:<[area].corners.parse_tag[<[parse_value].xyz.replace_text[,].with[ ]>]>" world:<[area].world.name> min_y:<[area].min_y> max_y:<[area].max_y>
+                    - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.polygon]>].with_flag[claim:<[area]>]>
+                    - if <[loop_index].mod[45]> == 0:
+                        - define page:++
+            - case ellipsoids:
+                - repeat <[areas].size>:
+                    - define area <[areas].get[<[value]>]>
+                    - definemap data "location:<[area].location.xyz.replace_text[,].with[ ]>" world:<[area].world.name>
+                    - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.ellipsoid]>].with_flag[claim:<[area]>]>
+                    - if <[loop_index].mod[45]> == 0:
+                        - define page:++
+    #Dummy if there aren't any claims yet.
+    - if !<[inventory_menu.pages.1].exists>:
+        - define inventory_menu.pages.1:<list[air]>
     - determine <[inventory_menu]>
 dPrevention_info_formatter:
     debug: false
     type: task
+    definitions: cuboids|polygons|ellipsoids
     script:
-    - define data <proc[dPrevention_info_data]>
+    - definemap areas cuboids:<[cuboids].if_null[<list>]> polygons:<[polygons].if_null[<list>]> ellipsoids:<[ellipsoids].if_null[<list>]>
+    - define data <proc[dPrevention_info_data].context[<[areas]>]>
     - flag <player> dPrevention.inventory_menu:<[data]>
     - inventory open destination:dPrevention_menu
     - wait 1t
