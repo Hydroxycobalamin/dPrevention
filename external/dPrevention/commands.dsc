@@ -69,6 +69,12 @@ dPrevention_main:
                 - stop
             - define argument <context.args.first>
             - choose <[argument]>:
+                - case info:
+                    - define player <server.match_offline_player[<context.args.last>].if_null[null]>
+                    - if <[player]> == null:
+                        - narrate "This player doesn't exist!"
+                        - stop
+                    - run dPrevention_info_formatter def.cuboids:<[player].flag[dPrevention.areas.cuboids].parse[as_cuboid].sort_by_value[world.name].if_null[<list>].exclude[null]>
                 - case cuboid:
                     - define area <player.flag[ctool_selection].if_null[null]>
                     - if <[area]> == null:
