@@ -37,6 +37,8 @@ Vault: https://www.spigotmc.org/resources/vault.34315/
 
 Any permission plugin such as LuckPerms: https://www.spigotmc.org/resources/luckperms.28140/
 
+Any economy plugin with Vault support or an economy script. https://meta.denizenscript.com/Docs/Languages/economy#economy%20script%20containers
+
 ### Licensing pre-note:
 
 This is an open source project, provided entirely freely, for everyone to use and contribute to.
