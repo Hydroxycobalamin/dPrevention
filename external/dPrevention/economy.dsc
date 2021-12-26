@@ -46,7 +46,7 @@ dPrevention_blocks_handler:
         - determine cancelled passively
         - wait 1t
         - take iteminhand
-        - narrate "You've received <context.item.flag[dPrevention.blocks].custom_color[dpkey]> blocks." format:dPrevention_format
+        - narrate "You've received <context.item.flag[dPrevention.blocks].custom_color[emphasis]> blocks." format:dPrevention_format
         - flag <player> dPrevention.blocks.amount.per_block:+:<context.item.flag[dPrevention.blocks]>
         after delta time minutely every:5:
         - define players <server.online_players.filter[has_flag[dPrevention.blocks.reached_max].not]>

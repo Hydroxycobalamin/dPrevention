@@ -7,7 +7,7 @@ dPrevention_blockshop:
     procedural items:
     - define config <script[dPrevention_config].data_key[shop]>
     - foreach <[config.blocks]> as:blocks:
-        - define "items:->:<item[dPrevention_item_blocks].with_flag[dPrevention.blocks:<[blocks]>].with_flag[dPrevention.price:<[blocks].mul[<[config.block-price]>]>].with[lore=<&[dptext]>Price: <[blocks].mul[<[config.block-price]>].custom_color[dpkey]>|<&[dptext]>Blocks: <[blocks].custom_color[dpkey]>]>"
+        - define "items:->:<item[dPrevention_item_blocks].with_flag[dPrevention.blocks:<[blocks]>].with_flag[dPrevention.price:<[blocks].mul[<[config.block-price]>]>].with[lore=<&[base]>Price: <[blocks].mul[<[config.block-price]>].custom_color[emphasis]>|<&[base]>Blocks: <[blocks].custom_color[emphasis]>]>"
     - determine <[items]>
     slots:
         - [] [] [] [] [] [] [] [] []
@@ -35,8 +35,8 @@ dPrevention_blockshop_handler:
             - narrate "You don't have enough space in your inventory." format:dPrevention_format
             - stop
         - money take quantity:<[price]>
-        - give "<context.item.with[lore=<&[dptext]>[Rightclick to use]|<element[Blocks: <context.item.flag[dPrevention.blocks]>].color_gradient[from=#009933;to=#00ff55]>]>"
-        - narrate "You've got <context.item.flag[dPrevention.blocks].custom_color[dpkey]>" format:dPrevention_format
+        - give "<context.item.with[lore=<&[base]>[Rightclick to use]|<element[Blocks: <context.item.flag[dPrevention.blocks]>].color_gradient[from=#009933;to=#00ff55]>]>"
+        - narrate "You've got <context.item.flag[dPrevention.blocks].custom_color[emphasis]>" format:dPrevention_format
 dPrevention_blockshop_command:
     type: command
     debug: false

@@ -1,21 +1,20 @@
 dPrevention
 -----------
 
-dPrevention is a script which prevents grief and let your players claim their land, written in dScript.
+dPrevention prevents grief and let your players claim their land on your Minecraft server, written in dScript.
 
 ### Installation
 
 1. Install the dependencies listed below.
 2. Download dPrevention and drop the external folder into your `/plugins/Denizen/scripts` folder.
-3. Add the following keys under the Colors key in the `config.yml` of Denizen. You can change the Hexcodes if you want different colors.
+3. You can change the following hexcodes listed below under the Colors key in the `config.yml` of Denizen to use the colors dPrevention uses or use your own ones.
 ```yaml
 Colors:
-  dpkey: <&color[#0066ff]>
-  dpblue: <&color[#00ccff]>
-  dptext: <&color[#d9d9d9]>
+  emphasis: <&color[#0066ff]>
+  base: <&color[#d9d9d9]>
 ```
 4. Join your Minecraft Server and type `/ex reload` to reload your scripts.
-5. Configure permissions listed [here](https://github.com/Hydroxycobalamin/dPrevention/wiki/Documentation(PARTIAL)#permissions).
+5. Configure permissions listed [here](https://github.com/Hydroxycobalamin/dPrevention/wiki/Documentation#permissions).
 
 ### Dependencies
 

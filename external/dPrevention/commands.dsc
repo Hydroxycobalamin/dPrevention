@@ -12,7 +12,7 @@ dPrevention_open_gui:
             - define areas <[location].proc[dPrevention_get_areas]>
             - if <player.has_permission[dPrevention.admin]>:
                 - if <[areas].is_empty>:
-                    - narrate "You're not inside an area. Default to world: <player.location.world.name.custom_color[dpkey]>" format:dPrevention_format
+                    - narrate "You're not inside an area. Default to world: <player.location.world.name.custom_color[emphasis]>" format:dPrevention_format
                     - run dPrevention_fill_flag_GUI def:<player.location.world>
                     - stop
                 - if <[areas].size> > 1:
@@ -26,7 +26,7 @@ dPrevention_open_gui:
                 - foreach <[ownership]> as:area:
                     - clickable dPrevention_fill_flag_GUI def:<[area]> for:<player> until:1m save:<[loop_index]>
                     - define clickables:->:<[area].note_name.on_click[<entry[<[loop_index]>].command>].on_hover[<[area].note_name>]>
-                - narrate <[clickables].space_separated.custom_color[dpkey]> format:dPrevention_format
+                - narrate <[clickables].space_separated.custom_color[emphasis]> format:dPrevention_format
                 - stop
             - if <[ownership].is_empty>:
                 - narrate "You're not inside your claim." format:dPrevention_format
@@ -85,12 +85,12 @@ dPrevention_main:
                         - stop
                     - define id <context.args.get[2].trim_to_character_set[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890]>
                     - if <[area].world.flag[dPrevention.areas.admin.cuboids].contains[<[id]>].if_null[false]>:
-                        - narrate "A cuboid with the id <[id].custom_color[dpkey]> exists already!" format:dPrevention_format
+                        - narrate "A cuboid with the id <[id].custom_color[emphasis]> exists already!" format:dPrevention_format
                         - stop
                     - flag <[area].world> dPrevention.areas.admin.cuboids:->:<[id]>
                     - note <[area]> as:<[id]>
                     - run dPrevention_area_creation def:<list.include[<cuboid[<[id]>]>]>
-                    - narrate "You've created an admin claim called <[id].custom_color[dpkey]>!" format:dPrevention_format
+                    - narrate "You've created an admin claim called <[id].custom_color[emphasis]>!" format:dPrevention_format
                 - case ellipsoid:
                     - define area <player.flag[elliptool_selection].if_null[null]>
                     - if <[area]> == null:
@@ -98,12 +98,12 @@ dPrevention_main:
                         - stop
                     - define id <context.args.get[2].trim_to_character_set[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890]>
                     - if <[area].world.flag[dPrevention.areas.admin.ellipsoids].contains[<[id]>].if_null[false]>:
-                        - narrate "A ellipsoid with the name <[id].custom_color[dpkey]> exists already!" format:dPrevention_format
+                        - narrate "A ellipsoid with the name <[id].custom_color[emphasis]> exists already!" format:dPrevention_format
                         - stop
                     - flag <[area].world> dPrevention.areas.admin.ellipsoids:->:<[id]>
                     - note <[area]> as:<[id]>
                     - run dPrevention_area_creation def:<list.include[<ellipsoid[<[id]>]>]>
-                    - narrate "You've created an admin claim called <[id].custom_color[dpkey]>!" format:dPrevention_format
+                    - narrate "You've created an admin claim called <[id].custom_color[emphasis]>!" format:dPrevention_format
                 - case polygon:
                     - define area <player.flag[ptool_selection].if_null[null]>
                     - if <[area]> == null:
@@ -111,31 +111,31 @@ dPrevention_main:
                         - stop
                     - define id <context.args.get[2].trim_to_character_set[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890]>
                     - if <[area].world.flag[dPrevention.areas.admin.polygons].contains[<[id]>].if_null[false]>:
-                        - narrate "A ellipsoid with the name <[id].custom_color[dpkey]> exists already!" format:dPrevention_format
+                        - narrate "A ellipsoid with the name <[id].custom_color[emphasis]> exists already!" format:dPrevention_format
                         - stop
                     - flag <[area].world> dPrevention.areas.admin.polygons:->:<[id]>
                     - note <[area]> as:<[id]>
                     - run dPrevention_area_creation def:<list.include[<polygon[<[id]>]>]>
-                    - narrate "You've created an admin claim called <[id].custom_color[dpkey]>!" format:dPrevention_format
+                    - narrate "You've created an admin claim called <[id].custom_color[emphasis]>!" format:dPrevention_format
                 - default:
-                    - narrate <script.data_key[usage].custom_color[dpkey]><n><script.parsed_key[data.tools]> format:dPrevention_format
+                    - narrate <script.data_key[usage].custom_color[emphasis]><n><script.parsed_key[data.tools]> format:dPrevention_format
         - default:
-            - narrate <script.data_key[usage].custom_color[dpkey]><n><script.parsed_key[data.tools]> format:dPrevention_format
+            - narrate <script.data_key[usage].custom_color[emphasis]><n><script.parsed_key[data.tools]> format:dPrevention_format
 dPrevention_info_data:
     type: procedure
     debug: false
     data:
         cuboid:
-        - <&[dptext]>Location: <[data.min].custom_color[dpkey]> to <[data.max].custom_color[dpkey]> in <[data.world].custom_color[dpkey]>
-        - <&[dptext]>Size: <[data.size].custom_color[dpblue]> Priority: <[data.priority].custom_color[dpkey]>
-        - <&[dptext]>Costs: <[data.costs].color[#cc0066]>
+        - <&[base]>Location: <[data.min].custom_color[emphasis]> to <[data.max].custom_color[emphasis]> in <[data.world].custom_color[emphasis]>
+        - <&[base]>Size: <[data.size].color[#00ccff]> Priority: <[data.priority].custom_color[emphasis]>
+        - <&[base]>Costs: <[data.costs].color[#cc0066]>
         polygon:
-        - <[data.corner].parse_tag[<&[dptext]>Corner: <[parse_value].custom_color[dpkey]>].separated_by[<n>]>
-        - <&[dptext]>World: <[data.world].custom_color[dpkey]> Priority: <[data.priority].custom_color[dpkey]>
-        - <&[dptext]>Height: <[data.min_y].custom_color[dpkey]> to <[data.max_y].custom_color[dpkey]>
+        - <[data.corner].parse_tag[<&[base]>Corner: <[parse_value].custom_color[emphasis]>].separated_by[<n>]>
+        - <&[base]>World: <[data.world].custom_color[emphasis]> Priority: <[data.priority].custom_color[emphasis]>
+        - <&[base]>Height: <[data.min_y].custom_color[emphasis]> to <[data.max_y].custom_color[emphasis]>
         ellipsoid:
-        - <&[dptext]>Priority: <[data.priority].custom_color[dpkey]>
-        - <&[dptext]>Location: <[data.location].custom_color[dpkey]> in <[data.world].custom_color[dpkey]>
+        - <&[base]>Priority: <[data.priority].custom_color[emphasis]>
+        - <&[base]>Location: <[data.location].custom_color[emphasis]> in <[data.world].custom_color[emphasis]>
     definitions: areas|player
     script:
     - define page 1
@@ -242,7 +242,7 @@ dPrevention_menu_handler:
             - flag <player> dPrevention.type_integer:!
             - stop
         - flag <player.flag[dPrevention.type_integer]> dPrevention.priority:<[integer]>
-        - narrate "The Claims priority was set to <[integer].custom_color[dpkey]>" format:dPrevention_format
+        - narrate "The Claims priority was set to <[integer].custom_color[emphasis]>" format:dPrevention_format
         - flag <player> dPrevention.type_integer:!
         on player chats flagged:dPrevention.remove_area:
         - determine cancelled passively
@@ -252,9 +252,9 @@ dPrevention_menu_handler:
             - stop
         - define data <player.flag[dPrevention.remove_area]>
         - if <player.flag[dPrevention.remove_area.holder]> == null:
-            - narrate "The claim <[data.claim].note_name.custom_color[dpkey]> was removed." format:dPrevention_format
+            - narrate "The claim <[data.claim].note_name.custom_color[emphasis]> was removed." format:dPrevention_format
             - run dPrevention_area_admin_removal def:<list_single[<[data]>]>
             - stop
-        - narrate "This claim was removed. You received <[data.claim].proc[dPrevention_get_costs].custom_color[dpkey]> blocks back!" format:dPrevention_format
+        - narrate "This claim was removed. You received <[data.claim].proc[dPrevention_get_costs].custom_color[emphasis]> blocks back!" format:dPrevention_format
         - run dPrevention_area_removal def:<[data.claim]>|<player.flag[dPrevention.remove_area.holder]>
         - flag <player> dPrevention.remove_area:!

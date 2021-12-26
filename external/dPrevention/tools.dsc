@@ -8,21 +8,21 @@ dPrevention_tool:
     display name: <white>dPrevention tool
     lore:
     - <gold>Modes<&co>
-    - <&[dptext]>Right click inside your claim to
-    - <&[dptext]>activate expand mode
-    - <&[dptext]>Right click outside your claim to
-    - <&[dptext]>activate claim mode
+    - <&[base]>Right click inside your claim to
+    - <&[base]>activate expand mode
+    - <&[base]>Right click outside your claim to
+    - <&[base]>activate claim mode
     - <gold>Expand<&co>
-    - <&[dptext]>Left click a corner of your claim
-    - <&[dptext]>to start expanding your claim
-    - <&[dptext]>Right click a new location
-    - <&[dptext]>to expand your claim
+    - <&[base]>Left click a corner of your claim
+    - <&[base]>to start expanding your claim
+    - <&[base]>Right click a new location
+    - <&[base]>to expand your claim
     - <gold>Claim<&co>
-    - <&[dptext]>Left click to start a selection
-    - <&[dptext]>Right click to end the selection
-    - <&[dptext]>and claim your area
+    - <&[base]>Left click to start a selection
+    - <&[base]>Right click to end the selection
+    - <&[base]>and claim your area
     - <gold>Cancel<&co>
-    - <&[dptext]>Sneak + Rightclick to cancel
+    - <&[base]>Sneak + Rightclick to cancel
 dPrevention_tool_handler:
     type: world
     debug: false
@@ -48,7 +48,7 @@ dPrevention_tool_handler:
             - foreach <[owned_areas]> as:cuboid:
                 - clickable dPrevention_expand_mode def:<list_single[<[cuboid]>].include[<[location]>]> for:<player> until:1m save:<[loop_index]>
                 - define clickables:->:<[cuboid].note_name.on_click[<entry[<[loop_index]>].command>].on_hover[<[cuboid].note_name>]>
-            - narrate <[clickables].space_separated.custom_color[dpkey]> format:dPrevention_format
+            - narrate <[clickables].space_separated.custom_color[emphasis]> format:dPrevention_format
             - stop
         #If there's only a single area, set the player in expand mode.
         - run dPrevention_expand_mode def:<list_single[<[owned_areas].first>].include[<[location]>]>
@@ -63,7 +63,7 @@ dPrevention_tool_handler:
         - choose <context.click_type>:
             - case LEFT_CLICK_BLOCK:
                 - flag <player> dPrevention.selection:<context.location.with_y[<script[dPrevention_config].data_key[claims.depth]>].to_cuboid[<context.location>]>
-                - narrate "Selection start set on <context.location.simple.custom_color[dpkey]>" format:dPrevention_format
+                - narrate "Selection start set on <context.location.simple.custom_color[emphasis]>" format:dPrevention_format
             - case RIGHT_CLICK_BLOCK:
                 - if !<player.has_flag[dPrevention.selection]>:
                     - narrate "You must start your selection by left clicking first." format:dPrevention_format
@@ -116,7 +116,7 @@ dPrevention_tool_handler:
                     - narrate "You're not allowed to do that." format:dPrevention_format
                     - stop
                 - flag <player> dPrevention.location:<context.location.flag[dPrevention.location].with_y[0]>
-                - narrate "Selection start set on <context.location.flag[dPrevention.location].simple.custom_color[dpkey]>" format:dPrevention_format
+                - narrate "Selection start set on <context.location.flag[dPrevention.location].simple.custom_color[emphasis]>" format:dPrevention_format
                 - stop
             - case RIGHT_CLICK_BLOCK:
                 - if !<player.has_flag[dPrevention.location]>:

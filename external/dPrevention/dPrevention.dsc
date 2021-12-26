@@ -314,7 +314,7 @@ dPrevention_flag_GUI_handler:
                 - foreach <context.message.split> as:entity:
                     #If an provided entity is not a valid entity, stop.
                     - if <entity[<[entity]>].if_null[null]> == null:
-                        - narrate "<[entity].custom_color[dpkey]> is not a valid entity. Try again or Type cancel. 30 Seconds." format:dPrevention_format
+                        - narrate "<[entity].custom_color[emphasis]> is not a valid entity. Try again or Type cancel. 30 Seconds." format:dPrevention_format
                         - flag <player> dPrevention.add_flag.flag:<[flag]> expire:30s
                         - flag <player> dPrevention.add_flag.area:<[area]> expire:30s
                         - stop
@@ -331,12 +331,12 @@ dPrevention_flag_GUI_handler:
                     - narrate "This claims doesn't prevent any entity anymore." format:dPrevention_format
                     - stop
                 - flag <player> dPrevention.add_flag:!
-                - narrate "This claim prevents <[area].flag[dPrevention.flags.<[flag]>].space_separated.to_titlecase.custom_color[dpkey]> from spawning." format:dPrevention_format
+                - narrate "This claim prevents <[area].flag[dPrevention.flags.<[flag]>].space_separated.to_titlecase.custom_color[emphasis]> from spawning." format:dPrevention_format
         after player left clicks item_flagged:flag in dPrevention_flag_GUI:
         - define flag <context.item.flag[flag]>
         #If the player doesn't have permission to change the flag stop.
         - if !<player.has_permission[dPrevention.flag.<[flag]>]>:
-            - narrate "You don't have permission to change the <[flag].custom_color[dpkey]> flag." format:dPrevention_format
+            - narrate "You don't have permission to change the <[flag].custom_color[emphasis]> flag." format:dPrevention_format
             - stop
         #If a flag needs separate input. Listen to the chat event.
         - if <script.data_key[data.chat_input].contains[<[flag]>]>:
@@ -362,15 +362,15 @@ dPrevention_flag_GUI_handler:
         - define flag <context.item.flag[flag]>
         - define users <player.flag[dPrevention.flaggui].flag[dPrevention.permissions.<[flag]>].if_null[<list>].parse[as_player]>
         - if <[users].is_empty>:
-            - narrate "The are no players whitelisted for <[flag].custom_color[dpkey]>" format:dPrevention_format
+            - narrate "The are no players whitelisted for <[flag].custom_color[emphasis]>" format:dPrevention_format
             - inventory close
             - stop
-        - narrate <[users].parse[name].space_separated.custom_color[dpkey]> format:dPrevention_format
+        - narrate <[users].parse[name].space_separated.custom_color[emphasis]> format:dPrevention_format
         - inventory close
         after player shift_left clicks item_flagged:flag in dPrevention_flag_GUI:
         - define flag <context.item.flag[flag]>
         - if !<script[dPrevention_flag_data].data_key[player_flags].contains[<[flag]>]>:
-            - narrate "You can't whitelist a player on the flag <[flag].custom_color[dpkey]>!" format:dPrevention_format
+            - narrate "You can't whitelist a player on the flag <[flag].custom_color[emphasis]>!" format:dPrevention_format
             - inventory close
             - stop
         #Listen to the Chat event, to allow specific players to bypass the player related flag.
@@ -393,11 +393,11 @@ dPrevention_flag_GUI_handler:
             - stop
         - if <[player].is_in[dPrevention.permissions.<[flag]>]>:
             - flag <player.flag[dPrevention.add_bypass_user.area]> dPrevention.permissions.<[flag]>:<-:<[player].uuid>
-            - narrate "<player.name.custom_color[dpkey]> isn't whitelisted to bypass <[flag].custom_color[dpkey]> anymore." format:dPrevention_format
+            - narrate "<player.name.custom_color[emphasis]> isn't whitelisted to bypass <[flag].custom_color[emphasis]> anymore." format:dPrevention_format
             - flag <player> dPrevention.add_bypass_user:!
             - stop
         - flag <player.flag[dPrevention.add_bypass_user.area]> dPrevention.permissions.<[flag]>:->:<[player].uuid>
-        - narrate "<player.name.custom_color[dpkey]> is whitelisted to bypass <[flag].custom_color[dpkey]>" format:dPrevention_format
+        - narrate "<player.name.custom_color[emphasis]> is whitelisted to bypass <[flag].custom_color[emphasis]>" format:dPrevention_format
         - flag <player> dPrevention.add_bypass_user:!
 dPrevention_flag_GUI:
     type: inventory
@@ -433,7 +433,7 @@ dPrevention_generate_clickables:
     - foreach <[areas]> as:area:
         - clickable dPrevention_fill_flag_GUI def:<[area]> for:<player> until:1m save:<[loop_index]>
         - define clickables:->:<[area].note_name.on_click[<entry[<[loop_index]>].command>].on_hover[<[area].note_name>]>
-    - narrate <[clickables].space_separated.custom_color[dpkey]> format:dPrevention_format
+    - narrate <[clickables].space_separated.custom_color[emphasis]> format:dPrevention_format
 dPrevention_area_creation:
     type: task
     debug: false
@@ -476,7 +476,7 @@ dPrevention_check_intersections:
     - define intersections <[intersections].exclude[<[owned_areas]>]>
     #If the selection intersects another claim which he the player doesn't own, he's not allowed to claim.
     - if !<[intersections].is_empty>:
-        - narrate "Your selection intersects <[intersections].size.custom_color[dpkey]> other claims." format:dPrevention_format
+        - narrate "Your selection intersects <[intersections].size.custom_color[emphasis]> other claims." format:dPrevention_format
         - playeffect effect:BARRIER at:<[intersections].parse[bounding_box.outline].combine> offset:0,0,0 targets:<player>
         - stop
 dPrevention_get_areas:
@@ -488,4 +488,4 @@ dPrevention_get_areas:
 dPrevention_format:
     type: format
     debug: false
-    format: <element[[dPrevention]].color_gradient[from=#00ccff;to=#0066ff]> <&[dptext]><[text]>
+    format: <element[[dPrevention]].color_gradient[from=#00ccff;to=#0066ff]> <&[base]><[text]>
