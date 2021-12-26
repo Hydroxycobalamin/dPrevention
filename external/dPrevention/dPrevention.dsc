@@ -10,6 +10,12 @@ dPrevention_player_flag_handlers:
         on player breaks block in:area_flagged:dPrevention.flags.block-break priority:50:
         - definemap arguments flag:block-break "reason:You can't break this block here." location:<context.location>
         - inject dPrevention_initial_check
+        on player places hanging in:area_flagged:dPrevention.flags.block-place priority:50:
+        - definemap arguments flag:block-place "reason:You can't place this block here." location:<context.location>
+        - inject dPrevention_initial_check
+        on player places hanging in:world_flagged:dPrevention.flags.block-place priority:100:
+        - definemap arguments flag:block-place "reason:You can't place this block here." location:<context.location>
+        - inject dPrevention_initial_check
         #places block
         on player places block in:world_flagged:dPrevention.flags.block-place priority:100:
         - definemap arguments flag:block-place "reason:You can't place this block here." location:<context.location>
@@ -18,10 +24,10 @@ dPrevention_player_flag_handlers:
         - definemap arguments flag:block-place "reason:You can't place this block here." location:<context.location>
         - inject dPrevention_initial_check
         #use block
-        on player right clicks *_door|lever|*_button|*_pressure_plate in:world_flagged:dPrevention.flags.use priority:100:
+        on player right clicks *_door|lever|*_button|*_pressure_plate|anvil in:world_flagged:dPrevention.flags.use priority:100:
         - definemap arguments flag:use "reason:You can't use this block here." location:<context.location>
         - inject dPrevention_initial_check
-        on player right clicks *_door|lever|*_button|*_pressure_plate in:area_flagged:dPrevention.flags.use priority:50:
+        on player right clicks *_door|lever|*_button|*_pressure_plate|anvil in:area_flagged:dPrevention.flags.use priority:50:
         - definemap arguments flag:use "reason:You can't use this block here." location:<context.location>
         - inject dPrevention_initial_check
         #use lighter
@@ -49,6 +55,12 @@ dPrevention_player_flag_handlers:
         on player teleports cause:CHORUS_FRUIT|ENDER_PEARL:
         - definemap arguments flag:use "reason:You can't teleport in this area." location:<context.destination>
         - inject dPrevention_initial_check
+        on player right clicks item_frame in:world_flagged:dPrevention.flags.item-frame-rotation priority:100:
+        - definemap arguments flag:item-frame-rotation "reason:You can't turn this here" location:<context.entity.location>
+        - inject dPrevention_initial_check
+        on player right clicks item_frame in:world_flagged:dPrevention.flags.item-frame-rotation priority:50:
+        - definemap arguments flag:item-frame-rotation "reason:You can't turn this here" location:<context.entity.location>
+        - inject dPrevention_initial_check
 dPrevention_generic_flag_handlers:
     type: world
     debug: false
@@ -57,91 +69,71 @@ dPrevention_generic_flag_handlers:
         on block burns in:world_flagged:dPrevention.flags.fire-damage priority:100:
         - definemap arguments flag:fire-damage location:<context.location>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         on block burns in:area_flagged:dPrevention.flags.fire-damage priority:50:
         - definemap arguments flag:fire-damage location:<context.location>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         #block fades
         on block fades in:world_flagged:dPrevention.flags.block-fades priority:100:
         - definemap arguments flag:block-fades location:<context.location>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         on block fades in:area_flagged:dPrevention.flags.block-fades priority:50:
         - definemap arguments flag:block-fades location:<context.location>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         #block grows
         on block grows in:world_flagged:dPrevention.flags.block-grows priority:100:
         - definemap arguments flag:block-grows location:<context.location>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         on block grows in:area_flagged:dPrevention.flags.block-grows priority:50:
         - definemap arguments flag:block-grows location:<context.location>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         #block ignites
         on block ignites in:world_flagged:dPrevention.flags.block-ignites priority:100:
         - definemap arguments flag:block-ignites location:<context.location>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         on block ignites in:area_flagged:dPrevention.flags.block-ignites priority:50:
         - definemap arguments flag:block-ignites location:<context.location>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         #tnt
         on block destroyed by explosion in:world_flagged:dPrevention.flags.tnt priority:100:
         - definemap arguments flag:tnt location:<context.block>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         on block destroyed by explosion in:area_flagged:dPrevention.flags.tnt priority:50:
         - definemap arguments flag:tnt location:<context.block>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         on primed_tnt explodes in:world_flagged:dPrevention.flags.tnt priority:100:
         - definemap arguments flag:tnt location:<context.location>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         on primed_tnt explodes in:area_flagged:dPrevention.flags.tnt priority:50:
         - definemap arguments flag:tnt location:<context.location>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         #vehicle destroyed
         on vehicle destroyed in:world_flagged:dPrevention.flags.vehicle-break priority:100:
         - definemap arguments flag:vehicle-break location:<context.vehicle.location>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         on vehicle destroyed in:area_flagged:dPrevention.flags.vehicle-break priority:50:
         - definemap arguments flag:vehicle-break location:<context.vehicle.location>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         #vehicle placed
         on vehicle created in:world_flagged:dPrevention.flags.vehicle-place priority:100:
         - definemap arguments flag:vehicle-place location:<context.vehicle.location>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         on vehicle created in:area_flagged:dPrevention.flags.vehicle-place priority:50:
         - definemap arguments flag:vehicle-place location:<context.vehicle.location>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         #entity changes block
         on entity changes block in:world_flagged:dPrevention.flags.block-change priority:100:
         - definemap arguments flag:block-change location:<context.location>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         on entity changes block in:area_flagged:dPrevention.flags.block-change priority:50:
         - definemap arguments flag:block-change location:<context.location>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         #entity damage
         on entity damaged in:world_flagged:dPrevention.flags.entity-damage priority:100:
         - definemap arguments flag:entity-damage location:<context.entity.location>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         on entity damaged in:area_flagged:dPrevention.flags.entity-damage priority:50:
         - definemap arguments flag:entity-damage location:<context.entity.location>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         #piston extends
         on piston extends priority:100:
         - define location <context.location>
@@ -155,20 +147,16 @@ dPrevention_generic_flag_handlers:
         on liquid spreads type:lava in:world_flagged:dPrevention.flags.lava-spread priority:100:
         - definemap arguments flag:lava-spread location:<context.destination>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         on liquid spreads type:lava in:area_flagged:dPrevention.flags.lava-spread priority:50:
         - definemap arguments flag:lava-spread location:<context.destination>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         #water spread
         on liquid spreads type:water in:area_flagged:dPrevention.flags.water-spread priority:50:
         - definemap arguments flag:water-spread location:<context.destination>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         on liquid spreads type:water in:world_flagged:dPrevention.flags.water-spread priority:100:
         - definemap arguments flag:water-spread location:<context.destination>
         - inject dPrevention_initial_block_check
-        - determine cancelled
         #monster ban
         on monster prespawns in:world_flagged:dPrevention.flags.spawn-monster priority:100:
         - determine cancelled
@@ -180,11 +168,9 @@ dPrevention_generic_flag_handlers:
         on living prespawns in:area_flagged:dPrevention.flags.spawn-living priority:50:
         - determine cancelled
         on entity prespawns in:world_flagged:dPrevention.flags.entities priority:100:
-        - if <context.location.world.flag[dPrevention.flags.entities].contains[<context.entity.entity_type>]>:
-            - determine cancelled
+        - determine cancelled
         on entity prespawns in:area_flagged:dPrevention.flags.entities priority:50:
-        - if <context.location.cuboids.first.flag[dPrevention.flags.entities].contains[<context.entity.entity_type>]>:
-            - determine cancelled
+        - determine cancelled
 dPrevention_initial_block_check:
     type: task
     debug: false
@@ -193,6 +179,7 @@ dPrevention_initial_block_check:
     - ~run dPrevention_check_flag def:<list_single[<[areas]>].include[<[arguments.flag]>|<queue>]>
     - if <queue.has_flag[allow]>:
         - stop
+    - determine cancelled
 dPrevention_prevent_piston_grief:
     type: task
     debug: false
@@ -234,6 +221,8 @@ dPrevention_flag_data:
         zombie_head: spawn-monster
         leather_horse_armor: spawn-living
         cow_spawn_egg: entities
+        item_frame: item-frame-rotation
+        farmland: block-change
     player_flags:
         - block-break
         - block-place
@@ -292,7 +281,6 @@ dPrevention_check_flag:
     definitions: areas|flag|queue
     script:
     - define priority <[areas].sort_by_number[flag[dPrevention.priority]]>
-    - announce <[priority]>
     - foreach <[priority]> as:area:
         #If the user is whitelisted in this area to bypass the flag, allow it.
         - if <[area].flag[dPrevention.permissions.<[flag]>].contains[<player.uuid.if_null[null]>].if_null[false]>:
