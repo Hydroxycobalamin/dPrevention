@@ -166,6 +166,7 @@ dPrevention_flag_data:
     flags:
         iron_pickaxe: block-break
         grass_block: block-place
+        lever: use
         campfire: fire-damage
         flint_and_steel: lighter
         fire_charge: block-ignition
@@ -184,6 +185,14 @@ dPrevention_flag_data:
         zombie_head: spawn-monster
         leather_horse_armor: spawn-living
         cow_spawn_egg: entities
+    player_flags:
+        - block-break
+        - block-place
+        - use
+        - lighter
+        - pvp
+        - container-access
+        - teleport
 dPrevention_initial_check:
     type: task
     debug: false
@@ -286,8 +295,12 @@ dPrevention_flag_GUI_handler:
         - if !<player.has_permission[dPrevention.flag.<[flag]>]>:
             - narrate "You don't have permission to change the <[flag].custom_color[dpkey]> flag." format:dPrevention_format
             - stop
-        #If a flag needs separate input, stop here.
+        #If a flag needs separate input. Listen to the chat event.
         - if <script.data_key[data.chat_input].contains[<[flag]>]>:
+            - flag <player> dPrevention.add_flag.area:<player.flag[dPrevention.flaggui]> expire:30s
+            - flag <player> dPrevention.add_flag.flag:<[flag]> expire:30s
+            - narrate "Type the strings. Seperate multiple by space. 30 Seconds." format:dPrevention_format
+            - inventory close
             - stop
         - define area <player.flag[dPrevention.flaggui]>
         - define value <context.item.flag[value]>
@@ -313,15 +326,9 @@ dPrevention_flag_GUI_handler:
         - inventory close
         after player shift_left clicks item_flagged:flag in dPrevention_flag_GUI:
         - define flag <context.item.flag[flag]>
-        #If the player doesn't have permission to change the flag stop.
-        - if !<player.has_permission[dPrevention.flag.<[flag]>]>:
-            - narrate "You don't have permission to change the <[flag].custom_color[dpkey]> flag." format:dPrevention_format
-            - stop
-        #If a flag needs separate input. Listen to the chat event.
-        - if <script.data_key[data.chat_input].contains[<[flag]>]>:
-            - flag <player> dPrevention.add_flag.area:<player.flag[dPrevention.flaggui]> expire:30s
-            - flag <player> dPrevention.add_flag.flag:<[flag]> expire:30s
-            - narrate "Type the strings. Seperate multiple by space. 30 Seconds."
+        - if !<script[dPrevention_flag_data].data_key[player_flags].contains[<[flag]>]>:
+            - narrate "You can't whitelist a player on the flag <[flag].custom_color[dpkey]>!" format:dPrevention_format
+            - inventory close
             - stop
         #Listen to the Chat event, to allow specific players to bypass the player related flag.
         - flag <player> dPrevention.add_bypass_user.area:<player.flag[dPrevention.flaggui]> expire:30s
