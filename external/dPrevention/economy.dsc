@@ -32,17 +32,6 @@ dPrevention_check_affordability:
                 - flag <queue> stop
                 - stop
             - determine <[costs]>
-dPrevention_item_blocks:
-    type: item
-    debug: false
-    material: grass_block
-    mechanisms:
-        hides: ENCHANTS
-    enchantments:
-    - durability:1
-    flags:
-        dPrevention:
-            blocks: 50
 dPrevention_blocks_handler:
     type: world
     debug: false
