@@ -71,7 +71,7 @@ dPrevention_tool_handler:
                 - if <player.flag[dPrevention.selection].world.name> != <context.location.world.name>:
                     - narrate "Worlds doesn't match. Please restart your selection by left clicking." format:dPrevention_format
                     - stop
-                - flag <player> dPrevention.selection:<player.flag[dPrevention.selection].include[<context.location.world.max_height>]>
+                - flag <player> dPrevention.selection:<player.flag[dPrevention.selection].include[<context.location.with_y[<context.location.world.max_height>]>]>
                 - define selection <player.flag[dPrevention.selection]>
                 - inject dPrevention_check_intersections
                 #If the player can't afford the region, stop. Else define the costs.
@@ -129,7 +129,7 @@ dPrevention_tool_handler:
                 - define cuboid <player.flag[dPrevention.expand_mode]>
                 - definemap data dPrevention:<[cuboid].flag[dPrevention]>
                 - define name <[cuboid].note_name>
-                - define selection <player.flag[dPrevention.location].to_cuboid[<context.location.world.max_height>]>
+                - define selection <player.flag[dPrevention.location].to_cuboid[<context.location.with_y[<context.location.world.max_height>]>]>
                 - inject dPrevention_check_intersections
                 #If the player can't afford the region, stop. Else define the costs.
                 - ~run dPrevention_check_affordability def:<list_single[<[selection]>].include[expand].include_single[<[cuboid]>]> save:queue
