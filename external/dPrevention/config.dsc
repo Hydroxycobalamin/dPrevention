@@ -5,8 +5,7 @@ dPrevention_config:
         #Default depth of claims, claimed via dPrevention_tool.
         depth: 0
         flags:
-        #Key: value structure of flags that will be applied upon creation by default. True means it prevents it. Possible flags are:
-        # block-break, block-place, use, fire-damage, lighter, block-ignition, block-fades, block-growth, tnt ,vehicle-break, vehicle-place, pvp, entity-damage, container-access, piston,teleport_item, water-spread, lava-spread, spawn-monster, spawn-living, entities.
+        #Key: value structure of flags that will be applied upon creation by default. True means it prevents it. Read the Documentation for more information about possible flags. https://github.com/Hydroxycobalamin/dPrevention/wiki/Documentation(PARTIAL)
             block-break: true
             block-place: true
             tnt: true
@@ -15,6 +14,7 @@ dPrevention_config:
             piston: true
             container-access: true
             teleport: true
+            item-frame-rotation: true
         ##If the flag need additional input, use a map with a list of values instead, format:
             #entities:
               #- COW

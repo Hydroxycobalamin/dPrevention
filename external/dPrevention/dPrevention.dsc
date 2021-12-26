@@ -10,13 +10,13 @@ dPrevention_player_flag_handlers:
         on player breaks block in:area_flagged:dPrevention.flags.block-break priority:50:
         - definemap arguments flag:block-break "reason:You can't break this block here." location:<context.location>
         - inject dPrevention_initial_check
+        #places block
         on player places hanging in:area_flagged:dPrevention.flags.block-place priority:50:
         - definemap arguments flag:block-place "reason:You can't place this block here." location:<context.location>
         - inject dPrevention_initial_check
         on player places hanging in:world_flagged:dPrevention.flags.block-place priority:100:
         - definemap arguments flag:block-place "reason:You can't place this block here." location:<context.location>
         - inject dPrevention_initial_check
-        #places block
         on player places block in:world_flagged:dPrevention.flags.block-place priority:100:
         - definemap arguments flag:block-place "reason:You can't place this block here." location:<context.location>
         - inject dPrevention_initial_check
@@ -53,7 +53,7 @@ dPrevention_player_flag_handlers:
         - inject dPrevention_initial_check
         #teleport_item
         on player teleports cause:CHORUS_FRUIT|ENDER_PEARL:
-        - definemap arguments flag:use "reason:You can't teleport in this area." location:<context.destination>
+        - definemap arguments flag:teleport-item "reason:You can't teleport in this area." location:<context.destination>
         - inject dPrevention_initial_check
         on player right clicks item_frame in:world_flagged:dPrevention.flags.item-frame-rotation priority:100:
         - definemap arguments flag:item-frame-rotation "reason:You can't turn this here" location:<context.entity.location>
@@ -100,10 +100,10 @@ dPrevention_generic_flag_handlers:
         on block destroyed by explosion in:area_flagged:dPrevention.flags.tnt priority:50:
         - definemap arguments flag:tnt location:<context.block>
         - inject dPrevention_initial_block_check
-        on primed_tnt explodes in:world_flagged:dPrevention.flags.tnt priority:100:
+        on entity explodes in:world_flagged:dPrevention.flags.tnt priority:100:
         - definemap arguments flag:tnt location:<context.location>
         - inject dPrevention_initial_block_check
-        on primed_tnt explodes in:area_flagged:dPrevention.flags.tnt priority:50:
+        on entity explodes in:area_flagged:dPrevention.flags.tnt priority:50:
         - definemap arguments flag:tnt location:<context.location>
         - inject dPrevention_initial_block_check
         #vehicle destroyed
@@ -215,7 +215,7 @@ dPrevention_flag_data:
         netherite_sword: entity-damage
         chest: container-access
         sticky_piston: piston
-        ender_pearl: teleport_item
+        ender_pearl: teleport-item
         water_bucket: water-spread
         lava_bucket: lava-spread
         zombie_head: spawn-monster
