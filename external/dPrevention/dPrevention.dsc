@@ -392,9 +392,12 @@ dPrevention_area_creation:
         flags:
             block-break: true
             block-place: true
+            tnt: true
+            piston: true
         ##If the flag has separate input, use a map with a list of values instead, format:
             #entities:
               #- COW
+              #- ZOMBIE
         #Default priority that will be set on the area upon creation.
         priority: 1
     definitions: area|owner
