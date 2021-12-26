@@ -231,6 +231,7 @@ dPrevention_flag_data:
         - pvp
         - container-access
         - teleport
+        - item-frame-rotation
 dPrevention_initial_check:
     type: task
     debug: false
