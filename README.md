@@ -38,6 +38,10 @@ Any permission plugin such as LuckPerms: https://www.spigotmc.org/resources/luck
 
 Any economy plugin with Vault support or an economy script. https://meta.denizenscript.com/Docs/Languages/economy#economy%20script%20containers
 
+## Good to have
+
+Please take some time to read [this](https://forum.denizenscript.com/threads/tiny-sample-scripts-to-start-with.354/) forum thread. It comes up with tiny useful scripts you can start with, but also contains an Auto-saver script that saves denizen files, which also dPrevention benefits from.
+
 ### Licensing pre-note:
 
 This is an open source project, provided entirely freely, for everyone to use and contribute to.
