@@ -5,7 +5,7 @@ dPrevention_config:
         #Default depth of claims, claimed via dPrevention_tool.
         depth: 0
         flags:
-        #Key: value structure of flags that will be applied upon creation by default. True means it prevents it. Read the Documentation for more information about possible flags. https://github.com/Hydroxycobalamin/dPrevention/wiki/Documentation(PARTIAL)
+        #Key: value structure of flags that will be applied upon creation by default. True means it prevents it. Read the Documentation for more information about possible flags. https://github.com/Hydroxycobalamin/dPrevention/wiki/Documentation
             block-break: true
             block-place: true
             tnt: true
