@@ -3,7 +3,7 @@ dPrevention_get_costs:
     debug: false
     definitions: cuboid
     script:
-    - define math <[cuboid].max.sub[<[cuboid].min>]>
+    - define math <[cuboid].size>
     - define costs <[math].x.mul[<[math].z>]>
     - determine <[costs]>
 dPrevention_get_blocks:

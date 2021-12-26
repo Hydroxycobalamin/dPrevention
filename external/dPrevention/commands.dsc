@@ -28,6 +28,9 @@ dPrevention_open_gui:
                     - define clickables:->:<[area].note_name.on_click[<entry[<[loop_index]>].command>].on_hover[<[area].note_name>]>
                 - narrate <[clickables].space_separated.custom_color[dpkey]> format:dPrevention_format
                 - stop
+            - if <[ownership].is_empty>:
+                - narrate "You're not inside your claim." format:dPrevention_format
+                - stop
             - run dPrevention_fill_flag_GUI def:<[ownership].first>
 dPrevention_main:
     type: command
@@ -74,7 +77,7 @@ dPrevention_main:
                     - if <[player]> == null:
                         - narrate "This player doesn't exist!"
                         - stop
-                    - run dPrevention_info_formatter def.cuboids:<[player].flag[dPrevention.areas.cuboids].parse[as_cuboid].sort_by_value[world.name].if_null[<list>].exclude[null]>
+                    - run dPrevention_info_formatter def.cuboids:<[player].flag[dPrevention.areas.cuboids].parse[as_cuboid].sort_by_value[world.name].if_null[<list>].exclude[null]> def.player:<[player]>
                 - case cuboid:
                     - define area <player.flag[ctool_selection].if_null[null]>
                     - if <[area]> == null:
@@ -133,7 +136,7 @@ dPrevention_info_data:
         ellipsoid:
         - <&[dptext]>Priority: <[data.priority].custom_color[dpkey]>
         - <&[dptext]>Location: <[data.location].custom_color[dpkey]> in <[data.world].custom_color[dpkey]>
-    definitions: areas
+    definitions: areas|player
     script:
     - define page 1
     - foreach <[areas]> key:type as:areas:
@@ -142,21 +145,21 @@ dPrevention_info_data:
                 - repeat <[areas].size>:
                     - define area <[areas].get[<[value]>]>
                     - definemap data "min:<[area].min.xyz.replace_text[,].with[ ]>" "max:<[area].max.xyz.replace_text[,].with[ ]>" world:<[area].world.name> "size:<[area].size.xyz.replace_text[,].with[ ]>" costs:<[area].proc[dPrevention_get_costs]> priority:<[area].flag[dPrevention.priority]>
-                    - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.cuboid]>].with_flag[claim:<[area]>]>
+                    - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.cuboid]>].with_flag[claim:<[area]>].with_flag[holder:<[player]>]>
                     - if <[loop_index].mod[45]> == 0:
                         - define page:++
             - case polygons:
                 - repeat <[areas].size>:
                     - define area <[areas].get[<[value]>]>
                     - definemap data "corner:<[area].corners.parse_tag[<[parse_value].xyz.replace_text[,].with[ ]>]>" world:<[area].world.name> min_y:<[area].min_y> max_y:<[area].max_y> priority:<[area].flag[dPrevention.priority]>
-                    - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.polygon]>].with_flag[claim:<[area]>]>
+                    - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.polygon]>].with_flag[claim:<[area]>].with_flag[holder:<[player]>]>
                     - if <[loop_index].mod[45]> == 0:
                         - define page:++
             - case ellipsoids:
                 - repeat <[areas].size>:
                     - define area <[areas].get[<[value]>]>
                     - definemap data "location:<[area].location.xyz.replace_text[,].with[ ]>" world:<[area].world.name> priority:<[area].flag[dPrevention.priority]>
-                    - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.ellipsoid]>].with_flag[claim:<[area]>]>
+                    - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.ellipsoid]>].with_flag[claim:<[area]>].with_flag[holder:<[player]>]>
                     - if <[loop_index].mod[45]> == 0:
                         - define page:++
     #Dummy if there aren't any claims yet.
@@ -166,10 +169,10 @@ dPrevention_info_data:
 dPrevention_info_formatter:
     debug: false
     type: task
-    definitions: cuboids|polygons|ellipsoids
+    definitions: cuboids|polygons|ellipsoids|player
     script:
     - definemap areas cuboids:<[cuboids].if_null[<list>]> polygons:<[polygons].if_null[<list>]> ellipsoids:<[ellipsoids].if_null[<list>]>
-    - define data <proc[dPrevention_info_data].context[<[areas]>]>
+    - define data <[areas].proc[dPrevention_info_data].context[<[player].if_null[<player>]>]>
     - flag <player> dPrevention.inventory_menu:<[data]>
     - inventory open destination:dPrevention_menu
     - wait 1t
@@ -220,9 +223,11 @@ dPrevention_menu_handler:
         - run dPrevention_fill_flag_GUI def:<context.item.flag[claim]>
         after player right clicks dPrevention_menu_item in dPrevention_menu:
         - define costs <context.item.flag[claim].proc[dPrevention_get_costs]>
-        - flag <player> dPrevention.remove_cuboid:<context.item.flag[claim]> expire:30s
+        - definemap data claim:<context.item.flag[claim]> holder:<context.item.flag[holder]>
+        - flag <player> dPrevention.remove_cuboid:<[data]> expire:30s
+        - announce <player.flag[dPrevention.remove_cuboid]>
         - inventory close
-        - narrate "Type 'delete' if want to remove your cuboid." format:dPrevention_format
+        - narrate "Type 'delete' if want to remove this cuboid." format:dPrevention_format
         after player shift_left clicks dPrevention_menu_item in dPrevention_menu:
         - if !<player.has_permission[dPrevention.admin]>:
             - narrate "You're not allowed to change the priority of your claim." format:dPrevention_format
@@ -244,10 +249,10 @@ dPrevention_menu_handler:
         on player chats flagged:dPrevention.remove_cuboid:
         - determine cancelled passively
         - if <context.message.split.first> != delete:
-            - narrate "Your claim was not removed." format:dPrevention_format
+            - narrate "This claim was not removed." format:dPrevention_format
             - flag <player> dPrevention.remove_cuboid:!
             - stop
-        - define cuboid <player.flag[dPrevention.remove_cuboid]>
-        - narrate "Your claim was removed. You received <[cuboid].proc[dPrevention_get_costs].custom_color[dpkey]> blocks back!" format:dPrevention_format
-        - run dPrevention_area_removal def:<[cuboid]>|<player>
+        - define cuboid <player.flag[dPrevention.remove_cuboid.claim]>
+        - narrate "This claim was removed. You received <[cuboid].proc[dPrevention_get_costs].custom_color[dpkey]> blocks back!" format:dPrevention_format
+        - run dPrevention_area_removal def:<[cuboid]>|<player.flag[dPrevention.remove_cuboid.holder]>
         - flag <player> dPrevention.remove_cuboid:!
