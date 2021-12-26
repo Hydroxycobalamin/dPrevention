@@ -412,6 +412,13 @@ dPrevention_area_removal:
     - flag <[player]> dPrevention.areas.cuboids:<-:<[cuboid].note_name>
     - note remove as:<[cuboid].note_name>
     - flag <[player]> dPrevention.blocks.amount.in_use:-:<[cuboid].proc[dPrevention_get_costs]>
+dPrevention_area_admin_removal:
+    type: task
+    debug: false
+    definitions: data
+    script:
+    - flag <[data.claim].world> dPrevention.areas.admin.<[data.type]>:<-:<[data.claim].note_name>
+    - note remove as:<[data.claim].note_name>
 dPrevention_check_intersections:
     type: task
     debug: false
