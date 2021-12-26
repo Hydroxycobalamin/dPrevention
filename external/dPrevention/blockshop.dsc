@@ -1,23 +1,12 @@
 dPrevention_blockshop:
     type: inventory
     debug: false
-    data:
-        blocks:
-            - 1
-            - 2
-            - 10
-            - 25
-            - 50
-            - 100
-            - 250
-            - 500
-            - 1000
     inventory: CHEST
     title: BlockShop
     gui: true
     procedural items:
     - define config <script[dPrevention_config].data_key[shop]>
-    - foreach <script.data_key[data.blocks]> as:blocks:
+    - foreach <[config.blocks]> as:blocks:
         - define "items:->:<item[dPrevention_item_blocks].with_flag[dPrevention.blocks:<[blocks]>].with_flag[dPrevention.price:<[blocks].mul[<[config.block-price]>]>].with[lore=<&[dptext]>Price: <[blocks].mul[<[config.block-price]>].custom_color[dpkey]>|<&[dptext]>Blocks: <[blocks].custom_color[dpkey]>]>"
     - determine <[items]>
     slots:

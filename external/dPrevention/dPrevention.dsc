@@ -389,24 +389,12 @@ dPrevention_generate_clickables:
 dPrevention_area_creation:
     type: task
     debug: false
-    data:
-        #Map of flags that will be added to the area upon creation.
-        flags:
-            block-break: true
-            block-place: true
-            tnt: true
-            piston: true
-        ##If the flag has separate input, use a map with a list of values instead, format:
-            #entities:
-              #- COW
-              #- ZOMBIE
-        #Default priority that will be set on the area upon creation.
-        priority: 1
     definitions: area|owner
     script:
-    - foreach <script.data_key[data.flags]> key:flag as:value:
+    - define config <script[dPrevention_config].data_key[claims]>
+    - foreach <[config.flags]> key:flag as:value:
         - flag <[area]> dPrevention.flags.<[flag]>:<[value]>
-    - flag <[area]> dPrevention.priority:<script.data_key[data.priority]>
+    - flag <[area]> dPrevention.priority:<[config.priority]>
     - if <[owner].exists>:
         - flag <[area]> dPrevention.owners:->:<[owner]>
 dPrevention_area_removal:

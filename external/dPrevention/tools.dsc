@@ -127,7 +127,9 @@ dPrevention_tool_handler:
                     - stop
                 #Read data from the cuboid linked to the expand mode for later use(read the read comment below).
                 - define cuboid <player.flag[dPrevention.expand_mode]>
+                ##
                 - definemap data dPrevention:<[cuboid].flag[dPrevention]>
+                ##
                 - define name <[cuboid].note_name>
                 - define selection <player.flag[dPrevention.location].to_cuboid[<context.location.with_y[<context.location.world.max_height>]>]>
                 - inject dPrevention_check_intersections
