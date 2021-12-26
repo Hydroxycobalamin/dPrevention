@@ -212,9 +212,11 @@ dPrevention_check_membership:
         - define areas:->:<player.location.world>
         - inject dPrevention_check_flag
     #If he is inside an area, check for flags first.
-    - define flagged_areas <[areas].filter_tag[<[filter_value].has_flag[dPrevention.flags.<[flag]>]>]>
-    - ~run dPrevention_check_flag def:<list_single[<[flagged_areas]>].include[<[flag]>|<queue>]>
+  #  - define flagged_areas <[areas].filter_tag[<[filter_value].has_flag[dPrevention.flags.<[flag]>]>]>
+    - ~run dPrevention_check_flag def:<list_single[<[areas]>].include[<[flag]>|<queue>]>
     - if <queue.has_flag[allow]>:
+        ##Flag the player to reduce multifiring if he's inside a claim and the world is also flagged, if no dPrevention.allow flag is applied, events with world_flagged matchers would run too
+        - flag <player> dPrevention.allow.<[flag]> expire:1t
         - stop
     #If he isn't owner of any region, stop the queue
     - define owned_areas <[areas].filter_tag[<[filter_value].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>]>
@@ -237,6 +239,10 @@ dPrevention_check_flag:
             - stop
         #If an area doesn't allow it, stop
         - if <[area].has_flag[dPrevention.flags.<[flag]>]>:
+            - stop
+        #If an area allow it, allow the player and stop.
+        - if !<[area].has_flag[dPrevention.flag.<[flag]>]>:
+            - flag <[queue].if_null[<queue>]> allow
             - stop
     #Allow it.
     - flag <[queue].if_null[<queue>]> allow
