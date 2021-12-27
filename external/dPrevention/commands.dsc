@@ -8,25 +8,33 @@ dPrevention_open_gui:
     script:
     - define location <player.location>
     - define areas <[location].cuboids.include[<[location].ellipsoids>].include[<[location].polygons>]>
+    #If the player is an admin, let him access all claims.
     - if <player.has_permission[dPrevention.admin]>:
+        #If he's not inside an area, open the world flag GUI.
         - if <[areas].is_empty>:
-            - narrate "You're not inside an area. Default to current world: <player.location.world.name.custom_color[emphasis]>" format:dPrevention_format
-            - run dPrevention_fill_flag_GUI def:<player.location.world>
+            - narrate "You're not inside an area. Default to current world: <[location].world.name.custom_color[emphasis]>" format:dPrevention_format
+            - run dPrevention_fill_flag_GUI def:<[location].world>
             - stop
+        #If he's inside multiple areas, he can select one.
         - if <[areas].size> > 1:
             - run dPrevention_generate_clickables def:<list_single[<[areas]>]>
             - stop
+        #Open the GUI if he's only in one.
         - run dPrevention_fill_flag_GUI def:<[areas].first>
         - stop
-    - define ownership <[areas].filter_tag[<[filter_value].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>]>
-    - if <[ownership].size> > 1:
+    #User
+    - define ownerships <[areas].filter_tag[<[filter_value].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>]>
+    #If the user is note inside his claim, stop.
+    - if <[ownerships].is_empty>:
+        - narrate "You're not inside your own claim." format:dPrevention_format
+        - stop
+    #If the user has multiple ownerships, he can select one.
+    - if <[ownerships].size> > 1:
         - narrate "There are multiple areas with ownerships at your location, please choose one." format:dPrevention_format
         - run dPrevention_generate_clickables def:<list_single[<[ownership]>]>
         - stop
-    - if <[ownership].is_empty>:
-        - narrate "You're not inside your own claim." format:dPrevention_format
-        - stop
-    - run dPrevention_fill_flag_GUI def:<[ownership].first>
+    #Open the GUI if he has only one.
+    - run dPrevention_fill_flag_GUI def:<[ownerships].first>
 dPrevention_main:
     type: command
     debug: false
