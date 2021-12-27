@@ -44,7 +44,6 @@ dPrevention_blocks_handler:
     events:
         on player right clicks block with:item_flagged:dPrevention.blocks:
         - determine cancelled passively
-        - wait 1t
         - take iteminhand
         - narrate "You've received <context.item.flag[dPrevention.blocks].custom_color[emphasis]> blocks." format:dPrevention_format
         - flag <player> dPrevention.blocks.amount.per_block:+:<context.item.flag[dPrevention.blocks]>
