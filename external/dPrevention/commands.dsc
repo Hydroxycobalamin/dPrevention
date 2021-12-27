@@ -10,7 +10,7 @@ dPrevention_open_gui:
     - define areas <[location].proc[dPrevention_get_areas]>
     - if <player.has_permission[dPrevention.admin]>:
         - if <[areas].is_empty>:
-            - narrate "You're not inside an area. Default to world: <player.location.world.name.custom_color[emphasis]>" format:dPrevention_format
+            - narrate "You're not inside an area. Default to current world: <player.location.world.name.custom_color[emphasis]>" format:dPrevention_format
             - run dPrevention_fill_flag_GUI def:<player.location.world>
             - stop
         - if <[areas].size> > 1:
@@ -21,13 +21,10 @@ dPrevention_open_gui:
     - define ownership <[areas].filter_tag[<[filter_value].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>]>
     - if <[ownership].size> > 1:
         - narrate "There are multiple areas with ownerships at your location, please choose one." format:dPrevention_format
-        - foreach <[ownership]> as:area:
-            - clickable dPrevention_fill_flag_GUI def:<[area]> for:<player> until:1m save:<[loop_index]>
-            - define clickables:->:<[area].note_name.on_click[<entry[<[loop_index]>].command>].on_hover[<[area].note_name>]>
-        - narrate <[clickables].space_separated.custom_color[emphasis]> format:dPrevention_format
+        - run dPrevention_generate_clickables def:<list_single[<[ownership]>]>
         - stop
     - if <[ownership].is_empty>:
-        - narrate "You're not inside your claim." format:dPrevention_format
+        - narrate "You're not inside your own claim." format:dPrevention_format
         - stop
     - run dPrevention_fill_flag_GUI def:<[ownership].first>
 dPrevention_main:
