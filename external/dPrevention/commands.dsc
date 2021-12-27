@@ -7,7 +7,7 @@ dPrevention_open_gui:
     permission: dPrevention.command.flags
     script:
     - define location <player.location>
-    - define areas <[location].proc[dPrevention_get_areas]>
+    - define areas <[location].cuboids.include[<[location].ellipsoids>].include[<[location].polygons>]>
     - if <player.has_permission[dPrevention.admin]>:
         - if <[areas].is_empty>:
             - narrate "You're not inside an area. Default to current world: <player.location.world.name.custom_color[emphasis]>" format:dPrevention_format

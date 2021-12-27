@@ -175,9 +175,8 @@ dPrevention_initial_block_check:
     type: task
     debug: false
     script:
-    - define areas <[arguments.location].proc[dPrevention_get_areas]>
-    - ~run dPrevention_check_flag def:<list_single[<[areas]>].include[<[arguments.flag]>|<queue>]>
-    - if <queue.has_flag[allow]>:
+    - define area <[arguments.location].proc[dPrevention_get_areas]>
+    - if <[areas].proc[dPrevention_check_flag].context[<[arguments.flag]>]>:
         - stop
     - determine cancelled
 dPrevention_prevent_piston_grief:
@@ -193,8 +192,7 @@ dPrevention_prevent_piston_grief:
     - if <[modified_areas].size> == 1 && <[location_areas].is_empty>:
         - determine cancelled
     #If the cuboid allows pistons, allow it.
-    - ~run dPrevention_check_flag def:<list_single[<[location_areas]>].include[piston].include[<queue>]>
-    - if <queue.has_flag[allow]>:
+    - if <[location_areas].proc[dPrevention_check_flag].context[piston]>:
         - stop
 dPrevention_flag_data:
     type: data
@@ -235,65 +233,49 @@ dPrevention_flag_data:
 dPrevention_initial_check:
     type: task
     debug: false
+    #This task is injected.
     script:
     #Allow players to bypass the flag, if they have the specific permission.
     - if <player.has_permission[dPrevention.bypass.<[arguments.flag]>]>:
         - stop
-    - ~run dPrevention_check_membership def:<[arguments.location]>|<[arguments.flag]> save:queue
-    - if <entry[queue].created_queue.has_flag[allow]>:
-        - stop
+    - inject dPrevention_check_membership
     - determine cancelled passively
     - ratelimit <player> 2s
     - narrate <[arguments.reason]> format:dPrevention_format
 dPrevention_check_membership:
+    #This task MUST be injected.
     type: task
     debug: false
-    definitions: location|flag
     script:
-    ##Avoid multifiring of this task by flagging the player, if he's allowed
     #TODO: check of possibility of triggering a event twice per tick
-    - if <player.has_flag[dPrevention.allow.<[flag]>]>:
-        - flag <queue> allow
+    ##Avoid multifiring of this task by flagging the player, if he's allowed
+    - if <player.has_flag[dPrevention.allow.<[arguments.flag]>]>:
         - stop
-    #Check if player is inside an Area
-    - define areas <[location].proc[dPrevention_get_areas]>
-    #If he is not inside an area, check the worlds flags.
-    - if <[areas].is_empty>:
-        - define areas:->:<player.location.world>
-        - inject dPrevention_check_flag
-    #If he is inside an area, check for flags first.
-  #  - define flagged_areas <[areas].filter_tag[<[filter_value].has_flag[dPrevention.flags.<[flag]>]>]>
-    - ~run dPrevention_check_flag def:<list_single[<[areas]>].include[<[flag]>|<queue>]>
-    - if <queue.has_flag[allow]>:
+    #Check if player is inside an dPrevention area
+    - define area <[arguments.location].proc[dPrevention_get_areas]>
+    #Check for flags
+    - if <[area].proc[dPrevention_check_flag].context[<[arguments.flag]>]>:
         ##Flag the player to reduce multifiring if he's inside a claim and the world is also flagged, if no dPrevention.allow flag is applied, events with world_flagged matchers would run too
-        - flag <player> dPrevention.allow.<[flag]> expire:1t
+        - flag <player> dPrevention.allow.<[arguments.flag]> expire:1t
         - stop
-    #If he isn't owner of any region, stop the queue
-    - define owned_areas <[areas].filter_tag[<[filter_value].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>]>
-    - if <[owned_areas].is_empty>:
+    #If he is owner of the region on this location, stop the queue
+    - if <[area].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>:
         - stop
-    # else, allow him
-    - flag <queue> allow
-    ##Flag the player to reduce multifiring if he's inside a claim and the world is also flagged, if no dPrevention.allow flag is applied, events with world_flagged matchers would run too
-    - flag <player> dPrevention.allow.<[flag]> expire:1t
+    #Event cancelled
 dPrevention_check_flag:
-    type: task
+    type: procedure
     debug: false
-    definitions: areas|flag|queue
+    definitions: area|flag
     script:
-    - define priority <[areas].sort_by_number[flag[dPrevention.priority]]>
-    - foreach <[priority]> as:area:
-        #If the user is whitelisted in this area to bypass the flag, allow it.
-        - if <[area].flag[dPrevention.permissions.<[flag]>].contains[<player.uuid.if_null[null]>].if_null[false]>:
-            - flag <[queue].if_null[<queue>]> allow
-            - stop
-        #If an area doesn't allow it, stop
-        - if <[area].has_flag[dPrevention.flags.<[flag]>]>:
-            - stop
-        - else:
-            #Allow it
-            - flag <[queue].if_null[<queue>]> allow
-            - stop
+    #If the user is whitelisted in this area to bypass the flag, allow it.
+    - if <[area].flag[dPrevention.permissions.<[flag]>].contains[<player.uuid.if_null[null]>].if_null[false]>:
+        - determine true
+    #If an area doesn't allow it, stop
+    - if <[area].has_flag[dPrevention.flags.<[flag]>]>:
+        - determine false
+    - else:
+        #Allow it
+        - determine true
 dPrevention_flag_GUI_handler:
     type: world
     debug: false
@@ -484,7 +466,7 @@ dPrevention_get_areas:
     debug: false
     definitions: location
     script:
-    - determine <[location].cuboids.include[<[location].ellipsoids>].include[<[location].polygons>]>
+    - determine <[location].cuboids.include[<[location].ellipsoids>].include[<[location].polygons>].filter[has_flag[dPrevention]].sort_by_number[flag[dPrevention.priority]].first.if_null[<[location].world>]>
 dPrevention_format:
     type: format
     debug: false
