@@ -234,10 +234,10 @@ dPrevention_check_intersections:
     #This task script is usually injected via inject command.
     definitions: cuboid|selection
     script:
-    - define world <player.world>
-    - define cuboids <[world].flag[dPrevention.areas.cuboids].if_null[<list>].parse[as_cuboid].exclude[<[cuboid].if_null[<empty>]>]>
-    - define ellipsoids <[world].flag[dPrevention.areas.ellipsoids].if_null[<list>].parse[as_ellipsoid.bounding_box]>
-    - define polygons <[world].flag[dPrevention.areas.polygons].if_null[<list>].parse[as_polygon.bounding_box]>
+    - define area_map <[selection].world.flag[dPrevention.areas]>
+    - define cuboids <[area_map.cuboids].if_null[<list>].include[<[area_map.admin.cuboids].if_null[<list>]>].parse[as_cuboid].exclude[<[cuboid].if_null[<empty>]>]>
+    - define ellipsoids <[area_map.ellipsoids].if_null[<list>].include[<[area_map.admin.ellipsoids].if_null[<list>]>].parse[as_ellipsoid.bounding_box].exclude[<[cuboid].if_null[<empty>]>]>
+    - define polygons <[area_map.polygons].if_null[<list>].include[<[area_map.admin.polygons].if_null[<list>]>].parse[as_polygon.bounding_box].exclude[<[cuboid].if_null[<empty>]>]>
     - define intersections <[cuboids].include[<[ellipsoids]>].include[<[polygons]>].filter_tag[<[filter_value].intersects[<[selection]>]>]>
     - define owned_areas <[intersections].filter_tag[<[filter_value].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>]>
     - define intersections <[intersections].exclude[<[owned_areas]>]>
