@@ -140,7 +140,7 @@ dPrevention_generic_flag_handlers:
         - inject dPrevention_prevent_piston_grief
         on piston retracts priority:100:
         - define location <context.location>
-        - define blocks <context.blocks.include[<context.location>]>
+        - define blocks <context.blocks.include[<[location]>]>
         - inject dPrevention_prevent_piston_grief
         #lava spread
         on liquid spreads type:lava in:world_flagged:dPrevention.flags.lava-spread priority:100:
@@ -174,17 +174,18 @@ dPrevention_prevent_piston_grief:
     type: task
     debug: false
     script:
-    - define location_areas <[location].proc[dPrevention_get_areas]>
+    - define area <[location].proc[dPrevention_get_areas]>
     - define modified_areas <[blocks].parse_tag[<[parse_value].proc[dPrevention_get_areas]>].combine.deduplicate>
     #If the piston makes changes in another area, cancel it.
     - if <[modified_areas].size> > 1:
         - determine cancelled
     #If the piston makes changes in another area and is not inside an area cancel it.
-    - if <[modified_areas].size> == 1 && <[location_areas].is_empty>:
+    - if <[modified_areas].size> == 1 && <world[<[area]>].exists>:
         - determine cancelled
-    #If the cuboid allows pistons, allow it.
-    - if <[location_areas].proc[dPrevention_check_flag].context[piston]>:
+    #If the area allows pistons, allow it.
+    - if <[area].proc[dPrevention_check_flag].context[piston]>:
         - stop
+    - determine cancelled
 dPrevention_flag_data:
     type: data
     debug: false
