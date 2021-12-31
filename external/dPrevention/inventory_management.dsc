@@ -148,17 +148,6 @@ dPrevention_fill_flag_GUI:
     - inventory open destination:dPrevention_flag_GUI
     - wait 1t
     - inventory set origin:<[items]> destination:<player.open_inventory>
-dPrevention_generate_clickables:
-    type: task
-    debug: false
-    definitions: areas
-    script:
-    - foreach <[areas]> as:area:
-        - clickable dPrevention_fill_flag_GUI def:<[area]> for:<player> until:1m save:<[loop_index]>
-        - define clickables:->:<[area].note_name.on_click[<entry[<[loop_index]>].command>].on_hover[<[area].note_name>]>
-    - narrate <[clickables].space_separated.custom_color[emphasis]> format:dPrevention_format
-
-
 dPrevention_info_data:
     type: procedure
     debug: false
