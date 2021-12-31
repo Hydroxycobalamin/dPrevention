@@ -156,20 +156,14 @@ dPrevention_generic_flag_handlers:
         on liquid spreads type:water in:world_flagged:dPrevention.flags.water-spread priority:100:
         - definemap arguments flag:water-spread location:<context.destination>
         - inject dPrevention_initial_block_check
-        #monster ban
-        on monster prespawns in:world_flagged:dPrevention.flags.spawn-monster priority:100:
-        - determine cancelled
-        on monster prespawns in:area_flagged:dPrevention.flags.spawn-monster priority:50:
-        - determine cancelled
-        #living ban
-        on living prespawns in:world_flagged:dPrevention.flags.spawn-living priority:100:
-        - determine cancelled
-        on living prespawns in:area_flagged:dPrevention.flags.spawn-living priority:50:
-        - determine cancelled
-        on entity prespawns in:world_flagged:dPrevention.flags.entities priority:100:
-        - determine cancelled
-        on entity prespawns in:area_flagged:dPrevention.flags.entities priority:50:
-        - determine cancelled
+        on entity spawns in:world_flagged:dPrevention.flags.entities priority:100:
+        - define area <context.location.proc[dPrevention_get_areas]>
+        - if <[area].flag[dPrevention.flags.entities].contains[<context.entity.entity_type>]>:
+            - determine cancelled
+        on entity spawns in:area_flagged:dPrevention.flags.entities priority:50:
+        - define area <context.location.proc[dPrevention_get_areas]>
+        - if <[area].flag[dPrevention.flags.entities].contains[<context.entity.entity_type>]>:
+            - determine cancelled
 dPrevention_prevent_piston_grief:
     type: task
     debug: false
@@ -208,8 +202,6 @@ dPrevention_flag_data:
         ender_pearl: teleport-item
         water_bucket: water-spread
         lava_bucket: lava-spread
-        zombie_head: spawn-monster
-        leather_horse_armor: spawn-living
         cow_spawn_egg: entities
         item_frame: item-frame-rotation
         farmland: block-change

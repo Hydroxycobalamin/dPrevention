@@ -75,7 +75,17 @@ dPrevention_flag_GUI_handler:
         - define area <player.flag[dPrevention.flaggui]>
         - choose <[flag]>:
             - case entities:
-                - foreach <context.message.split> as:entity:
+                - define entities <context.message.split>
+                - define e <server.entity_types.exclude[UNKNOWN].parse[as_entity]>
+                - if <[entities].contains[monster]>:
+                    - define entities <[entities].replace[monster].with[<[e].filter[advanced_matches[monster]].parse[entity_type]>]>
+                - if <[entities].contains[animal]>:
+                    - define entities <[entities].replace[animal].with[<[e].filter[advanced_matches[animals]].parse[entity_type]>]>
+                - if <[entities].contains[mob]>:
+                    - define entities <[entities].replace[monster].with[<[e].filter[advanced_matches[mob]].parse[entity_type]>]>
+                - if <[entities].contains[living]>:
+                    - define entities <[entities].replace[monster].with[<[e].filter[advanced_matches[living]].parse[entity_type]>]>
+                - foreach <[entities].combine> as:entity:
                     #If an provided entity is not a valid entity, stop.
                     - if <entity[<[entity]>].if_null[null]> == null:
                         - narrate "<[entity].custom_color[emphasis]> is not a valid entity. Try again or Type cancel. 30 Seconds." format:dPrevention_format
@@ -110,17 +120,14 @@ dPrevention_flag_GUI_handler:
             - inventory close
             - stop
         - define area <player.flag[dPrevention.flaggui]>
-        - define value <context.item.flag[value]>
         #If the flag is set to false, display true.
-        - if !<[value]>:
+        - if <[area].has_flag[dPrevention.flags.<[flag]>]>:
             - flag <[area]> dPrevention.flags.<[flag]>:!
-            - inventory adjust slot:<context.slot> "lore:<dark_gray>Status<&co> <green>true" destination:<player.open_inventory>
-            - inventory flag slot:<context.slot> value:true destination:<player.open_inventory>
+            - inventory adjust slot:<context.slot> lore:<script[dPrevention_fill_flag_GUI].parsed_key[data.format.allowed]> destination:<player.open_inventory>
         #Else display false.
         - else:
             - flag <[area]> dPrevention.flags.<[flag]>
-            - inventory adjust slot:<context.slot> "lore:<dark_gray>Status<&co> <red>false" destination:<player.open_inventory>
-            - inventory flag slot:<context.slot> value:false destination:<player.open_inventory>
+            - inventory adjust slot:<context.slot> lore:<script[dPrevention_fill_flag_GUI].parsed_key[data.format.denied]> destination:<player.open_inventory>
         after player shift_right clicks item_flagged:flag in dPrevention_flag_GUI:
         #Checks for all users which are whitelisted on this claim to bypass the flag.
         - define flag <context.item.flag[flag]>
@@ -172,21 +179,34 @@ dPrevention_flag_GUI:
     size: 27
 dPrevention_fill_flag_GUI:
     type: task
+    data:
+        format:
+            display: <[flag].color[gray]>
+            denied:
+            - <dark_gray>Status: <red>Denied
+            allowed:
+            - <dark_gray>Status: <green>Allowed
+            input:
+            - <dark_gray>Denied<&co>
+            - <[status].parse_tag[<[parse_value].color[red]>].separated_by[<n>]>
     debug: false
     definitions: area
     script:
+    #Check if it's already a dclaim first.
     - if !<[area].has_flag[dPrevention]> && !<world[<[area]>].exists>:
         - inject dPrevention_check_dclaim
         - stop
+    #Loop through all existing flags.
     - foreach <script[dPrevention_flag_data].data_key[flags]> key:item as:flag:
-        #- announce dPrevention.flags.<[flag]>
-        #true is false and false is truely true is the truth
         - if <[area].has_flag[dPrevention.flags.<[flag]>]>:
-            - define bool false
-            #If the flag has a value, add it to the item.
+            - define lore <script.parsed_key[data.format.denied]>
+            #If the flag has additional input, separate it into three entries per line.
             - if <[flag].is_in[<script[dPrevention_flag_GUI_handler].data_key[data.chat_input]>]>:
-                - define bool <n><[area].flag[dPrevention.flags.<[flag]>].parse_tag[<red><[parse_value]>].separated_by[<n>]>
-        - define "items:->:<item[<[item]>].with[display=<[flag].color[gray]>;lore=<dark_gray>Status: <[bool].color[red].if_null[<green>true]>;hides=ALL].with_flag[flag:<[flag]>].with_flag[value:<[bool].if_null[true]>]>"
+                - define status <[area].flag[dPrevention.flags.<[flag]>].alphabetical.sub_lists[3].parse_tag[<[parse_value].space_separated>]>
+                - define lore <script.parsed_key[data.format.input]>
+        - else:
+            - define lore <script.parsed_key[data.format.allowed]>
+        - define items:->:<item[<[item]>].with[display=<script.parsed_key[data.format.display]>;lore=<[lore]>;hides=ALL].with_flag[flag:<[flag]>]>
         - define bool:!
     - flag <player> dPrevention.flaggui:<[area]>
     - inventory open destination:dPrevention_flag_GUI
