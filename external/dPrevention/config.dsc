@@ -40,3 +40,7 @@ dPrevention_config:
             - 250
             - 500
             - 1000
+dPrevention_format:
+    type: format
+    debug: false
+    format: <element[[dPrevention]].color_gradient[from=#00ccff;to=#0066ff]> <&[base]><[text]>

@@ -57,3 +57,9 @@ dPrevention_check_flag:
     - else:
         #Allow it
         - determine true
+dPrevention_get_areas:
+    type: procedure
+    debug: false
+    definitions: location
+    script:
+    - determine <[location].cuboids.include[<[location].ellipsoids>].include[<[location].polygons>].filter[has_flag[dPrevention]].sort_by_number[flag[dPrevention.priority]].first.if_null[<[location].world>]>
