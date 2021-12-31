@@ -76,15 +76,10 @@ dPrevention_flag_GUI_handler:
         - choose <[flag]>:
             - case entities:
                 - define entities <context.message.split>
-                - define e <server.entity_types.exclude[UNKNOWN].parse[as_entity]>
-                - if <[entities].contains[monster]>:
-                    - define entities <[entities].replace[monster].with[<[e].filter[advanced_matches[monster]].parse[entity_type]>]>
-                - if <[entities].contains[animal]>:
-                    - define entities <[entities].replace[animal].with[<[e].filter[advanced_matches[animals]].parse[entity_type]>]>
-                - if <[entities].contains[mob]>:
-                    - define entities <[entities].replace[monster].with[<[e].filter[advanced_matches[mob]].parse[entity_type]>]>
-                - if <[entities].contains[living]>:
-                    - define entities <[entities].replace[monster].with[<[e].filter[advanced_matches[living]].parse[entity_type]>]>
+                - define entity_types <server.entity_types.exclude[PLAYER].parse[as_entity]>
+                - foreach monster|animal|mob|living as:matcher:
+                    - if <[entities].contains[<[matcher]>]>:
+                        - define entities <[entities].replace[<[matcher]>].with[<[entity_types].filter[advanced_matches[<[matcher]>]].parse[entity_type]>]>
                 - foreach <[entities].combine> as:entity:
                     #If an provided entity is not a valid entity, stop.
                     - if <entity[<[entity]>].if_null[null]> == null:
@@ -188,7 +183,7 @@ dPrevention_fill_flag_GUI:
             - <dark_gray>Status: <green>Allowed
             input:
             - <dark_gray>Denied<&co>
-            - <[status].parse_tag[<[parse_value].color[red]>].separated_by[<n>]>
+            - <[status].split[<n>].parse_tag[<[parse_value].color[red]>].separated_by[<n>]>
     debug: false
     definitions: area
     script:
@@ -202,7 +197,7 @@ dPrevention_fill_flag_GUI:
             - define lore <script.parsed_key[data.format.denied]>
             #If the flag has additional input, separate it into three entries per line.
             - if <[flag].is_in[<script[dPrevention_flag_GUI_handler].data_key[data.chat_input]>]>:
-                - define status <[area].flag[dPrevention.flags.<[flag]>].alphabetical.sub_lists[3].parse_tag[<[parse_value].space_separated>]>
+                - define status <[area].flag[dPrevention.flags.<[flag]>].alphabetical.space_separated.split_lines_by_width[240]>
                 - define lore <script.parsed_key[data.format.input]>
         - else:
             - define lore <script.parsed_key[data.format.allowed]>
