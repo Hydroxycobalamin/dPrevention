@@ -28,16 +28,15 @@ dPrevention_check_membership:
     type: task
     debug: false
     script:
-    #TODO: check of possibility of triggering a event twice per tick
     ##Avoid multifiring of this task by flagging the player, if he's allowed
-    - if <player.has_flag[dPrevention.allow.<[arguments.flag]>]>:
+    - if <player.has_flag[dPrevention.allow.<[arguments.flag]>.<[arguments.location].simple>]>:
         - stop
     #Check if player is inside an dPrevention area
     - define area <[arguments.location].proc[dPrevention_get_areas]>
     #Check for flags
     - if <[area].proc[dPrevention_check_flag].context[<[arguments.flag]>]>:
-        ##Flag the player to reduce multifiring if he's inside a claim and the world is also flagged, if no dPrevention.allow flag is applied, events with world_flagged matchers would run too
-        - flag <player> dPrevention.allow.<[arguments.flag]> expire:1t
+        ##Flag the player to reduce multifiring if he's inside a claim and the world is also flagged, if no dPrevention.allow flag is applied, events with world_flagged matchers would run too.
+        - flag <player> dPrevention.allow.<[arguments.flag]>.<[arguments.location].simple> expire:1t
         - stop
     #If he is owner of the region on this location, stop the queue
     - if <[area].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>:

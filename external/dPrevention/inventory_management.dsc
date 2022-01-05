@@ -1,4 +1,3 @@
-#TODO: dynmap support
 dPrevention_flag_GUI_handler:
     type: world
     debug: false
