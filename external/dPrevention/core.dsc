@@ -61,4 +61,5 @@ dPrevention_get_areas:
     debug: false
     definitions: location
     script:
+    #Return all dPrevention areas, if null return the current world.
     - determine <[location].cuboids.include[<[location].ellipsoids>].include[<[location].polygons>].filter[has_flag[dPrevention]].sort_by_number[flag[dPrevention.priority]].first.if_null[<[location].world>]>

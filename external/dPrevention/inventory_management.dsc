@@ -170,22 +170,22 @@ dPrevention_info_data:
             - case cuboids:
                 - repeat <[areas].size>:
                     - define area <[areas].get[<[value]>]>
-                    - definemap data "min:<[area].min.xyz.replace_text[,].with[ ]>" "max:<[area].max.xyz.replace_text[,].with[ ]>" world:<[area].world.name> "size:<[area].size.xyz.replace_text[,].with[ ]>" costs:<[area].proc[dPrevention_get_costs]> priority:<[area].flag[dPrevention.priority]>
-                    - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.cuboid]>].with_flag[claim:<[area]>].with_flag[holder:<[player]>].with_flag[type:<[type]>]>
+                    - definemap data "min:<[area].min.xyz.replace_text[,].with[ ]>" "max:<[area].max.xyz.replace_text[,].with[ ]>" world:<[area].world.name> "size:<[area].size.xyz.replace_text[,].with[ ]>" costs:<[area].proc[dPrevention_get_costs]> priority:<[area].flag[dPrevention.priority]> name:<[area].flag[dPrevention.name].parse_color.if_null[<white>Claim]>
+                    - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[display=<[data.name]>;lore=<script.parsed_key[data.cuboid]>].with_flag[claim:<[area]>].with_flag[holder:<[player]>].with_flag[type:<[type]>]>
                     - if <[loop_index].mod[45]> == 0:
                         - define page:++
             - case polygons:
                 - repeat <[areas].size>:
                     - define area <[areas].get[<[value]>]>
-                    - definemap data "corner:<[area].corners.parse_tag[<[parse_value].xyz.replace_text[,].with[ ]>]>" world:<[area].world.name> min_y:<[area].min_y> max_y:<[area].max_y> priority:<[area].flag[dPrevention.priority]>
-                    - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.polygon]>].with_flag[claim:<[area]>].with_flag[holder:<[player]>].with_flag[type:<[type]>]>
+                    - definemap data "corner:<[area].corners.parse_tag[<[parse_value].xyz.replace_text[,].with[ ]>]>" world:<[area].world.name> min_y:<[area].min_y> max_y:<[area].max_y> priority:<[area].flag[dPrevention.priority]> name:<[area].flag[dPrevention.name].parse_color.if_null[<white>Claim]>
+                    - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[display=<[data.name]>;lore=<script.parsed_key[data.polygon]>].with_flag[claim:<[area]>].with_flag[holder:<[player]>].with_flag[type:<[type]>]>
                     - if <[loop_index].mod[45]> == 0:
                         - define page:++
             - case ellipsoids:
                 - repeat <[areas].size>:
                     - define area <[areas].get[<[value]>]>
-                    - definemap data "location:<[area].location.xyz.replace_text[,].with[ ]>" world:<[area].world.name> priority:<[area].flag[dPrevention.priority]>
-                    - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[lore=<script.parsed_key[data.ellipsoid]>].with_flag[claim:<[area]>].with_flag[holder:<[player]>].with_flag[type:<[type]>]>
+                    - definemap data "location:<[area].location.xyz.replace_text[,].with[ ]>" world:<[area].world.name> priority:<[area].flag[dPrevention.priority]> name:<[area].flag[dPrevention.name].parse_color.if_null[<white>Claim]>
+                    - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[display=<[data.name]>;lore=<script.parsed_key[data.ellipsoid]>].with_flag[claim:<[area]>].with_flag[holder:<[player]>].with_flag[type:<[type]>]>
                     - if <[loop_index].mod[45]> == 0:
                         - define page:++
     #Dummy if there aren't any claims yet.
@@ -223,7 +223,6 @@ dPrevention_menu_item:
     type: item
     debug: false
     material: grass_block
-    display name: <white>Claim
 dPrevention_page_item:
     type: item
     debug: false
@@ -239,19 +238,23 @@ dPrevention_menu_handler:
     - inventory flag slot:<context.slot> page:<[page]> destination:<player.open_inventory>
     - inventory set "origin:<context.item.with[lore=Current Page:<[page]>/<[max]>].with_flag[page:<[page]>]>" slot:<context.slot> destination:<player.open_inventory>
     events:
+        #Changes the page.
         after player left clicks dPrevention_page_item in dPrevention_menu:
         - define page <context.item.flag[page].add[1]>
         - inject <script> path:pager
         after player right clicks dPrevention_page_item in dPrevention_menu:
         - define page <context.item.flag[page].sub[1]>
         - inject <script> path:pager
+        #Opens the relevant flag menu.
         after player left clicks dPrevention_menu_item in dPrevention_menu:
         - run dPrevention_fill_flag_GUI def:<context.item.flag[claim]>
+        #Delete an area.
         after player right clicks dPrevention_menu_item in dPrevention_menu:
         - definemap data claim:<context.item.flag[claim]> holder:<context.item.flag[holder]> type:<context.item.flag[type]>
         - flag <player> dPrevention.remove_area:<[data]> expire:30s
         - inventory close
         - narrate "Type 'delete' if want to remove this area." format:dPrevention_format
+        #Change the area's priority.
         after player shift_left clicks dPrevention_menu_item in dPrevention_menu:
         - if !<player.has_permission[dPrevention.admin]>:
             - narrate "You're not allowed to change the priority of your claim." format:dPrevention_format
@@ -260,6 +263,18 @@ dPrevention_menu_handler:
         - narrate "Type an integer to change it's priority." format:dPrevention_format
         - flag <player> dPrevention.type_integer:<context.item.flag[claim]> expire:30s
         - inventory close
+        #Rename an area.
+        after player shift_right clicks dPrevention_menu_item in dPrevention_menu:
+        - definemap data claim:<context.item.flag[claim]> holder:<context.item.flag[holder]>
+        - flag <player> dPrevention.rename_area:<[data]> expire:30s
+        - inventory close
+        - narrate "Type the new name of your area. Type 'cancel' if you want to cancel the rename or wait 30 seconds." format:dPrevention_format
+        on player chats flagged:dPrevention.rename_area:
+        - determine passively cancelled
+        - define name "<context.message.trim_to_character_set[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890&# ]>"
+        - flag <player.flag[dPrevention.rename_area.claim]> dPrevention.name:<white><[name].parse_color>
+        - narrate "You're claim was renamed to '<white><[name].parse_color><&[base]>'" format:dPrevention_format
+        - flag <player> dPrevention.rename_area:!
         on player chats flagged:dPrevention.type_integer:
         - determine passively cancelled
         - define integer <context.message.split.first>

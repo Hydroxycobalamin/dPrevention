@@ -125,7 +125,7 @@ dPrevention_tool_handler:
                 - if <player.flag[dPrevention.location].world.name> != <context.location.world.name>:
                     - narrate "World's doesnt match. Please don't change worlds while expanding your cuboid." format:dPrevention_format
                     - stop
-                #Read data from the cuboid linked to the expand mode for later use(read the read comment below).
+                #Read data from the cuboid linked to the expand mode for later use(read the red comment below).
                 - define cuboid <player.flag[dPrevention.expand_mode]>
                 ##
                 - definemap data dPrevention:<[cuboid].flag[dPrevention]>
