@@ -15,7 +15,8 @@ dPrevention_flag_GUI_handler:
         - if <script.data_key[data.chat_input].contains[<[flag]>]>:
             - definemap data area:<player.flag[dPrevention.flaggui]> flag:<[flag]> type:add_flag
             - flag <player> dPrevention.chat_input:<[data]> expire:30s
-            - narrate "Type the strings. Seperate multiple by space. 30 Seconds." format:dPrevention_format
+            - if <[flag]> == entities:
+                - narrate "Type the entity type in chat. Seperate multiple by space." format:dPrevention_format
             - inventory close
             - stop
         - define area <player.flag[dPrevention.flaggui]>
@@ -50,11 +51,26 @@ dPrevention_flag_GUI_handler:
         - inventory close
 dPrevention_flag_GUI:
     type: inventory
+    data:
+        info_lore:
+        - <gold>Left-Click<&co>
+        - <&[base]>Toggle flag
+    #    - <gold>Right-Click<&co>
+        - <gold>Shift-Rightclick<&co>
+        - <&[base]>List whitelisted players
+        - <gold>Shift-Leftclick<&co>
+        - <&[base]>Whitelist player
     debug: false
     inventory: CHEST
     title: Flags
     gui: true
-    size: 27
+    definitions:
+        info: <item[light].with[display=<white>Info;lore=<script.parsed_key[data.info_lore]>]>
+    slots:
+    - [] [] [] [] [] [] [] [] []
+    - [] [] [] [] [] [] [] [] []
+    - [] [] [] [] [] [] [] [] []
+    - [] [] [] [] [info] [] [] [] []
 dPrevention_fill_flag_GUI:
     type: task
     data:
@@ -148,20 +164,36 @@ dPrevention_info_formatter:
     - inventory set origin:<[data.pages.1]> destination:<player.open_inventory>
 dPrevention_menu:
     type: inventory
+    data:
+        block_lore:
+        - <element[From play:].color_gradient[from=#009933;to=#00ff55]> <player.flag[dPrevention.blocks.amount.per_time].if_null[0]>
+        - <element[From blocks:].color_gradient[from=#009933;to=#00ff55]> <player.flag[dPrevention.blocks.amount.per_block].if_null[0]>
+        - <element[In Use:].color_gradient[from=#ff3399;to=#cc0066]> <player.flag[dPrevention.blocks.amount.in_use].if_null[0]>
+        - <element[Left to spent:].color_gradient[from=#00ffff;to=#009999]> <player.proc[dPrevention_get_blocks]>
+        info_lore:
+        - <gold>Left-Click<&co>
+        - <&[base]>Opens the Flag-Menu
+        - <gold>Right-Click<&co>
+        - <&[base]>Rename the claim
+        - <gold>Shift-Rightclick<&co>
+        - <&[base]>Delete the claim
+        - <gold>Shift-Leftclick<&co>
+        - <&[base]>Change the priority
     debug: false
     inventory: CHEST
     title: Menu
     gui: true
     definitions:
-        blocks: <item[dPrevention_menu_item].with[display=<white>Blocks;lore=<element[From play:].color_gradient[from=#009933;to=#00ff55]> <player.flag[dPrevention.blocks.amount.per_time].if_null[0]>|<element[From blocks:].color_gradient[from=#009933;to=#00ff55]> <player.flag[dPrevention.blocks.amount.per_block].if_null[0]>|<element[In Use:].color_gradient[from=#ff3399;to=#cc0066]> <player.flag[dPrevention.blocks.amount.in_use].if_null[0]>|<element[Left to spent:].color_gradient[from=#00ffff;to=#009999]> <player.proc[dPrevention_get_blocks]>]>
-        page: <item[dPrevention_page_item].with[display=<white>Page;lore=Current Page:1/<player.flag[dPrevention.inventory_menu.pages].keys.highest>].with_flag[page:1]>
+        blocks: <item[dPrevention_menu_item].with[display=<white>Blocks;lore=<script.parsed_key[data.block_lore]>]>
+        page: <item[dPrevention_page_item].with[display=<white>Page;lore=<&[base]>Current Page:1/<player.flag[dPrevention.inventory_menu.pages].keys.highest>].with_flag[page:1]>
+        info: <item[light].with[display=<white>Info;lore=<script.parsed_key[data.info_lore]>]>
     slots:
     - [] [] [] [] [] [] [] [] []
     - [] [] [] [] [] [] [] [] []
     - [] [] [] [] [] [] [] [] []
     - [] [] [] [] [] [] [] [] []
     - [] [] [] [] [] [] [] [] []
-    - [] [] [] [] [blocks] [] [] [page] []
+    - [] [info] [] [] [blocks] [] [] [page] []
 dPrevention_menu_item:
     type: item
     debug: false
@@ -192,7 +224,7 @@ dPrevention_menu_handler:
         after player left clicks dPrevention_menu_item in dPrevention_menu:
         - run dPrevention_fill_flag_GUI def:<context.item.flag[claim]>
         #Delete an area.
-        after player right clicks dPrevention_menu_item in dPrevention_menu:
+        after player shift_right clicks dPrevention_menu_item in dPrevention_menu:
         - definemap data claim:<context.item.flag[claim]> holder:<context.item.flag[holder]> path:<context.item.flag[type]> type:remove_area
         - flag <player> dPrevention.chat_input:<[data]> expire:30s
         - inventory close
@@ -208,7 +240,7 @@ dPrevention_menu_handler:
         - flag <player> dPrevention.chat_input:<[data]> expire:30s
         - inventory close
         #Rename an area.
-        after player shift_right clicks dPrevention_menu_item in dPrevention_menu:
+        after player right clicks dPrevention_menu_item in dPrevention_menu:
         - definemap data claim:<context.item.flag[claim]> holder:<context.item.flag[holder]> type:rename_area
         - flag <player> dPrevention.chat_input:<[data]> expire:30s
         - inventory close

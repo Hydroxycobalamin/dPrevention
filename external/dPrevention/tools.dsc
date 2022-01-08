@@ -150,6 +150,7 @@ dPrevention_tool_handler:
                 - playeffect effect:LIGHT at:<[new_cuboid].outline.parse[center]> offset:0,0,0 visibility:90
                 #Remove expand mode.
                 - run dPrevention_cancel_mode def:expand
+                - narrate "Your claim was expanded." format:dPrevention_format
         after player drops dPrevention_tool:
         - remove <context.entity>
         after delta time secondly every:2:
