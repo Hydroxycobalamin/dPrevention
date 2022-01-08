@@ -5,42 +5,6 @@ dPrevention_flag_GUI_handler:
         chat_input:
         - entities
     events:
-        on player chats flagged:dPrevention.add_flag:
-        - determine cancelled passively
-        - if <context.message.split.first> == cancel:
-            - narrate "Adding or removing flags cancelled." format:dPrevention_format
-            - flag <player> dPrevention.add_flag:!
-            - stop
-        - define flag <player.flag[dPrevention.add_flag.flag]>
-        - define area <player.flag[dPrevention.flaggui]>
-        - choose <[flag]>:
-            - case entities:
-                - define entities <context.message.split>
-                - define entity_types <server.entity_types.exclude[PLAYER].parse[as_entity]>
-                - foreach monster|animal|mob|living as:matcher:
-                    - if <[entities].contains[<[matcher]>]>:
-                        - define entities <[entities].replace[<[matcher]>].with[<[entity_types].filter[advanced_matches[<[matcher]>]].parse[entity_type]>]>
-                - foreach <[entities].combine> as:entity:
-                    #If an provided entity is not a valid entity, stop.
-                    - if <entity[<[entity]>].if_null[null]> == null:
-                        - narrate "<[entity].custom_color[emphasis]> is not a valid entity. Try again or Type cancel. 30 Seconds." format:dPrevention_format
-                        - flag <player> dPrevention.add_flag.flag:<[flag]> expire:30s
-                        - flag <player> dPrevention.add_flag.area:<[area]> expire:30s
-                        - stop
-                    #If the entity is already in the list, remove it.
-                    - if <[area].flag[dPrevention.flags.<[flag]>].if_null[<list>].contains[<[entity]>]>:
-                        - flag <[area]> dPrevention.flags.<[flag]>:<-:<[entity]>
-                        - foreach next
-                    #If the entity is not in the list, add it.
-                    - flag <[area]> dPrevention.flags.<[flag]>:->:<[entity]>
-                #If the list of entities is empty, remove the flag.
-                - if <[area].flag[dPrevention.flags.<[flag]>].is_empty>:
-                    - flag <[area]> dPrevention.flags.<[flag]>:!
-                    - flag <player> dPrevention.add_flag:!
-                    - narrate "This claims doesn't prevent any entity anymore." format:dPrevention_format
-                    - stop
-                - flag <player> dPrevention.add_flag:!
-                - narrate "This claim prevents <[area].flag[dPrevention.flags.<[flag]>].space_separated.to_titlecase.custom_color[emphasis]> from spawning." format:dPrevention_format
         after player left clicks item_flagged:flag in dPrevention_flag_GUI:
         - define flag <context.item.flag[flag]>
         #If the player doesn't have permission to change the flag stop.
@@ -49,8 +13,8 @@ dPrevention_flag_GUI_handler:
             - stop
         #If a flag needs separate input. Listen to the chat event.
         - if <script.data_key[data.chat_input].contains[<[flag]>]>:
-            - flag <player> dPrevention.add_flag.area:<player.flag[dPrevention.flaggui]> expire:30s
-            - flag <player> dPrevention.add_flag.flag:<[flag]> expire:30s
+            - definemap data area:<player.flag[dPrevention.flaggui]> flag:<[flag]> type:add_flag
+            - flag <player> dPrevention.chat_input:<[data]> expire:30s
             - narrate "Type the strings. Seperate multiple by space. 30 Seconds." format:dPrevention_format
             - inventory close
             - stop
@@ -80,31 +44,10 @@ dPrevention_flag_GUI_handler:
             - inventory close
             - stop
         #Listen to the Chat event, to allow specific players to bypass the player related flag.
-        - flag <player> dPrevention.add_bypass_user.area:<player.flag[dPrevention.flaggui]> expire:30s
-        - flag <player> dPrevention.add_bypass_user.flag:<context.item.flag[flag]> expire:30s
+        - definemap data type:add_bypass_user area:<player.flag[dPrevention.flaggui]> flag:<context.item.flag[flag]>
+        - flag <player> dPrevention.chat_input:<[data]> expire:30s
         - narrate "Type the name of the player into the chat, to add or remove him. Write cancel, to cancel it." format:dPrevention_format
         - inventory close
-        on player chats flagged:dPrevention.add_bypass_user:
-        - determine cancelled passively
-        - define message <context.message.split.first>
-        - define flag <player.flag[dPrevention.add_bypass_user.flag]>
-        - if <[message]> == cancel:
-            - flag <player> dPrevention.add_bypass_user:!
-            - narrate "Add users to bypass <[flag]> cancelled." format:dPrevention_format
-            - stop
-        - define player <server.match_offline_player[<[message]>].if_null[null]>
-        - if <[player]> == null:
-            - narrate "This user doesn't exist." format:dPrevention_format
-            - flag <player> dPrevention.add_bypass_user:!
-            - stop
-        - if <[player].is_in[dPrevention.permissions.<[flag]>]>:
-            - flag <player.flag[dPrevention.add_bypass_user.area]> dPrevention.permissions.<[flag]>:<-:<[player].uuid>
-            - narrate "<player.name.custom_color[emphasis]> isn't whitelisted to bypass <[flag].custom_color[emphasis]> anymore." format:dPrevention_format
-            - flag <player> dPrevention.add_bypass_user:!
-            - stop
-        - flag <player.flag[dPrevention.add_bypass_user.area]> dPrevention.permissions.<[flag]>:->:<[player].uuid>
-        - narrate "<player.name.custom_color[emphasis]> is whitelisted to bypass <[flag].custom_color[emphasis]>" format:dPrevention_format
-        - flag <player> dPrevention.add_bypass_user:!
 dPrevention_flag_GUI:
     type: inventory
     debug: false
@@ -250,8 +193,8 @@ dPrevention_menu_handler:
         - run dPrevention_fill_flag_GUI def:<context.item.flag[claim]>
         #Delete an area.
         after player right clicks dPrevention_menu_item in dPrevention_menu:
-        - definemap data claim:<context.item.flag[claim]> holder:<context.item.flag[holder]> type:<context.item.flag[type]>
-        - flag <player> dPrevention.remove_area:<[data]> expire:30s
+        - definemap data claim:<context.item.flag[claim]> holder:<context.item.flag[holder]> path:<context.item.flag[type]> type:remove_area
+        - flag <player> dPrevention.chat_input:<[data]> expire:30s
         - inventory close
         - narrate "Type 'delete' if want to remove this area." format:dPrevention_format
         #Change the area's priority.
@@ -261,41 +204,12 @@ dPrevention_menu_handler:
             - inventory close
             - stop
         - narrate "Type an integer to change it's priority." format:dPrevention_format
-        - flag <player> dPrevention.type_integer:<context.item.flag[claim]> expire:30s
+        - definemap data claim:<context.item.flag[claim]> type:set_priority
+        - flag <player> dPrevention.chat_input:<[data]> expire:30s
         - inventory close
         #Rename an area.
         after player shift_right clicks dPrevention_menu_item in dPrevention_menu:
-        - definemap data claim:<context.item.flag[claim]> holder:<context.item.flag[holder]>
-        - flag <player> dPrevention.rename_area:<[data]> expire:30s
+        - definemap data claim:<context.item.flag[claim]> holder:<context.item.flag[holder]> type:rename_area
+        - flag <player> dPrevention.chat_input:<[data]> expire:30s
         - inventory close
         - narrate "Type the new name of your area. Type 'cancel' if you want to cancel the rename or wait 30 seconds." format:dPrevention_format
-        on player chats flagged:dPrevention.rename_area:
-        - determine passively cancelled
-        - define name "<context.message.trim_to_character_set[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890&# ]>"
-        - flag <player.flag[dPrevention.rename_area.claim]> dPrevention.name:<white><[name].parse_color>
-        - narrate "You're claim was renamed to '<white><[name].parse_color><&[base]>'" format:dPrevention_format
-        - flag <player> dPrevention.rename_area:!
-        on player chats flagged:dPrevention.type_integer:
-        - determine passively cancelled
-        - define integer <context.message.split.first>
-        - if !<[integer].is_integer>:
-            - narrate "You must provide an integer!" format:dPrevention_format
-            - flag <player> dPrevention.type_integer:!
-            - stop
-        - flag <player.flag[dPrevention.type_integer]> dPrevention.priority:<[integer]>
-        - narrate "The Claims priority was set to <[integer].custom_color[emphasis]>" format:dPrevention_format
-        - flag <player> dPrevention.type_integer:!
-        on player chats flagged:dPrevention.remove_area:
-        - determine cancelled passively
-        - if <context.message.split.first> != delete:
-            - narrate "This claim was not removed." format:dPrevention_format
-            - flag <player> dPrevention.remove_area:!
-            - stop
-        - define data <player.flag[dPrevention.remove_area]>
-        - if <player.flag[dPrevention.remove_area.holder]> == null:
-            - narrate "The claim <[data.claim].note_name.custom_color[emphasis]> was removed." format:dPrevention_format
-            - run dPrevention_area_admin_removal def:<list_single[<[data]>]>
-            - stop
-        - narrate "This claim was removed. You received <[data.claim].proc[dPrevention_get_costs].custom_color[emphasis]> blocks back!" format:dPrevention_format
-        - run dPrevention_area_removal def:<[data.claim]>|<player.flag[dPrevention.remove_area.holder]>
-        - flag <player> dPrevention.remove_area:!
