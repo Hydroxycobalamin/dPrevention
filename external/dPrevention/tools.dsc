@@ -56,8 +56,7 @@ dPrevention_tool_handler:
         - determine passively cancelled
         #If the player sneaks while he clicks a block, claim mode will be removed.
         - if <player.is_sneaking>:
-            - flag <player> dPrevention.claim_mode:!
-            - flag <player> dPrevention.selection:!
+            - run dPrevention_cancel_mode def:claim
             - narrate "Claim mode cancelled" format:dPrevention_format
             - stop
         - choose <context.click_type>:
@@ -94,16 +93,12 @@ dPrevention_tool_handler:
                 #Make the area to a dPrevention area. Add the player as owner.
                 - run dPrevention_area_creation def:<list.include[<cuboid[<[name]>]>].include[<player.uuid>]>
                 #Remove claim mode.
-                - flag <player> dPrevention.selection:!
-                - flag <player> dPrevention.claim_mode:!
+                - run dPrevention_cancel_mode def:claim
         on player clicks block with:dPrevention_tool flagged:dPrevention.expand_mode priority:-1:
         - determine passively cancelled
         #If the player sneaks while he clicks a block, expand mode will be removed.
         - if <player.is_sneaking>:
-            - flag <player> dPrevention.expand_mode:!
-            - flag <player> dPrevention.location:!
-            - showfake cancel <player.flag[dPrevention.show_fake_locations]>
-            - flag <player> dPrevention.show_fake_locations:!
+            - run dPrevention_cancel_mode def:expand
             - narrate "Expand mode cancelled" format:dPrevention_format
             - stop
         - choose <context.click_type>:
@@ -154,10 +149,7 @@ dPrevention_tool_handler:
                     - flag <[new_cuboid]> <[type]>:<[flags]>
                 - playeffect effect:LIGHT at:<[new_cuboid].outline.parse[center]> offset:0,0,0 visibility:90
                 #Remove expand mode.
-                - showfake cancel <player.flag[dPrevention.show_fake_locations]>
-                - flag <player> dPrevention.show_fake_locations:!
-                - flag <player> dPrevention.expand_mode:!
-                - flag <player> dPrevention.location:!
+                - run dPrevention_cancel_mode def:expand
         after player drops dPrevention_tool:
         - remove <context.entity>
         after delta time secondly every:2:
@@ -189,3 +181,15 @@ dPrevention_expand_mode:
                 - flag <[locations.north_east]> dPrevention.location:<[location]>
             - case north_east:
                 - flag <[locations.south_west]> dPrevention.location:<[location]>
+dPrevention_cancel_mode:
+    type: task
+    definitions: mode
+    script:
+    - if <[mode]> == claim:
+        - flag <player> dPrevention.claim_mode:!
+        - flag <player> dPrevention.selection:!
+    - else:
+        - showfake cancel <player.flag[dPrevention.show_fake_locations]>
+        - flag <player> dPrevention.expand_mode:!
+        - flag <player> dPrevention.location:!
+        - flag <player> dPrevention.show_fake_locations:!
