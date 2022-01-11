@@ -13,13 +13,13 @@ dPrevention_chat_tasks:
         - narrate "This user doesn't exist." format:dPrevention_format
         - flag <player> dPrevention.chat_input:!
         - stop
-    - if <[player].is_in[dPrevention.permissions.<[flag]>]>:
+    - if <[player].uuid.is_in[<[data.area].flag[dPrevention.permissions.<[flag]>].if_null[<list>]>]>:
         - flag <[data.area]> dPrevention.permissions.<[flag]>:<-:<[player].uuid>
-        - narrate "<player.name.custom_color[emphasis]> isn't whitelisted to bypass <[flag].custom_color[emphasis]> anymore." format:dPrevention_format
+        - narrate "<[player].name.custom_color[emphasis]> isn't whitelisted to bypass <[flag].custom_color[emphasis]> anymore." format:dPrevention_format
         - flag <player> dPrevention.chat_input:!
         - stop
     - flag <[data.area]> dPrevention.permissions.<[flag]>:->:<[player].uuid>
-    - narrate "<player.name.custom_color[emphasis]> is whitelisted to bypass <[flag].custom_color[emphasis]>" format:dPrevention_format
+    - narrate "<[player].name.custom_color[emphasis]> is whitelisted to bypass <[flag].custom_color[emphasis]>" format:dPrevention_format
     - flag <player> dPrevention.chat_input:!
     rename_area:
     - define name "<context.message.trim_to_character_set[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890&# ]>"
