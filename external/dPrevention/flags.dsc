@@ -23,10 +23,10 @@ dPrevention_player_flag_handlers:
         - definemap arguments flag:block-place "reason:You can't place this block here." location:<context.location>
         - inject dPrevention_initial_check
         ##use
-        on player right clicks *_door|lever|*_button|*_pressure_plate|anvil in:world_flagged:dPrevention.flags.use priority:100:
+        on player right clicks *_door|lever|*_button|*_pressure_plate|anvil|*campfire in:world_flagged:dPrevention.flags.use priority:100:
         - definemap arguments flag:use "reason:You can't use this block here." location:<context.location>
         - inject dPrevention_initial_check
-        on player right clicks *_door|lever|*_button|*_pressure_plate|anvil in:area_flagged:dPrevention.flags.use priority:50:
+        on player right clicks *_door|lever|*_button|*_pressure_plate|anvil|*campfire in:area_flagged:dPrevention.flags.use priority:50:
         - definemap arguments flag:use "reason:You can't use this block here." location:<context.location>
         - inject dPrevention_initial_check
         ##lighter
@@ -44,10 +44,10 @@ dPrevention_player_flag_handlers:
         - definemap arguments flag:pvp "reason:PvP is disabled in this region." location:<context.entity.location>
         - inject dPrevention_initial_check
         ##container-access
-        on player right clicks *chest|*_shulker_box|*furnace|smoker|barrel|brewing_stand in:world_flagged:dPrevention.flags.container-access priority:100:
+        on player right clicks minecart_chest|chest|trapped_chest|*_shulker_box|*furnace|smoker|barrel|brewing_stand in:world_flagged:dPrevention.flags.container-access priority:100:
         - definemap arguments flag:container-access "reason:You can't open that here." location:<context.location>
         - inject dPrevention_initial_check
-        on player right clicks *chest|*_shulker_box|*furnace|smoker|barrel|brewing_stand in:area_flagged:dPrevention.flags.container-access priority:50:
+        on player right clicks minecart_chest|chest|trapped_chest|*_shulker_box|*furnace|smoker|barrel|brewing_stand in:area_flagged:dPrevention.flags.container-access priority:50:
         - definemap arguments flag:container-access "reason:You can't open that here." location:<context.location>
         - inject dPrevention_initial_check
         ##teleport-item
