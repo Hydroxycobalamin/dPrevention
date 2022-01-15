@@ -14,7 +14,7 @@ dPrevention_area_removal:
     debug: false
     definitions: cuboid|player
     script:
-    - inject dPrevention_cancel_mode def:expand player:<[player]>
+    - run dPrevention_cancel_mode def:expand player:<[player]>
     - flag <[cuboid].world> dPrevention.areas.cuboids:<-:<[cuboid].note_name>
     - flag <[player]> dPrevention.areas.cuboids:<-:<[cuboid].note_name>
     - note remove as:<[cuboid].note_name>
