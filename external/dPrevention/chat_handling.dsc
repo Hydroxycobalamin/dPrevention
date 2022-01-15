@@ -43,6 +43,7 @@ dPrevention_chat_tasks:
     - if <[data.holder]> == null:
         - narrate "The claim <[data.claim].note_name.custom_color[emphasis]> was removed." format:dPrevention_format
         - run dPrevention_area_admin_removal def:<list_single[<[data]>]>
+        - flag <player> dPrevention.chat_input:!
         - stop
     - narrate "This claim was removed. You received <[data.claim].proc[dPrevention_get_costs].custom_color[emphasis]> blocks back!" format:dPrevention_format
     - run dPrevention_area_removal def:<[data.claim]>|<[data.holder]>

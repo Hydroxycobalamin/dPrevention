@@ -17,7 +17,7 @@ dPrevention_convert_dclaim:
         - define type polygons
     - else <ellipsoid[<[area]>].exists>:
         - define type ellipsoids
-    - if <[area].world.flag[dPrevention.areas.admin.<[type]>].contains[<[area].note_name>]>:
+    - if <[area].world.flag[dPrevention.areas.admin.<[type]>].contains[<[area].note_name>].if_null[false]>:
         - narrate "<[area].note_name.custom_color[emphasis]> is already an admin claim." format:dPrevention_format
         - stop
     - flag <[area].world> dPrevention.areas.admin.<[type]>:->:<[area].note_name>
