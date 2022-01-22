@@ -90,6 +90,7 @@ dPrevention_main:
                     - if <[area].world.flag[dPrevention.areas.admin.cuboids].contains[<[id]>].if_null[false]>:
                         - narrate "A cuboid with the id <[id].custom_color[emphasis]> exists already!" format:dPrevention_format
                         - stop
+                    - run cuboid_tool_status_task
                     - flag <[area].world> dPrevention.areas.admin.cuboids:->:<[id]>
                     - note <[area]> as:<[id]>
                     - run dPrevention_area_creation def:<list.include[<cuboid[<[id]>]>]>
@@ -103,6 +104,7 @@ dPrevention_main:
                     - if <[area].world.flag[dPrevention.areas.admin.ellipsoids].contains[<[id]>].if_null[false]>:
                         - narrate "A ellipsoid with the name <[id].custom_color[emphasis]> exists already!" format:dPrevention_format
                         - stop
+                    - run ellipsoid_tool_status_task
                     - flag <[area].world> dPrevention.areas.admin.ellipsoids:->:<[id]>
                     - note <[area]> as:<[id]>
                     - run dPrevention_area_creation def:<list.include[<ellipsoid[<[id]>]>]>
@@ -116,6 +118,7 @@ dPrevention_main:
                     - if <[area].world.flag[dPrevention.areas.admin.polygons].contains[<[id]>].if_null[false]>:
                         - narrate "A ellipsoid with the name <[id].custom_color[emphasis]> exists already!" format:dPrevention_format
                         - stop
+                    - run polygon_tool_status_task
                     - flag <[area].world> dPrevention.areas.admin.polygons:->:<[id]>
                     - note <[area]> as:<[id]>
                     - run dPrevention_area_creation def:<list.include[<polygon[<[id]>]>]>
