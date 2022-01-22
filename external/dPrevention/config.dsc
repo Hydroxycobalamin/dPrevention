@@ -21,10 +21,15 @@ dPrevention_config:
               #- ZOMBIE
         #Default priority that will be set on the area, upon creation.
         priority: 1
+        #List world names in which users are able to create claims.
+        worlds:
+        - world
+        - world_nether
+        - world_the_end
     user:
         #Max blocks obtainable per time
         max-blocks-per-time: 2000
-        #Amount of blocks a user gets, every 5 minutes of online time until max-blocks-per-time is reached.
+        #Amount of blocks a user receives, every 5 minutes of online time until max-blocks-per-time is reached.
         blocks-per-5-min: 25
     shop:
         #Price per block

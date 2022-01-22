@@ -72,6 +72,9 @@ dPrevention_tool_handler:
                     - stop
                 - flag <player> dPrevention.selection:<player.flag[dPrevention.selection].include[<context.location.with_y[<context.location.world.max_height>]>]>
                 - define selection <player.flag[dPrevention.selection]>
+                - if !<script[dPrevention_config].data_key[claims.worlds].contains[<[selection].world.name>]>:
+                    - narrate "You can't create a claim in this world." format:dPrevention_format
+                    - stop
                 - inject dPrevention_check_intersections
                 #If the player can't afford the region, stop. Else define the costs.
                 - ~run dPrevention_check_affordability def:<list_single[<[selection]>].include[claim]> save:queue
