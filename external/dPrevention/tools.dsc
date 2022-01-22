@@ -141,9 +141,10 @@ dPrevention_tool_handler:
                     - define costs <entry[queue].created_queue.determination.first>
                     #Check if the cuboid is smaller or larger, to take or give him blocks back.
                     - if <[costs]> < 0:
-                        - flag <player> dPrevention.blocks.amount.in_use:-:<[costs]>
+                        - flag <player> dPrevention.blocks.amount.in_use:-:<[costs].mul[-1]>
                     - else:
                         - flag <player> dPrevention.blocks.amount.in_use:+:<[costs]>
+                - narrate <player.flag[dPrevention.blocks.amount.in_use]>
                 #Note the selection.
                 - note <[selection]> as:<[name]>
                 - define new_cuboid <cuboid[<[name]>]>
