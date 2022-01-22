@@ -93,7 +93,7 @@ dPrevention_tool_handler:
                 - flag <player> dPrevention.areas.cuboids:->:<[name]>
                 - flag <cuboid[<[name]>].world> dPrevention.areas.cuboids:->:<[name]>
                 - narrate "Selection claimed" format:dPrevention_format
-                - playeffect effect:BARRIER at:<player.flag[dPrevention.selection].outline.parse[center]> offset:0,0,0 visibility:100
+                - playeffect effect:BARRIER at:<player.flag[dPrevention.selection].outline.parse[center]> offset:0,0,0 visibility:100 targets:<player>
                 #Make the area to a dPrevention area. Add the player as owner.
                 - run dPrevention_area_creation def:<list.include[<cuboid[<[name]>]>].include[<player.uuid>]>
                 #Remove claim mode.
@@ -149,9 +149,10 @@ dPrevention_tool_handler:
                 - define new_cuboid <cuboid[<[name]>]>
                 #Pass data to the new cuboid.
                 ##If you use your own area flags, make sure to pass them aswell. You can add them to the data map defined above.
-                - foreach <[data]> key:type as:flags:
-                    - flag <[new_cuboid]> <[type]>:<[flags]>
-                - playeffect effect:LIGHT at:<[new_cuboid].outline.parse[center]> offset:0,0,0 visibility:90
+                - foreach <[data]> key:name as:value:
+                    - flag <[new_cuboid]> <[name]>:<[value]>
+                - playeffect effect:BARRIER at:<[new_cuboid].outline.parse[center]> offset:0,0,0 visibility:100 targets:<player>
+                - showfake glowstone <[new_cuboid].proc[dPrevention_get_corners].context[<player.location>].values> duration:120s
                 #Remove expand mode.
                 - run dPrevention_cancel_mode def:expand
                 - narrate "Your claim was expanded." format:dPrevention_format
@@ -167,15 +168,13 @@ dPrevention_expand_mode:
     script:
     - narrate "Expand mode activated" format:dPrevention_format
     - flag <player> dPrevention.expand_mode:<[cuboid]> expire:120s
-    - playeffect effect:BARRIER at:<[cuboid].outline_2d[<[location].y>].parse[center]> offset:0,0,0 visibility:100
+    - playeffect effect:BARRIER at:<[cuboid].outline_2d[<[location].y>].parse[center]> offset:0,0,0 visibility:100 targets:<player>
     #Define the fake_block locations and mark them.
-    - define cuboid_2d <[cuboid].outline_2d[<[location].y>]>
-    - definemap l min_x:<[cuboid_2d].lowest[x].x> max_x:<[cuboid_2d].highest[x].x> min_z:<[cuboid_2d].lowest[z].z> max_z:<[cuboid_2d].highest[z].z>
-    - definemap locations north_west:<[location].with_x[<[l.min_x]>].with_z[<[l.min_z]>].highest> south_east:<[location].with_x[<[l.max_x]>].with_z[<[l.max_z]>].highest> south_west:<[location].with_x[<[l.min_x]>].with_z[<[l.max_z]>].highest> north_east:<[location].with_x[<[l.max_x]>].with_z[<[l.min_z]>].highest>
+    - define locations <[cuboid].proc[dPrevention_get_corners].context[<[location]>]>
     - flag <player> dPrevention.show_fake_locations:<[locations].values>
     - foreach <[locations]> key:direction as:location:
         - showfake glowstone <[location]> duration:120s
-        #Flag the location other players to expand the claim.
+        #Flag the location to prevent other players from expanding the claim.
         - flag <[location]> dPrevention.expandable_corner:<player.uuid> duration:120s
         - choose <[direction]>:
             - case north_west:
@@ -186,8 +185,18 @@ dPrevention_expand_mode:
                 - flag <[locations.north_east]> dPrevention.location:<[location]>
             - case north_east:
                 - flag <[locations.south_west]> dPrevention.location:<[location]>
+dPrevention_get_corners:
+    type: procedure
+    debug: false
+    definitions: cuboid|location
+    script:
+    - define cuboid_2d <[cuboid].outline_2d[<[location].y>]>
+    - definemap l min_x:<[cuboid_2d].lowest[x].x> max_x:<[cuboid_2d].highest[x].x> min_z:<[cuboid_2d].lowest[z].z> max_z:<[cuboid_2d].highest[z].z>
+    - definemap locations north_west:<[location].with_x[<[l.min_x]>].with_z[<[l.min_z]>].highest> south_east:<[location].with_x[<[l.max_x]>].with_z[<[l.max_z]>].highest> south_west:<[location].with_x[<[l.min_x]>].with_z[<[l.max_z]>].highest> north_east:<[location].with_x[<[l.max_x]>].with_z[<[l.min_z]>].highest>
+    - determine <[locations]>
 dPrevention_cancel_mode:
     type: task
+    debug: false
     definitions: mode
     script:
     - if <[mode]> == claim:
