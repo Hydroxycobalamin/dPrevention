@@ -31,7 +31,6 @@ dPrevention_check_affordability:
             - if <[costs]> > <proc[dPrevention_get_blocks]>:
                 - flag <queue> stop
                 - stop
-            - announce "<[costs]> <&gt> <proc[dPrevention_get_blocks]>"
             - determine <[costs]>
 dPrevention_blocks_handler:
     type: world
