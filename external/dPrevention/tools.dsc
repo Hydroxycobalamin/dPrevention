@@ -74,6 +74,7 @@ dPrevention_tool_handler:
                 - define selection <player.flag[dPrevention.selection]>
                 - if !<script[dPrevention_config].data_key[claims.worlds].contains[<[selection].world.name>]>:
                     - narrate "You can't create a claim in this world." format:dPrevention_format
+                    - run dPrevention_cancel_mode def:claim
                     - stop
                 - inject dPrevention_check_intersections
                 #If the player can't afford the region, stop. Else define the costs.
