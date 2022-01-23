@@ -144,7 +144,6 @@ dPrevention_tool_handler:
                         - flag <player> dPrevention.blocks.amount.in_use:-:<[costs].mul[-1]>
                     - else:
                         - flag <player> dPrevention.blocks.amount.in_use:+:<[costs]>
-                - narrate <player.flag[dPrevention.blocks.amount.in_use]>
                 #Note the selection.
                 - note <[selection]> as:<[name]>
                 - define new_cuboid <cuboid[<[name]>]>
