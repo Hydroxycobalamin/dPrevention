@@ -67,6 +67,13 @@ dPrevention_player_flag_handlers:
         on player right clicks item_frame in:world_flagged:dPrevention.flags.item-frame-rotation priority:50:
         - definemap arguments flag:item-frame-rotation "reason:You can't turn this here" location:<context.entity.location>
         - inject dPrevention_initial_check
+        ##vehicle-ride
+        on player enters vehicle in:world_flagged:dPrevention.flags.vehicle-ride priority:100:
+        - definemap arguments flag:vehicle-ride "reason:You can't enter this vehicle here." location:<context.entity.location>
+        - inject dPrevention_initial_check
+        on player enters vehicle in:area_flagged:dPrevention.flags.vehicle-ride priority:50:
+        - definemap arguments flag:vehicle-ride "reason:You can't enter this vehicle here." location:<context.entity.location>
+        - inject dPrevention_initial_check
 dPrevention_generic_flag_handlers:
     type: world
     debug: false
@@ -219,6 +226,7 @@ dPrevention_flag_data:
         tnt: tnt
         tnt_minecart: vehicle-break
         minecart: vehicle-place
+        saddle: vehicle-ride
         iron_sword: pvp
         netherite_sword: entity-damage
         chest: container-access
