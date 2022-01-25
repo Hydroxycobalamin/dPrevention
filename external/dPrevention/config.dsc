@@ -1,11 +1,14 @@
 dPrevention_config:
     type: data
     debug: false
+    options:
+        #Whether or not players are able to hijack tamed entities from other players.
+        vehicle-hijacking: false
     claims:
         #Default depth of claims, claimed via dPrevention_tool.
         depth: 0
         flags:
-        #Key: value structure of flags that will be applied upon creation by default. True means it prevents it. Read the Documentation for more information about possible flags. https://github.com/Hydroxycobalamin/dPrevention/wiki/Documentation
+            #Key: value structure of flags that will be applied upon creation by default. True means it prevents it. Read the Documentation for more information about possible flags. https://github.com/Hydroxycobalamin/dPrevention/wiki/Documentation
             block-break: true
             block-place: true
             tnt: true

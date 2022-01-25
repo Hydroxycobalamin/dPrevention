@@ -69,9 +69,11 @@ dPrevention_player_flag_handlers:
         - inject dPrevention_initial_check
         ##vehicle-ride
         on player enters vehicle in:world_flagged:dPrevention.flags.vehicle-ride priority:100:
+        - inject dPrevention_prevent_vehicle_hijacking
         - definemap arguments flag:vehicle-ride "reason:You can't enter this vehicle here." location:<context.entity.location>
         - inject dPrevention_initial_check
         on player enters vehicle in:area_flagged:dPrevention.flags.vehicle-ride priority:50:
+        - inject dPrevention_prevent_vehicle_hijacking
         - definemap arguments flag:vehicle-ride "reason:You can't enter this vehicle here." location:<context.entity.location>
         - inject dPrevention_initial_check
 dPrevention_generic_flag_handlers:
@@ -210,6 +212,20 @@ dPrevention_prevent_piston_grief:
     - if <[area].proc[dPrevention_check_flag].context[piston]>:
         - stop
     - determine cancelled
+dPrevention_prevent_vehicle_hijacking:
+    type: task
+    debug: false
+    script:
+    #If config option 'vehicle-hijacking' is true, the player is allowed to ride it, even if vehicle-ride is active.
+    - if <script[dPrevention_config].data_key[options.vehicle-hijacking]>:
+        - stop
+    #If the owner of the entity is the player he's allowed to ride it, even if vehicle-ride is active.
+    - if <context.entity.owner.if_null[null]> == <player>:
+        - stop
+    #If the player is not in the owners whitelist, he's not allowed to ride it.
+    - if !<context.entity.owner.flag[dPrevention.ride_whitelist].contains[<player.uuid>].if_null[false]>:
+        - narrate "You're not allowed to ride this vehicle." format:dPrevention_format
+        - determine cancelled
 dPrevention_flag_data:
     type: data
     debug: false

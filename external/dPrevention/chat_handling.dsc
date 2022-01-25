@@ -82,6 +82,36 @@ dPrevention_chat_tasks:
                 - stop
             - flag <player> dPrevention.chat_input:!
             - narrate "This claim prevents <[area].flag[dPrevention.flags.<[flag]>].space_separated.to_titlecase.custom_color[emphasis]> from spawning." format:dPrevention_format
+    add_ride_whitelist:
+    - if <context.message.split.first> == cancel:
+        - narrate "Adding players to the ride-whitelist cancelled." format:dPrevention_format
+        - flag <player> dPrevention.chat_input:!
+        - stop
+    - define player <server.match_offline_player[<context.message.split.first>].if_null[null]>
+    - if <[player]> == null:
+        - narrate "The player does not exist. Try again." format:dPrevention_format
+        - stop
+    - if <player.flag[dPrevention.ride_whitelist].contains[<[player].uuid>].if_null[false]>:
+        - narrate "The player is already in your ride whitelist. Try again." format:dPrevention_format
+        - stop
+    - flag <player> dPrevention.ride_whitelist:->:<[player].uuid>
+    - flag <player> dPrevention.chat_input:!
+    - narrate "<[player].name.custom_color[emphasis]> was sucessfully added to your ride whitelist!" format:dPrevention_format
+    remove_ride_whitelist:
+    - if <context.message.split.first> == cancel:
+        - narrate "Removing players from the ride-whitelist cancelled." format:dPrevention_format
+        - flag <player> dPrevention.chat_input:!
+        - stop
+    - define player <server.match_offline_player[<context.message.split.first>].if_null[null]>
+    - if <[player]> == null:
+        - narrate "The player does not exist. Try again." format:dPrevention_format
+        - stop
+    - if !<player.flag[dPrevention.ride_whitelist].contains[<[player].uuid>].if_null[false]>:
+        - narrate "The player is not in your ride whitelist. Try again." format:dPrevention_format
+        - stop
+    - flag <player> dPrevention.ride_whitelist:<-:<[player].uuid>
+    - flag <player> dPrevention.chat_input:!
+    - narrate "<[player].name.custom_color[emphasis]> was sucessfully removed from your ride whitelist!" format:dPrevention_format
     script:
     - inject <script> path:<player.flag[dPrevention.chat_input.type]>
 dPrevention_chat_handler:

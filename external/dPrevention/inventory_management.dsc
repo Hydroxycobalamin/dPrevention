@@ -187,13 +187,14 @@ dPrevention_menu:
         blocks: <item[dPrevention_menu_item].with[display=<white>Blocks;lore=<script.parsed_key[data.block_lore]>]>
         page: <item[dPrevention_page_item].with[display=<white>Page;lore=<&[base]>Current Page:1/<player.flag[dPrevention.inventory_menu.pages].keys.highest>].with_flag[page:1]>
         info: <item[light].with[display=<white>Info;lore=<script.parsed_key[data.info_lore]>]>
+        horse: <item[dPrevention_ride_whitelist_item].with[lore=<player.flag[dPrevention.ride_whitelist].parse_tag[<&[base]><player[<[parse_value]>].name>].if_null[<empty>]>]>
     slots:
     - [] [] [] [] [] [] [] [] []
     - [] [] [] [] [] [] [] [] []
     - [] [] [] [] [] [] [] [] []
     - [] [] [] [] [] [] [] [] []
     - [] [] [] [] [] [] [] [] []
-    - [] [info] [] [] [blocks] [] [] [page] []
+    - [] [info] [] [] [blocks] [horse] [] [page] []
 dPrevention_menu_item:
     type: item
     debug: false
@@ -202,6 +203,11 @@ dPrevention_page_item:
     type: item
     debug: false
     material: stone
+dPrevention_ride_whitelist_item:
+    type: item
+    debug: false
+    material: saddle
+    display name: <white>Ride-Whitelist
 dPrevention_menu_handler:
     type: world
     debug: false
@@ -245,3 +251,13 @@ dPrevention_menu_handler:
         - flag <player> dPrevention.chat_input:<[data]> expire:30s
         - inventory close
         - narrate "Type the new name of your area. Type 'cancel' if you want to cancel the rename or wait 30 seconds." format:dPrevention_format
+        #Add a player to the ride whitelist.
+        after player left clicks dPrevention_ride_whitelist_item in dPrevention_menu:
+        - flag <player> dPrevention.chat_input.type:add_ride_whitelist expire:30s
+        - narrate "Type the player's name you want to allow to ride your tamed entities. Type 'cancel' to cancel or wait 30 seconds." format:dPrevention_format
+        - inventory close
+        #Remove a player from the ride whitelist.
+        after player right clicks dPrevention_ride_whitelist_item in dPrevention_menu:
+        - flag <player> dPrevention.chat_input.type:remove_ride_whitelist expire:30s
+        - narrate "Type the player's name you want to remove the access to your tamed entities. Type 'cancel' to cancel or wait 30 seconds." format:dPrevention_format
+        - inventory close
