@@ -87,16 +87,16 @@ dPrevention_generic_flag_handlers:
         - inject dPrevention_initial_block_check
         ##block-grows
         on block grows in:world_flagged:dPrevention.flags.block-growth priority:100:
-        - definemap arguments flag:block-grows location:<context.location>
+        - definemap arguments flag:block-growth location:<context.location>
         - inject dPrevention_initial_block_check
         on block grows in:area_flagged:dPrevention.flags.block-growth priority:50:
-        - definemap arguments flag:block-grows location:<context.location>
+        - definemap arguments flag:block-growth location:<context.location>
         - inject dPrevention_initial_block_check
         on block spreads in:world_flagged:dPrevention.flags.block-growth priority:100:
-        - definemap arguments flag:block-grows location:<context.source_location>
+        - definemap arguments flag:block-growth location:<context.source_location>
         - inject dPrevention_initial_block_check
         on block spreads in:area_flagged:dPrevention.flags.block-growth priority:50:
-        - definemap arguments flag:block-grows location:<context.source_location>
+        - definemap arguments flag:block-growth location:<context.source_location>
         - inject dPrevention_initial_block_check
         ##block-ignites
         on block ignites in:world_flagged:dPrevention.flags.block-ignites priority:100:
