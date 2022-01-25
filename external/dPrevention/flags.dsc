@@ -85,18 +85,25 @@ dPrevention_generic_flag_handlers:
         on block fades in:area_flagged:dPrevention.flags.block-fades priority:50:
         - definemap arguments flag:block-fades location:<context.location>
         - inject dPrevention_initial_block_check
-        ##block-grows
+        ##block-growth
         on block grows in:world_flagged:dPrevention.flags.block-growth priority:100:
         - definemap arguments flag:block-growth location:<context.location>
         - inject dPrevention_initial_block_check
         on block grows in:area_flagged:dPrevention.flags.block-growth priority:50:
         - definemap arguments flag:block-growth location:<context.location>
         - inject dPrevention_initial_block_check
-        on block spreads in:world_flagged:dPrevention.flags.block-growth priority:100:
+        on block spreads type:vine|*mushroom in:world_flagged:dPrevention.flags.block-growth priority:100:
         - definemap arguments flag:block-growth location:<context.source_location>
         - inject dPrevention_initial_block_check
-        on block spreads in:area_flagged:dPrevention.flags.block-growth priority:50:
+        on block spreads type:vine|*mushroom in:area_flagged:dPrevention.flags.block-growth priority:50:
         - definemap arguments flag:block-growth location:<context.source_location>
+        - inject dPrevention_initial_block_check
+        ##block-spreads
+        on block spreads type:!vine|*mushroom in:world_flagged:dPrevention.flags.block-spreads priority:100:
+        - definemap arguments flag:block-spreads location:<context.source_location>
+        - inject dPrevention_initial_block_check
+        on block spreads type:!vine|*mushroom in:area_flagged:dPrevention.flags.block-spreads priority:50:
+        - definemap arguments flag:block-spreads location:<context.source_location>
         - inject dPrevention_initial_block_check
         ##block-ignites
         on block ignites in:world_flagged:dPrevention.flags.block-ignites priority:100:
@@ -208,6 +215,7 @@ dPrevention_flag_data:
         fire_charge: block-ignites
         ice: block-fades
         vine: block-growth
+        dirt: block-spreads
         tnt: tnt
         tnt_minecart: vehicle-break
         minecart: vehicle-place
