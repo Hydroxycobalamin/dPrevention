@@ -64,7 +64,7 @@ dPrevention_player_flag_handlers:
         on player right clicks item_frame in:world_flagged:dPrevention.flags.item-frame-rotation priority:100:
         - definemap arguments flag:item-frame-rotation "reason:You can't turn this here" location:<context.entity.location>
         - inject dPrevention_initial_check
-        on player right clicks item_frame in:world_flagged:dPrevention.flags.item-frame-rotation priority:50:
+        on player right clicks item_frame in:area_flagged:dPrevention.flags.item-frame-rotation priority:50:
         - definemap arguments flag:item-frame-rotation "reason:You can't turn this here" location:<context.entity.location>
         - inject dPrevention_initial_check
         ##vehicle-ride
