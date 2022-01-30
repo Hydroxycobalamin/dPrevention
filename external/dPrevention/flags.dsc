@@ -68,14 +68,9 @@ dPrevention_player_flag_handlers:
         - definemap arguments flag:item-frame-rotation "reason:You can't turn this here" location:<context.entity.location>
         - inject dPrevention_initial_check
         ##vehicle-ride
-        on player enters vehicle in:world_flagged:dPrevention.flags.vehicle-ride priority:100:
-        - inject dPrevention_prevent_vehicle_hijacking
+        on player enters vehicle priority:100:
         - definemap arguments flag:vehicle-ride "reason:You can't enter this vehicle here." location:<context.entity.location>
-        - inject dPrevention_initial_check
-        on player enters vehicle in:area_flagged:dPrevention.flags.vehicle-ride priority:50:
         - inject dPrevention_prevent_vehicle_hijacking
-        - definemap arguments flag:vehicle-ride "reason:You can't enter this vehicle here." location:<context.entity.location>
-        - inject dPrevention_initial_check
 dPrevention_generic_flag_handlers:
     type: world
     debug: false
@@ -215,17 +210,29 @@ dPrevention_prevent_piston_grief:
 dPrevention_prevent_vehicle_hijacking:
     type: task
     debug: false
+    definitions: arguments
     script:
-    #If config option 'vehicle-hijacking' is true, the player is allowed to ride it, even if vehicle-ride is active.
-    - if <script[dPrevention_config].data_key[options.vehicle-hijacking]>:
+    #If config option 'vehicle-hijacking' is true, the player is allowed to ride it, even if vehicle-ride is active and he's not in the players whitelist.
+    - if <script[dPrevention_config].data_key[options.vehicle-hijacking]> && <context.entity.owner.exists>:
         - stop
     #If the owner of the entity is the player he's allowed to ride it, even if vehicle-ride is active.
     - if <context.entity.owner.if_null[null]> == <player>:
         - stop
-    #If the player is not in the owners whitelist, he's not allowed to ride it.
-    - if !<context.entity.owner.flag[dPrevention.ride_whitelist].contains[<player.uuid>].if_null[false]>:
-        - narrate "You're not allowed to ride this vehicle." format:dPrevention_format
-        - determine cancelled
+    #If the area has the flag
+    - define area <[arguments.location].proc[dPrevention_get_areas]>
+    - if <[area].has_flag[dPrevention.flags.vehicle-ride]>:
+        #Allow players to bypass the flag, if they have the specific permission. -> Let Admins ride any vehicle.
+        - if <player.has_permission[dPrevention.bypass.<[arguments.flag]>]>:
+            - stop
+        #If the user is whitelisted on the claim and the vehicle does not have an owner allow him.
+        - if <[area].proc[dPrevention_check_flag].context[<[arguments.flag]>]> && !<context.entity.owner.exists>:
+            - stop
+    #If the player is in the owners ride-whitelist, he's allowed to ride it.
+    - if <context.entity.owner.flag[dPrevention.ride_whitelist].contains[<player.uuid>].if_null[false]>:
+        - stop
+    - determine cancelled passively
+    - ratelimit <player> 2s
+    - narrate <[arguments.reason]> format:dPrevention_format
 dPrevention_flag_data:
     type: data
     debug: false
@@ -262,3 +269,4 @@ dPrevention_flag_data:
         - container-access
         - teleport
         - item-frame-rotation
+        - vehicle-ride
