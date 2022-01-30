@@ -3,6 +3,7 @@ dPrevention_area_creation:
     debug: false
     definitions: area|owner
     script:
+    - customevent id:dPrevention_area_created context:[is_userclaim=<[owner].exists>;area=<[area]>]
     - define config <script[dPrevention_config].data_key[claims]>
     - foreach <[config.flags]> key:flag as:value:
         - flag <[area]> dPrevention.flags.<[flag]>:<[value]>
