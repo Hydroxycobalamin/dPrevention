@@ -9,8 +9,10 @@ dPrevention_get_costs:
 dPrevention_get_blocks:
     type: procedure
     debug: false
+    definitions: player
     script:
-    - define free_amount <player.flag[dPrevention.blocks.amount.per_time].if_null[0].add[<player.flag[dPrevention.blocks.amount.per_block].if_null[0]>].sub[<player.flag[dPrevention.blocks.amount.in_use].if_null[0]>]>
+    - define player <[player].if_null[<player>]>
+    - define free_amount <[player].flag[dPrevention.blocks.amount.per_time].if_null[0].add[<[player].flag[dPrevention.blocks.amount.per_block].if_null[0]>].sub[<[player].flag[dPrevention.blocks.amount.in_use].if_null[0]>]>
     - determine <[free_amount]>
 dPrevention_check_affordability:
     type: task

@@ -166,10 +166,10 @@ dPrevention_menu:
     type: inventory
     data:
         block_lore:
-        - <element[From play:].color_gradient[from=#009933;to=#00ff55]> <player.flag[dPrevention.blocks.amount.per_time].if_null[0]>
-        - <element[From blocks:].color_gradient[from=#009933;to=#00ff55]> <player.flag[dPrevention.blocks.amount.per_block].if_null[0]>
-        - <element[In Use:].color_gradient[from=#ff3399;to=#cc0066]> <player.flag[dPrevention.blocks.amount.in_use].if_null[0]>
-        - <element[Left to spent:].color_gradient[from=#00ffff;to=#009999]> <player.proc[dPrevention_get_blocks]>
+        - <element[From play:].color_gradient[from=#009933;to=#00ff55]> <[player].if_null[<player>].flag[dPrevention.blocks.amount.per_time].if_null[0]>
+        - <element[From blocks:].color_gradient[from=#009933;to=#00ff55]> <[player].if_null[<player>].flag[dPrevention.blocks.amount.per_block].if_null[0]>
+        - <element[In Use:].color_gradient[from=#ff3399;to=#cc0066]> <[player].if_null[<player>].flag[dPrevention.blocks.amount.in_use].if_null[0]>
+        - <element[Left to spent:].color_gradient[from=#00ffff;to=#009999]> <[player].if_null[<player>].proc[dPrevention_get_blocks]>
         info_lore:
         - <gold>Left-Click<&co>
         - <&[base]>Opens the Flag-Menu
@@ -187,7 +187,7 @@ dPrevention_menu:
         blocks: <item[dPrevention_menu_item].with[display=<white>Blocks;lore=<script.parsed_key[data.block_lore]>]>
         page: <item[dPrevention_page_item].with[display=<white>Page;lore=<&[base]>Current Page:1/<player.flag[dPrevention.inventory_menu.pages].keys.highest>].with_flag[page:1]>
         info: <item[light].with[display=<white>Info;lore=<script.parsed_key[data.info_lore]>]>
-        horse: <item[dPrevention_ride_whitelist_item].with[lore=<player.flag[dPrevention.ride_whitelist].parse_tag[<&[base]><player[<[parse_value]>].name>].if_null[<empty>]>]>
+        horse: <item[dPrevention_ride_whitelist_item].with[lore=<[player].if_null[<player>].flag[dPrevention.ride_whitelist].parse_tag[<&[base]><player[<[parse_value]>].name>].if_null[<empty>]>]>
     slots:
     - [] [] [] [] [] [] [] [] []
     - [] [] [] [] [] [] [] [] []
