@@ -11,15 +11,18 @@ dPrevention_convert_dclaim:
     debug: false
     definitions: area
     script:
+    #Get the name of the flag path.
     - if <cuboid[<[area]>].exists>:
         - define type cuboids
     - else if <polygon[<[area]>].exists>:
         - define type polygons
     - else <ellipsoid[<[area]>].exists>:
         - define type ellipsoids
+    #If the area is already a dPrevention claim, stop.
     - if <[area].world.flag[dPrevention.areas.admin.<[type]>].contains[<[area].note_name>].if_null[false]>:
         - narrate "<[area].note_name.custom_color[emphasis]> is already an admin claim." format:dPrevention_format
         - stop
+    #Convert the area.
     - flag <[area].world> dPrevention.areas.admin.<[type]>:->:<[area].note_name>
     - run dPrevention_area_creation def:<list_single[<[area]>]>
     - narrate "Area <[area].note_name.custom_color[emphasis]> was sucessfully converted to an admin claim." format:dPrevention_format

@@ -46,6 +46,7 @@ dPrevention_main:
     permission: dPrevention.command.main
     tab completions:
         1: <player.has_permission[dPrevention.admin].if_true[cuboid|ellipsoid|polygon|tool|info|admininfo].if_false[tool|info]>
+        2: <player.has_permission[dPrevention.admin].and[<context.args.first.equals[info]>].if_true[<server.players.parse[name]>].if_false[<empty>]>
     script:
     - choose <context.args.size>:
         - case 1:
