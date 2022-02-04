@@ -79,7 +79,7 @@ dPrevention_main:
                 - case info:
                     - define player <server.match_offline_player[<context.args.last>].if_null[null]>
                     - if <[player]> == null:
-                        - narrate "This player doesn't exist!"
+                        - narrate "This player doesn't exist!" format:dPrevention_format
                         - stop
                     - run dPrevention_info_formatter def.cuboids:<[player].flag[dPrevention.areas.cuboids].parse[as_cuboid].sort_by_value[world.name].if_null[<list>].exclude[null]> def.player:<[player]>
                 - case cuboid:
