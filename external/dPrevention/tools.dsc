@@ -159,8 +159,10 @@ dPrevention_tool_handler:
         after player drops dPrevention_tool:
         - remove <context.entity>
         after delta time secondly every:2:
-        - actionbar "<gold>Mode: <yellow>Claim" targets:<server.online_players_flagged[dPrevention.claim_mode]>
-        - actionbar "<gold>Mode: <yellow>Expand" targets:<server.online_players_flagged[dPrevention.expand_mode]>
+        - if <server.online_players_flagged[dPrevention.claim_mode].any>:
+            - actionbar "<gold>Mode: <yellow>Claim" targets:<server.online_players_flagged[dPrevention.claim_mode]>
+        - if <server.online_players_flagged[dPrevention.expand_mode].any>:
+            - actionbar "<gold>Mode: <yellow>Expand" targets:<server.online_players_flagged[dPrevention.expand_mode]>
 dPrevention_expand_mode:
     type: task
     debug: false
@@ -203,7 +205,8 @@ dPrevention_cancel_mode:
         - flag <player> dPrevention.claim_mode:!
         - flag <player> dPrevention.selection:!
     - else:
-        - showfake cancel <player.flag[dPrevention.show_fake_locations]>
+        - if <player.flag[dPrevention.show_fake_locations].exists>:
+            - showfake cancel <player.flag[dPrevention.show_fake_locations]>
         - flag <player> dPrevention.expand_mode:!
         - flag <player> dPrevention.location:!
         - flag <player> dPrevention.show_fake_locations:!
