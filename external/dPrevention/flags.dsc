@@ -218,7 +218,10 @@ dPrevention_prevent_vehicle_hijacking:
     #If the owner of the entity is the player he's allowed to ride it, even if vehicle-ride is active.
     - if <context.entity.owner.if_null[null]> == <player>:
         - stop
-    #If the area has the flag
+    #If the player is in the owners ride-whitelist, he's allowed to ride it, even if vehicle-ride is active.
+    - if <context.entity.owner.flag[dPrevention.ride_whitelist].contains[<player.uuid>].if_null[false]>:
+        - stop
+    #If vehicle-ride is active:
     - define area <[arguments.location].proc[dPrevention_get_areas]>
     - if <[area].has_flag[dPrevention.flags.vehicle-ride]>:
         #Allow players to bypass the flag, if they have the specific permission. -> Let Admins ride any vehicle.
@@ -227,12 +230,11 @@ dPrevention_prevent_vehicle_hijacking:
         #If the user is whitelisted on the claim and the vehicle does not have an owner allow him.
         - if <[area].proc[dPrevention_check_flag].context[<[arguments.flag]>]> && !<context.entity.owner.exists>:
             - stop
-    #If the player is in the owners ride-whitelist, he's allowed to ride it.
-    - if <context.entity.owner.flag[dPrevention.ride_whitelist].contains[<player.uuid>].if_null[false]>:
-        - stop
-    - determine cancelled passively
-    - ratelimit <player> 2s
-    - narrate <[arguments.reason]> format:dPrevention_format
+        #Deny it.
+        - determine cancelled passively
+        - ratelimit <player> 2s
+        - narrate <[arguments.reason]> format:dPrevention_format
+    #Allow it.
 dPrevention_flag_data:
     type: data
     debug: false
