@@ -39,10 +39,10 @@ dPrevention_blocks_handler:
     debug: false
     reached_max:
     - if <[player].flag[dPrevention.blocks.amount.per_time].add[<[config.blocks-per-5-min]>].if_null[0]> > <[config.max-blocks-per-time]>:
-        - flag <[player]> dPrevention.blocks.amount.per_time:<[config.max-blocks-per-time]>
+        - run dPrevention_add_blocks def.type:per_time def.amount:<[config.blocks-per-5-min]> player:<[player]>
         - flag <[player]> dPrevention.blocks.reached_max
         - stop
-    - flag <[player]> dPrevention.blocks.amount.per_time:+:<[config.blocks-per-5-min]>
+    - run dPrevention_add_blocks def.type:per_time def.amount:<[config.blocks-per-5-min]> player:<[player]>
     events:
         on player right clicks block with:item_flagged:dPrevention.blocks:
         - determine cancelled passively
