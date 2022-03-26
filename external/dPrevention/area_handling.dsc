@@ -19,7 +19,7 @@ dPrevention_area_removal:
     - flag <[cuboid].world> dPrevention.areas.cuboids:<-:<[cuboid].note_name>
     - flag <[player]> dPrevention.areas.cuboids:<-:<[cuboid].note_name>
     - note remove as:<[cuboid].note_name>
-    - flag <[player]> dPrevention.blocks.amount.in_use:-:<[cuboid].proc[dPrevention_get_costs]>
+    - run dPrevention_take_blocks def.type:in_use def.amount:<[cuboid].proc[dPrevention_get_costs]> player:<[player]>
 dPrevention_area_admin_removal:
     type: task
     debug: false

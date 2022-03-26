@@ -48,7 +48,7 @@ dPrevention_blocks_handler:
         - determine cancelled passively
         - take iteminhand
         - narrate "You've received <context.item.flag[dPrevention.blocks].custom_color[emphasis]> blocks." format:dPrevention_format
-        - flag <player> dPrevention.blocks.amount.per_block:+:<context.item.flag[dPrevention.blocks]>
+        - run dPrevention_add_blocks def.type:per_block def.amount:<context.item.flag[dPrevention.blocks]>
         after delta time minutely every:5:
         - define players <server.online_players.filter[has_flag[dPrevention.blocks.reached_max].not]>
         - define config <script[dPrevention_config].data_key[user]>
@@ -65,3 +65,17 @@ dPrevention_blocks_handler:
                 - foreach next
             - inject <script> path:reached_max
         - flag <[players]> dPrevention.blocks.last_checkup:<util.time_now>
+dPrevention_take_blocks:
+    type: task
+    debug: false
+    definitions: type|amount
+    script:
+    - flag <player> dPrevention.blocks.amount.<[type]>:-:<[amount]>
+    - customevent id:dPrevention_player_block_amount_changed context:[type=<[type]>;amount=<[amount]>;new_blocks=<proc[dPrevention_get_blocks]>]
+dPrevention_add_blocks:
+    type: task
+    debug: false
+    definitions: type|amount
+    script:
+    - flag <player> dPrevention.blocks.amount.<[type]>:+:<[amount]>
+    - customevent id:dPrevention_player_block_amount_changed context:[type=<[type]>;amount=<[amount]>;new_blocks=<proc[dPrevention_get_blocks]>]
