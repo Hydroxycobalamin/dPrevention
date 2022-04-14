@@ -66,11 +66,12 @@ dPrevention_flag_GUI:
     gui: true
     definitions:
         info: <item[light].with[display=<white>Info;lore=<script.parsed_key[data.info_lore]>]>
+        x: <script[dPrevention_config].data_key[inventories.filler_item]>
     slots:
     - [] [] [] [] [] [] [] [] []
     - [] [] [] [] [] [] [] [] []
     - [] [] [] [] [] [] [] [] []
-    - [] [] [] [] [info] [] [] [] []
+    - [x] [x] [x] [x] [info] [x] [x] [x] [x]
 dPrevention_fill_flag_GUI:
     type: task
     data:
@@ -184,6 +185,7 @@ dPrevention_menu:
     title: Menu
     gui: true
     definitions:
+        x: <script[dPrevention_config].data_key[inventories.filler_item]>
         blocks: <item[dPrevention_menu_item].with[display=<white>Blocks;lore=<script.parsed_key[data.block_lore]>]>
         page: <item[dPrevention_page_item].with[display=<white>Page;lore=<&[base]>Current Page:1/<player.flag[dPrevention.inventory_menu.pages].keys.highest>].with_flag[page:1]>
         info: <item[light].with[display=<white>Info;lore=<script.parsed_key[data.info_lore]>]>
@@ -194,7 +196,7 @@ dPrevention_menu:
     - [] [] [] [] [] [] [] [] []
     - [] [] [] [] [] [] [] [] []
     - [] [] [] [] [] [] [] [] []
-    - [] [info] [] [] [blocks] [horse] [] [page] []
+    - [x] [info] [x] [x] [blocks] [horse] [x] [page] [x]
 dPrevention_menu_item:
     type: item
     debug: false
