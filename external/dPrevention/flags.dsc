@@ -193,6 +193,19 @@ dPrevention_generic_flag_handlers:
         #Add a fallback if the area that is on the first priority doesn't has the flag.
         - if <[area].flag[dPrevention.flags.entities].contains[<context.entity.entity_type>].if_null[false]>:
             - determine cancelled
+        ##vehicle move
+        on vehicle collides with entity in:area_flagged:dPrevention.flags.vehicle-move:
+        - definemap arguments flag:vehicle-move "reason:You can't move this here" location:<context.vehicle.location>
+        - if <context.entity.entity_type> == PLAYER:
+            - inject dPrevention_initial_check
+        - else:
+            - inject dPrevention_initial_block_check
+        on vehicle collides with entity in:world_flagged:dPrevention.flags.vehicle-move:
+        - definemap arguments flag:vehicle-move "reason:You can't move this here" location:<context.vehicle.location>
+        - if <context.entity.entity_type> == PLAYER:
+            - inject dPrevention_initial_check
+        - else:
+            - inject dPrevention_initial_block_check
 dPrevention_prevent_piston_grief:
     type: task
     debug: false
@@ -252,6 +265,7 @@ dPrevention_flag_data:
         dirt: block-spreads
         tnt: tnt
         tnt_minecart: vehicle-break
+        hopper_minecart: vehicle-move
         minecart: vehicle-place
         saddle: vehicle-ride
         iron_sword: pvp
@@ -272,5 +286,6 @@ dPrevention_flag_data:
         - pvp
         - container-access
         - teleport
+        - vehicle-move
         - item-frame-rotation
         - vehicle-ride
