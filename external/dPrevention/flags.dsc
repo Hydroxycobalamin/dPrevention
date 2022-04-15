@@ -225,9 +225,13 @@ dPrevention_prevent_vehicle_placing:
     #Allow players to bypass the flag, if they have the specific permission.
     - if <player.has_permission[dPrevention.bypass.<[arguments.flag]>]>:
         - stop
-    #If he is owner of the region on this location, stop the queue
+    #If he is owner of the region on this location, allow it.
     - if <[area].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>:
         - stop
+    #If the user can build in this area, allow it.
+    - if <[area].flag[dPrevention.permissions.block-place].contains[<player.uuid>].if_null[false]>:
+        - stop
+    #If the vehicle is blocked, deny it.
     - if <[area].flag[dPrevention.flags.vehicle-place].contains[<context.item.material.name>].if_null[false]>:
         - narrate <[arguments.reason]> format:dPrevention_format
         - determine cancelled
