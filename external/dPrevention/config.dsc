@@ -18,6 +18,7 @@ dPrevention_config:
             container-access: true
             teleport: true
             item-frame-rotation: true
+            vehicle-move: true
         ##If the flag need additional input, use a map with a list of values instead, format:
             #entities:
               #- COW
