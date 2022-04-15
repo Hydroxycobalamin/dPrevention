@@ -44,17 +44,19 @@ dPrevention_player_flag_handlers:
         - definemap arguments flag:pvp "reason:PvP is disabled in this region." location:<context.entity.location>
         - inject dPrevention_initial_check
         ##container-access
-        on player right clicks minecart_chest|chest|trapped_chest|*_shulker_box|*furnace|smoker|barrel|brewing_stand in:world_flagged:dPrevention.flags.container-access priority:100:
-        - definemap arguments flag:container-access "reason:You can't open that here." location:<context.location>
+        on player opens inventory in:world_flagged:dPrevention.flags.container-access priority:100:
+        - define id_holder <context.inventory.id_holder>
+        #Allow opening of enderchests.
+        - if <[id_holder]> == ender_chest:
+            - stop
+        - definemap arguments flag:container-access "reason:You can't open that here." location:<[id_holder].location.if_null[<[id_holder]>]>
         - inject dPrevention_initial_check
-        on player right clicks chest|trapped_chest|*_shulker_box|*furnace|smoker|barrel|brewing_stand in:area_flagged:dPrevention.flags.container-access priority:50:
-        - definemap arguments flag:container-access "reason:You can't open that here." location:<context.location>
-        - inject dPrevention_initial_check
-        on player right clicks minecart_chest in:world_flagged:dPrevention.flags.container-access priority:100:
-        - definemap arguments flag:container-access "reason:You can't open that here." location:<context.entity.location>
-        - inject dPrevention_initial_check
-        on player right clicks minecart_chest in:area_flagged:dPrevention.flags.container-access priority:50:
-        - definemap arguments flag:container-access "reason:You can't open that here." location:<context.entity.location>
+        on player opens inventory in:area_flagged:dPrevention.flags.container-access priority:50:
+        - define id_holder <context.inventory.id_holder>
+        #Allow opening of enderchests.
+        - if <[id_holder]> == ender_chest:
+            - stop
+        - definemap arguments flag:container-access "reason:You can't open that here." location:<[id_holder].location.if_null[<[id_holder]>]>
         - inject dPrevention_initial_check
         ##teleport-item
         on player teleports cause:CHORUS_FRUIT|ENDER_PEARL:
