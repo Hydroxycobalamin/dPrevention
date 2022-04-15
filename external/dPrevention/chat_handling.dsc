@@ -62,8 +62,8 @@ dPrevention_chat_tasks:
             - foreach monster|animal|mob|living as:matcher:
                 - if <[entities].contains[<[matcher]>]>:
                     - define entities <[entities].replace[<[matcher]>].with[<[entity_types].filter[advanced_matches[<[matcher]>]].parse[entity_type]>]>
-            - foreach <[entities].combine> as:entity:
-                #If an provided entity is not a valid entity, stop.
+            - foreach <[entities].combine.deduplicate> as:entity:
+                #If a provided entity is not a valid entity, stop.
                 - if <entity[<[entity]>].if_null[null]> == null:
                     - narrate "<[entity].custom_color[emphasis]> is not a valid entity. Try again or Type cancel. 30 Seconds." format:dPrevention_format
                     - flag <player> dPrevention.chat_input:<player.flag[dPrevention.chat_input]> expire:30s
