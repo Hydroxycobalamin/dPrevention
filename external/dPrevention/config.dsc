@@ -23,6 +23,8 @@ dPrevention_config:
             #entities:
               #- COW
               #- ZOMBIE
+            vehicle-place:
+                - HOPPER_MINECART
         #Default priority that will be set on the area, upon creation.
         priority: 1
         #List world names in which users are able to create claims.

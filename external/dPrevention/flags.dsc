@@ -73,6 +73,13 @@ dPrevention_player_flag_handlers:
         on player enters vehicle priority:100:
         - definemap arguments flag:vehicle-ride "reason:You can't enter this vehicle here." location:<context.entity.location>
         - inject dPrevention_prevent_vehicle_hijacking
+        ##vehicle-placed
+        on player right clicks block with:*boat|*minecart in:world_flagged:dPrevention.flags.vehicle-place priority:100:
+        - definemap arguments flag:vehicle-place "reason:You can't place this here." location:<context.location>
+        - inject dPrevention_prevent_vehicle_placing
+        on player right clicks block with:*boat|*minecart in:area_flagged:dPrevention.flags.vehicle-place priority:50:
+        - definemap arguments flag:vehicle-place "reason:You can't place this here." location:<context.location>
+        - inject dPrevention_prevent_vehicle_placing
 dPrevention_generic_flag_handlers:
     type: world
     debug: false
@@ -138,13 +145,17 @@ dPrevention_generic_flag_handlers:
         on vehicle destroyed in:area_flagged:dPrevention.flags.vehicle-break priority:50:
         - definemap arguments flag:vehicle-break location:<context.vehicle.location>
         - inject dPrevention_initial_block_check
-        ##vehicle-placed
-        on vehicle created in:world_flagged:dPrevention.flags.vehicle-place priority:100:
-        - definemap arguments flag:vehicle-place location:<context.vehicle.location>
-        - inject dPrevention_initial_block_check
-        on vehicle created in:area_flagged:dPrevention.flags.vehicle-place priority:50:
-        - definemap arguments flag:vehicle-place location:<context.vehicle.location>
-        - inject dPrevention_initial_block_check
+        ##vehicle-place
+        on block dispenses *minecart|*boat in:world_flagged:dPrevention.flags.vehicle-place priority:100:
+        - definemap arguments flag:vehicle-place location:<context.location.add[<context.location.block_facing>]>
+        - define area <[arguments.location].proc[dPrevention_get_areas]>
+        - if <[area].flag[dPrevention.flags.vehicle-place].contains[<context.item.material.name>].if_null[false]>:
+            - determine cancelled
+        on block dispenses *minecart|*boat in:area_flagged:dPrevention.flags.vehicle-place priority:50:
+        - definemap arguments flag:vehicle-place location:<context.location.add[<context.location.block_facing>]>
+        - define area <[arguments.location].proc[dPrevention_get_areas]>
+        - if <[area].flag[dPrevention.flags.vehicle-place].contains[<context.item.material.name>].if_null[false]>:
+            - determine cancelled
         ##block-change
         on entity changes block in:world_flagged:dPrevention.flags.block-change priority:100:
         - definemap arguments flag:block-change location:<context.location>
@@ -194,18 +205,32 @@ dPrevention_generic_flag_handlers:
         - if <[area].flag[dPrevention.flags.entities].contains[<context.entity.entity_type>].if_null[false]>:
             - determine cancelled
         ##vehicle move
-        on vehicle collides with entity in:area_flagged:dPrevention.flags.vehicle-move:
+        on vehicle collides with entity in:world_flagged:dPrevention.flags.vehicle-move priority:100:
         - definemap arguments flag:vehicle-move "reason:You can't move this here" location:<context.vehicle.location>
         - if <context.entity.entity_type> == PLAYER:
             - inject dPrevention_initial_check
         - else:
             - inject dPrevention_initial_block_check
-        on vehicle collides with entity in:world_flagged:dPrevention.flags.vehicle-move:
+        on vehicle collides with entity in:area_flagged:dPrevention.flags.vehicle-move priority:50:
         - definemap arguments flag:vehicle-move "reason:You can't move this here" location:<context.vehicle.location>
         - if <context.entity.entity_type> == PLAYER:
             - inject dPrevention_initial_check
         - else:
             - inject dPrevention_initial_block_check
+dPrevention_prevent_vehicle_placing:
+    type: task
+    debug: false
+    script:
+    - define area <[arguments.location].proc[dPrevention_get_areas]>
+    #Allow players to bypass the flag, if they have the specific permission.
+    - if <player.has_permission[dPrevention.bypass.<[arguments.flag]>]>:
+        - stop
+    #If he is owner of the region on this location, stop the queue
+    - if <[area].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>:
+        - stop
+    - if <[area].flag[dPrevention.flags.vehicle-place].contains[<context.item.material.name>].if_null[false]>:
+        - narrate <[arguments.reason]> format:dPrevention_format
+        - determine cancelled
 dPrevention_prevent_piston_grief:
     type: task
     debug: false

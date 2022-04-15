@@ -59,6 +59,7 @@ dPrevention_chat_tasks:
         - case entities:
             - define entities <context.message.split>
             - define entity_types <server.entity_types.exclude[PLAYER].parse[as_entity]>
+            #Matcherhandling
             - foreach monster|animal|mob|living as:matcher:
                 - if <[entities].contains[<[matcher]>]>:
                     - define entities <[entities].replace[<[matcher]>].with[<[entity_types].filter[advanced_matches[<[matcher]>]].parse[entity_type]>]>
@@ -78,10 +79,36 @@ dPrevention_chat_tasks:
             - if <[area].flag[dPrevention.flags.<[flag]>].is_empty>:
                 - flag <[area]> dPrevention.flags.<[flag]>:!
                 - flag <player> dPrevention.chat_input:!
-                - narrate "This claims doesn't prevent any entity anymore." format:dPrevention_format
+                - narrate "This claim doesn't prevent any entity anymore." format:dPrevention_format
                 - stop
             - flag <player> dPrevention.chat_input:!
             - narrate "This claim prevents <[area].flag[dPrevention.flags.<[flag]>].space_separated.to_titlecase.custom_color[emphasis]> from spawning." format:dPrevention_format
+        - case vehicle-place:
+            - define vehicles <context.message.split>
+            - define vehicle_types <server.material_types.filter[advanced_matches[*boat|*minecart]].parse[name]>
+            #Matcherhandling
+            - if <[vehicles].contains[all]>:
+                - define vehicles <[vehicle_types]>
+            - foreach <[vehicles]> as:vehicle:
+                #If a provided vehicle is not a valid vehicle, stop.
+                - if !<[vehicle_types].contains[<[vehicle]>]>:
+                    - narrate "<[entity].custom_color[emphasis]> is not a valid vehicle. Try again or Type cancel. 30 Seconds." format:dPrevention_format
+                    - flag <player> dPrevention.chat_input:<player.flag[dPrevention.chat_input]> expire:30s
+                    - stop
+                #If the vehicle is already in the list, remove it.
+                - if <[area].flag[dPrevention.flags.<[flag]>].if_null[<list>].contains[<[vehicle]>]>:
+                    - flag <[area]> dPrevention.flags.<[flag]>:<-:<[vehicle].to_uppercase>
+                    - foreach next
+                #If the vehicle is not in the list, add it.
+                - flag <[area]> dPrevention.flags.<[flag]>:->:<[vehicle].to_uppercase>
+            #If the list of vehicles is empty, remove the flag.
+            - if <[area].flag[dPrevention.flags.<[flag]>].is_empty>:
+                - flag <[area]> dPrevention.flags.<[flag]>:!
+                - flag <player> dPrevention.chat_input:!
+                - narrate "This claim doesn't prevent any vehicle anymore." format:dPrevention_format
+                - stop
+            - flag <player> dPrevention.chat_input:!
+            - narrate "This claim prevents <[area].flag[dPrevention.flags.<[flag]>].space_separated.to_titlecase.custom_color[emphasis]> from being placed." format:dPrevention_format
     add_ride_whitelist:
     - if <context.message.split.first> == cancel:
         - narrate "Adding players to the ride-whitelist cancelled." format:dPrevention_format

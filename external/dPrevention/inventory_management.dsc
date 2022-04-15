@@ -4,6 +4,7 @@ dPrevention_flag_GUI_handler:
     data:
         chat_input:
         - entities
+        - vehicle-place
     events:
         after player left clicks item_flagged:flag in dPrevention_flag_GUI:
         - define flag <context.item.flag[flag]>
@@ -16,7 +17,9 @@ dPrevention_flag_GUI_handler:
             - definemap data area:<player.flag[dPrevention.flaggui]> flag:<[flag]> type:add_flag
             - flag <player> dPrevention.chat_input:<[data]> expire:30s
             - if <[flag]> == entities:
-                - narrate "Type the entity type in chat. Seperate multiple by space." format:dPrevention_format
+                - narrate "Type the entity type in chat. Seperate multiple by space. Valid matchers are: monster, animal, mob, living." format:dPrevention_format
+            - if <[flag]> == vehicle-place:
+                - narrate "Type the vehicle type in chat. Seperate multiple by space. Valid matcher is: all" format:dPrevention_format
             - inventory close
             - stop
         - define area <player.flag[dPrevention.flaggui]>
