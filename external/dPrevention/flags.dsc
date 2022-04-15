@@ -229,7 +229,7 @@ dPrevention_prevent_vehicle_placing:
     - if <[area].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>:
         - stop
     #If the user can build in this area, allow it.
-    - if <[area].flag[dPrevention.permissions.block-place].contains[<player.uuid.if_null[null]>].if_null[false]>:
+    - if <[area].flag[dPrevention.permissions.block-place].contains[<player.uuid>].if_null[false]>:
         - stop
     #If the vehicle is blocked, deny it.
     - if <[area].flag[dPrevention.flags.vehicle-place].contains[<context.item.material.name>].if_null[false]>:
