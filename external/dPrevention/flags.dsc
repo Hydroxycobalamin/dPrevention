@@ -49,12 +49,18 @@ dPrevention_player_flag_handlers:
         #Allow opening of enderchests.
         - if <[id_holder]> == ender_chest:
             - stop
+        #Allow any script inventories.
+        - if <context.inventory.id_type> == script:
+            - stop
         - definemap arguments flag:container-access "reason:You can't open that here." location:<[id_holder].location.if_null[<[id_holder]>]>
         - inject dPrevention_initial_check
         on player opens inventory in:area_flagged:dPrevention.flags.container-access priority:50:
         - define id_holder <context.inventory.id_holder>
         #Allow opening of enderchests.
         - if <[id_holder]> == ender_chest:
+            - stop
+        #Allow any script inventories.
+        - if <context.inventory.id_type> == script:
             - stop
         - definemap arguments flag:container-access "reason:You can't open that here." location:<[id_holder].location.if_null[<[id_holder]>]>
         - inject dPrevention_initial_check
