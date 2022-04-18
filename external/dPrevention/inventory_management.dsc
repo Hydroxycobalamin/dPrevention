@@ -188,7 +188,7 @@ dPrevention_menu:
     gui: true
     definitions:
         x: <script[dPrevention_config].data_key[inventories.filler_item]>
-        blocks: <item[dPrevention_menu_item].with[display=<white>Blocks;lore=<script.parsed_key[data.block_lore]>]>
+        blocks: <item[dPrevention_block_item].with[lore=<script.parsed_key[data.block_lore]>]>
         page: <item[dPrevention_page_item].with[display=<white>Page;lore=<&[base]>Current Page:1/<player.flag[dPrevention.inventory_menu.pages].keys.highest>].with_flag[page:1]>
         info: <item[light].with[display=<white>Info;lore=<script.parsed_key[data.info_lore]>]>
         horse: <item[dPrevention_ride_whitelist_item].with[lore=<[player].if_null[<player>].flag[dPrevention.ride_whitelist].parse_tag[<&[base]><player[<[parse_value]>].name>].if_null[<empty>]>].with_flag[holder:<[player]>]>
@@ -212,6 +212,11 @@ dPrevention_ride_whitelist_item:
     debug: false
     material: saddle
     display name: <white>Ride-Whitelist
+dPrevention_block_item:
+    type: item
+    debug: false
+    material: grass_block
+    display name: <white>Blocks
 dPrevention_menu_handler:
     type: world
     debug: false
