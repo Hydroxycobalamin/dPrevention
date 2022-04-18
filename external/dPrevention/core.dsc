@@ -21,7 +21,7 @@ dPrevention_initial_check:
         - stop
     - inject dPrevention_check_membership
     - determine cancelled passively
-    - ratelimit <player> 2s
+    - ratelimit <player.uuid>/<[arguments.flag]> 2s
     - narrate <[arguments.reason]> format:dPrevention_format
 dPrevention_check_membership:
     #This task MUST be injected.

@@ -282,7 +282,7 @@ dPrevention_prevent_vehicle_hijacking:
             - stop
         #Deny it.
         - determine cancelled passively
-        - ratelimit <player> 2s
+        - ratelimit <player.uuid>/<[arguments.flag]> 2s
         - narrate <[arguments.reason]> format:dPrevention_format
     #Allow it.
 dPrevention_flag_data:

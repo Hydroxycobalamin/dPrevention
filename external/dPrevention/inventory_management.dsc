@@ -105,7 +105,6 @@ dPrevention_fill_flag_GUI:
         - else:
             - define lore <script.parsed_key[data.format.allowed]>
         - define items:->:<item[<[item]>].with[display=<script.parsed_key[data.format.display]>;lore=<[lore]>;hides=ALL].with_flag[flag:<[flag]>]>
-        - define bool:!
     - flag <player> dPrevention.flaggui:<[area]>
     - inventory open destination:dPrevention_flag_GUI
     - wait 1t
