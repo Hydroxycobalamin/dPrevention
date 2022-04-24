@@ -64,6 +64,12 @@ dPrevention_player_flag_handlers:
             - stop
         - definemap arguments flag:container-access "reason:You can't open that here." location:<[id_holder].location.if_null[<[id_holder]>]>
         - inject dPrevention_initial_check
+        on *item_frame damaged by player in:area_flagged:dPrevention.flags.container-access priority:50:
+        - definemap arguments flag:container-access "reason:You can't take this item." location:<context.entity.location>
+        - inject dPrevention_initial_check
+        on *item_frame damaged by player in:world_flagged:dPrevention.flags.container-access priority:100:
+        - definemap arguments flag:container-access "reason:You can't take this item." location:<context.entity.location>
+        - inject dPrevention_initial_check
         ##teleport-item
         on player teleports cause:CHORUS_FRUIT|ENDER_PEARL:
         - definemap arguments flag:teleport-item "reason:You can't teleport in this area." location:<context.destination>
