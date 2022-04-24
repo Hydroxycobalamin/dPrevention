@@ -114,14 +114,14 @@ dPrevention_tool_handler:
                 - if <context.location.flag[dPrevention.expandable_corner]> != <player.uuid>:
                     - narrate "You're not allowed to do that." format:dPrevention_format
                     - stop
-                - flag <player> dPrevention.location:<context.location.flag[dPrevention.location].with_y[0]>
+                - flag <player> dPrevention.selection:<context.location.flag[dPrevention.location].with_y[<script[dPrevention_config].data_key[claims.depth]>].to_cuboid[<context.location>]>
                 - narrate "Selection start set on <context.location.flag[dPrevention.location].simple.custom_color[emphasis]>" format:dPrevention_format
                 - stop
             - case RIGHT_CLICK_BLOCK:
-                - if !<player.has_flag[dPrevention.location]>:
+                - if !<player.has_flag[dPrevention.selection]>:
                     - narrate "You must select a corner first." format:dPrevention_format
                     - stop
-                - if <player.flag[dPrevention.location].world.name> != <context.location.world.name>:
+                - if <player.flag[dPrevention.selection].world.name> != <context.location.world.name>:
                     - narrate "World's doesnt match. Please don't change worlds while expanding your cuboid." format:dPrevention_format
                     - stop
                 #Read data from the cuboid linked to the expand mode for later use(read the red comment below).
@@ -130,7 +130,7 @@ dPrevention_tool_handler:
                 - definemap data dPrevention:<[cuboid].flag[dPrevention]>
                 ##
                 - define name <[cuboid].note_name>
-                - define selection <player.flag[dPrevention.location].to_cuboid[<context.location.with_y[<context.location.world.max_height>]>]>
+                - define selection <player.flag[dPrevention.selection].to_cuboid[<context.location.with_y[<context.location.world.max_height>]>]>
                 - inject dPrevention_check_intersections
                 #If the player can't afford the region, stop. Else define the costs.
                 - ~run dPrevention_check_affordability def:<list_single[<[selection]>].include[expand].include_single[<[cuboid]>]> save:queue
@@ -163,6 +163,11 @@ dPrevention_tool_handler:
             - actionbar "<gold>Mode: <yellow>Claim" targets:<server.online_players_flagged[dPrevention.claim_mode]>
         - if <server.online_players_flagged[dPrevention.expand_mode].any>:
             - actionbar "<gold>Mode: <yellow>Expand" targets:<server.online_players_flagged[dPrevention.expand_mode]>
+        after player steps on block flagged:dPrevention.selection:
+        - ratelimit <player> 5s
+        - define selection <player.flag[dprevention.selection].include[<context.location.with_y[<context.location.world.max_height>]>]>
+        - run dPrevention_check_intersections def.selection:<[selection]>
+        - playeffect effect:BARRIER at:<[selection].outline> offset:0,0,0 visibility:100 targets:<player>
 dPrevention_expand_mode:
     type: task
     debug: false
@@ -208,5 +213,5 @@ dPrevention_cancel_mode:
         - if <player.flag[dPrevention.show_fake_locations].exists>:
             - showfake cancel <player.flag[dPrevention.show_fake_locations]>
         - flag <player> dPrevention.expand_mode:!
-        - flag <player> dPrevention.location:!
+        - flag <player> dPrevention.selection:!
         - flag <player> dPrevention.show_fake_locations:!
