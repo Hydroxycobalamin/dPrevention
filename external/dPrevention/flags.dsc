@@ -10,10 +10,10 @@ dPrevention_player_flag_handlers:
         - definemap arguments flag:block-break "reason:You can't break this block here." location:<context.location>
         - inject dPrevention_initial_check
         on player breaks hanging in:world_flagged:dPrevention.flags.block-break priority:100:
-        - definemap arguments flag:block-break "reason:You can't break this block here." location:<context.hanging.location>
+        - definemap arguments flag:block-break "reason:You can't break this hanging here." location:<context.hanging.location>
         - inject dPrevention_initial_check
         on player breaks hanging in:area_flagged:dPrevention.flags.block-break priority:50:
-        - definemap arguments flag:block-break "reason:You can't break this block here." location:<context.hanging.location>
+        - definemap arguments flag:block-break "reason:You can't break this hanging here." location:<context.hanging.location>
         - inject dPrevention_initial_check
         ##block-place
         on player places hanging in:area_flagged:dPrevention.flags.block-place priority:50:
@@ -27,6 +27,16 @@ dPrevention_player_flag_handlers:
         - inject dPrevention_initial_check
         on player places block in:area_flagged:dPrevention.flags.block-place priority:50:
         - definemap arguments flag:block-place "reason:You can't place this block here." location:<context.location>
+        - inject dPrevention_initial_check
+        on player right clicks *item_frame in:world_flagged:dPrevention.flags.block-place priority:100 with:!air:
+        - if <context.entity.has_framed_item>:
+            - stop
+        - definemap arguments flag:block-place "reason:You can't put your item into this item frame." location:<context.entity.location>
+        - inject dPrevention_initial_check
+        on player right clicks *item_frame in:area_flagged:dPrevention.flags.block-place priority:50 with:!air:
+        - if <context.entity.has_framed_item>:
+            - stop
+        - definemap arguments flag:block-place "reason:You can't put your item into this item frame." location:<context.entity.location>
         - inject dPrevention_initial_check
         ##use
         on player right clicks *door|lever|*_button|*_pressure_plate|anvil|*campfire in:world_flagged:dPrevention.flags.use priority:100:
