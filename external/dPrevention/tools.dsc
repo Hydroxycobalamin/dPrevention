@@ -95,7 +95,7 @@ dPrevention_tool_handler:
                 - narrate "Selection claimed" format:dPrevention_format
                 - playeffect effect:BARRIER at:<player.flag[dPrevention.selection].outline.parse[center]> offset:0,0,0 visibility:100 targets:<player>
                 #Make the area to a dPrevention area. Add the player as owner.
-                - run dPrevention_area_creation def:<list.include[<cuboid[<[name]>]>].include[<player.uuid>]>
+                - run dPrevention_area_creation def.area:<cuboid[<[name]>]> def.owner:<player.uuid>
                 #Remove claim mode.
                 - run dPrevention_cancel_mode def:claim
         on player clicks block with:dPrevention_tool flagged:dPrevention.expand_mode priority:-1:

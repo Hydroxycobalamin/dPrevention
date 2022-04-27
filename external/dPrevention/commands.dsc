@@ -39,15 +39,16 @@ dPrevention_main:
     type: command
     debug: false
     data:
-        tools: Tools by mcmonkey<&co> <element[Polygon].on_click[https://forum.denizenscript.com/resources/polygon-selector-tool.2/].type[OPEN_URL]> <element[Ellipsoid].on_click[https://forum.denizenscript.com/resources/ellipsoid-selector-tool.3/].type[OPEN_URL]> <element[Cuboid].on_click[https://forum.denizenscript.com/resources/cuboid-selector-tool.1/].type[OPEN_URL]>
+        tools: <element[[Tool]].color_gradient[from=#ff3399;to=#cc0066]> <&[base]><element[Area Selector Tool by mcmonkey].on_click[https://forum.denizenscript.com/resources/area-selector-tool.1/].type[OPEN_URL].on_hover[Click here]>
     name: dPrevention
     description: main command
     usage: /dPrevention [cuboid/ellipsoid/polygon/tool/info]
     permission: dPrevention.command.main
     tab completions:
-        1: <player.has_permission[dPrevention.admin].if_true[cuboid|ellipsoid|polygon|tool|info|admininfo].if_false[tool|info]>
-        2: <player.has_permission[dPrevention.admin].and[<context.args.first.equals[info]>].if_true[<server.players.parse[name]>].if_false[<empty>]>
+        1: <player.has_permission[dPrevention.admin].if_true[create|admininfo|tool|info].if_false[tool|info]>
+        2: <player.has_permission[dPrevention.admin].and[<context.args.first.equals[info]>].if_true[<server.players.parse[name]>].if_false[<player.has_permission[dPrevention.admin].and[<context.args.first.equals[create]>].if_true[cuboid|polygon|ellipsoid|sphere].if_false[<empty>]>]>
     script:
+    - define syntax <script.data_key[usage].custom_color[emphasis]><script[seltool_command].exists.if_true[<empty>].if_false[<n><script.parsed_key[data.tools]>]>
     - choose <context.args.size>:
         - case 1:
             - choose <context.args.first>:
@@ -56,6 +57,7 @@ dPrevention_main:
                         - narrate "You can't hold the tool. Make some space." format:dPrevention_format
                         - stop
                     - give dPrevention_tool slot:hand
+                    - narrate "You've obtained the <element[<item[dPrevention_tool].display>].on_hover[<item[dPrevention_tool]>].type[SHOW_ITEM]>." format:dPrevention_format
                 - case info:
                     - run dPrevention_info_formatter def.cuboids:<player.flag[dPrevention.areas.cuboids].parse[as_cuboid].sort_by_value[world.name].if_null[<list>].exclude[null]> def.player:<player>
                 - case admininfo:
@@ -70,64 +72,82 @@ dPrevention_main:
                         - define polygons <[polygons].if_null[<list>].include[<[data.polygons].parse[as_polygon].if_null[<list>]>]>
                         - define ellipsoids <[ellipsoids].if_null[<list>].include[<[data.ellipsoids].parse[as_ellipsoid].if_null[<list>]>]>
                     - run dPrevention_info_formatter def.cuboids:<[cuboids].if_null[<list>]> def.polygons:<[polygons].if_null[<list>]> def.ellipsoids:<[ellipsoids].if_null[<list>]> def.player:null
+                - default:
+                    - narrate <[syntax]> format:dPrevention_format
         - case 2:
             - if !<player.has_permission[dPrevention.admin]>:
                 - narrate "You don't have permission to do that" format:dPrevention_format
                 - stop
             - define argument <context.args.first>
-            - choose <[argument]>:
-                - case info:
-                    - define player <server.match_offline_player[<context.args.last>].if_null[null]>
-                    - if <[player]> == null:
-                        - narrate "This player doesn't exist!" format:dPrevention_format
-                        - stop
-                    - run dPrevention_info_formatter def.cuboids:<[player].flag[dPrevention.areas.cuboids].parse[as_cuboid].sort_by_value[world.name].if_null[<list>].exclude[null]> def.player:<[player]>
+            - if <[argument]> != info:
+                - narrate <[syntax]> format:dPrevention_format
+                - stop
+            - define player <server.match_offline_player[<context.args.last>].if_null[null]>
+            - if <[player]> == null:
+                - narrate "This player doesn't exist!" format:dPrevention_format
+                - stop
+            - run dPrevention_info_formatter def.cuboids:<[player].flag[dPrevention.areas.cuboids].parse[as_cuboid].sort_by_value[world.name].if_null[<list>].exclude[null]> def.player:<[player]>
+        - case 3:
+            - if !<player.has_permission[dPrevention.admin]>:
+                - narrate "You don't have permission to do that" format:dPrevention_format
+                - stop
+            - define argument <context.args.get[2]>
+            - if <context.args.first> != create:
+                - narrate <[syntax]> format:dPrevention_format
+                - stop
+            - choose <context.args.get[2]>:
                 - case cuboid:
-                    - define area <player.flag[ctool_selection].if_null[null]>
-                    - if <[area]> == null:
-                        - narrate "You don't have cuboid area selected." format:dPrevention_format
-                        - stop
-                    - define id <context.args.get[2].trim_to_character_set[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890]>
-                    - if <[area].world.flag[dPrevention.areas.admin.cuboids].contains[<[id]>].if_null[false]>:
-                        - narrate "A cuboid with the id <[id].custom_color[emphasis]> exists already!" format:dPrevention_format
-                        - stop
-                    - run cuboid_tool_status_task
-                    - flag <[area].world> dPrevention.areas.admin.cuboids:->:<[id]>
-                    - note <[area]> as:<[id]>
-                    - run dPrevention_area_creation def:<list.include[<cuboid[<[id]>]>]>
-                    - narrate "You've created an admin claim called <[id].custom_color[emphasis]>!" format:dPrevention_format
+                    - inject dPrevention_check_adminclaim_creation
+                - case sphere:
+                    - inject dPrevention_check_adminclaim_creation
                 - case ellipsoid:
-                    - define area <player.flag[elliptool_selection].if_null[null]>
-                    - if <[area]> == null:
-                        - narrate "You don't have any ellipsoid selected." format:dPrevention_format
-                        - stop
-                    - define id <context.args.get[2].trim_to_character_set[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890]>
-                    - if <[area].world.flag[dPrevention.areas.admin.ellipsoids].contains[<[id]>].if_null[false]>:
-                        - narrate "A ellipsoid with the name <[id].custom_color[emphasis]> exists already!" format:dPrevention_format
-                        - stop
-                    - run ellipsoid_tool_status_task
-                    - flag <[area].world> dPrevention.areas.admin.ellipsoids:->:<[id]>
-                    - note <[area]> as:<[id]>
-                    - run dPrevention_area_creation def:<list.include[<ellipsoid[<[id]>]>]>
-                    - narrate "You've created an admin claim called <[id].custom_color[emphasis]>!" format:dPrevention_format
+                    - inject dPrevention_check_adminclaim_creation
                 - case polygon:
-                    - define area <player.flag[ptool_selection].if_null[null]>
-                    - if <[area]> == null:
-                        - narrate "You don't have any polygon selected." format:dPrevention_format
-                        - stop
-                    - define id <context.args.get[2].trim_to_character_set[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890]>
-                    - if <[area].world.flag[dPrevention.areas.admin.polygons].contains[<[id]>].if_null[false]>:
-                        - narrate "A ellipsoid with the name <[id].custom_color[emphasis]> exists already!" format:dPrevention_format
-                        - stop
-                    - run polygon_tool_status_task
-                    - flag <[area].world> dPrevention.areas.admin.polygons:->:<[id]>
-                    - note <[area]> as:<[id]>
-                    - run dPrevention_area_creation def:<list.include[<polygon[<[id]>]>]>
-                    - narrate "You've created an admin claim called <[id].custom_color[emphasis]>!" format:dPrevention_format
+                    - inject dPrevention_check_adminclaim_creation
                 - default:
-                    - narrate <script.data_key[usage].custom_color[emphasis]><n><script.parsed_key[data.tools]> format:dPrevention_format
+                    - narrate <script.data_key[usage].custom_color[emphasis]><script[seltool_comamand].exists.if_true[<empty>].if_false[<n><script.parsed_key[data.tools]>]> format:dPrevention_format
         - default:
-            - narrate <script.data_key[usage].custom_color[emphasis]><n><script.parsed_key[data.tools]> format:dPrevention_format
+            - narrate <[syntax]> format:dPrevention_format
+dPrevention_check_adminclaim_creation:
+    type: task
+    debug: false
+    definitions: argument
+    script:
+    - define type <player.flag[seltool_type].if_null[null]>
+    - if <[type]> != <[argument]>:
+        - narrate "You don't have a <[argument]> selected." format:dPrevention_format
+        - stop
+    - define area <player.flag[seltool_selection].if_null[null]>
+    - if <[area]> == null:
+        - narrate "You don't have an area selected." format:dPrevention_format
+        - stop
+    - if <[type]> == sphere:
+        - define type ellipsoid
+    - define id <context.args.get[3].trim_to_character_set[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890]>
+    #If there's already a adminclaim with this name, stop.
+    - if <[area].world.flag[dPrevention.areas.admin.<[type]>s].contains[<[id]>].if_null[false]>:
+        - narrate "A <[type].custom_color[emphasis]> with the id <[id].custom_color[emphasis]> already exists!" format:dPrevention_format
+        - stop
+    #If a noted object already exists with this name, stop.
+    - if <server.notes.parse[note_name].contains[<[id]>]>:
+        - narrate "An object with this name already exists." format:dPrevention_format
+        - stop
+    - inject selector_tool_status_task path:<[type]>
+    - flag <[area].world> dPrevention.areas.admin.<[type]>s:->:<[id]>
+    - note <[area]> as:<[id]>
+    #Get the noted object.
+    - choose <[type]>:
+        - case ellipsoid:
+            - define note <ellipsoid[<[id]>]>
+        - case cuboid:
+            - define note <cuboid[<[id]>]>
+        - case polygon:
+            - define note <polygon[<[id]>]>
+        - default:
+            - debug error "Something went wrong. Please report it to the author. Type: <[type]>"
+    #Make the noted object a dPrevention admin area.
+    - run dPrevention_area_creation def.area:<[note]>
+    - narrate "You've created an admin claim called <[id].custom_color[emphasis]>!" format:dPrevention_format
 dPrevention_generate_clickables:
     type: task
     debug: false

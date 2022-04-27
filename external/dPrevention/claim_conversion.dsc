@@ -24,5 +24,5 @@ dPrevention_convert_dclaim:
         - stop
     #Convert the area.
     - flag <[area].world> dPrevention.areas.admin.<[type]>:->:<[area].note_name>
-    - run dPrevention_area_creation def:<list_single[<[area]>]>
+    - run dPrevention_area_creation def.area:<[area]>
     - narrate "Area <[area].note_name.custom_color[emphasis]> was sucessfully converted to an admin claim." format:dPrevention_format
