@@ -285,7 +285,7 @@ dPrevention_prevent_vehicle_hijacking:
     definitions: arguments
     script:
     #If config option 'vehicle-hijacking' is true, the player is allowed to ride it, even if vehicle-ride is active and he's not in the players whitelist.
-    - if <script[dPrevention_config].data_key[options.vehicle-hijacking]> && <context.entity.owner.exists>:
+    - if <server.flag[dPrevention.config.options.vehicle-hijacking]> && <context.entity.owner.exists>:
         - stop
     #If the owner of the entity is the player he's allowed to ride it, even if vehicle-ride is active.
     - if <context.entity.owner.if_null[null]> == <player>:

@@ -15,7 +15,7 @@ dPrevention_get_blocks:
     - define free_amount <[player].flag[dPrevention.blocks.amount.per_time].if_null[0].add[<[player].flag[dPrevention.blocks.amount.per_block].if_null[0]>].sub[<[player].flag[dPrevention.blocks.amount.in_use].if_null[0]>]>
     - determine <[free_amount]>
 dPrevention_check_affordability:
-    type: task
+    type: procedure
     debug: false
     definitions: cuboid|mode|old_cuboid
     script:
@@ -51,7 +51,7 @@ dPrevention_blocks_handler:
         - run dPrevention_add_blocks def.type:per_block def.amount:<context.item.flag[dPrevention.blocks]>
         after delta time minutely every:5:
         - define players <server.online_players.filter[has_flag[dPrevention.blocks.reached_max].not]>
-        - define config <script[dPrevention_config].data_key[user]>
+        - define config <server.flag[dPrevention.config.user]>
         - foreach <[players]> as:player:
             #If he's new and doesn't had a checkup yet, give him blocks.
             - if !<[player].has_flag[dPrevention.blocks.last_checkup]>:

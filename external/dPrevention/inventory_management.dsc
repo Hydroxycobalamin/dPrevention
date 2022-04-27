@@ -69,7 +69,7 @@ dPrevention_flag_GUI:
     gui: true
     definitions:
         info: <item[light].with[display=<white>Info;lore=<script.parsed_key[data.info_lore]>]>
-        x: <script[dPrevention_config].data_key[inventories.filler_item]>
+        x: <server.flag[dPrevention.config.inventories.filler_item]>
     slots:
     - [] [] [] [] [] [] [] [] []
     - [] [] [] [] [] [] [] [] []
@@ -187,7 +187,7 @@ dPrevention_menu:
     title: Menu
     gui: true
     definitions:
-        x: <script[dPrevention_config].data_key[inventories.filler_item]>
+        x: <server.flag[dPrevention.config.inventories.filler_item]>
         blocks: <item[dPrevention_block_item].with[lore=<script.parsed_key[data.block_lore]>]>
         page: <item[dPrevention_page_item].with[display=<white>Page;lore=<&[base]>Current Page:1/<player.flag[dPrevention.inventory_menu.pages].keys.highest>].with_flag[page:1]>
         info: <item[light].with[display=<white>Info;lore=<script.parsed_key[data.info_lore]>]>

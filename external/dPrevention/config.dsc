@@ -16,7 +16,7 @@ dPrevention_config:
             pvp: true
             piston: true
             container-access: true
-            teleport: true
+            teleport-item: true
             item-frame-rotation: true
             vehicle-move: true
         ##If the flag need additional input, use a map with a list of values instead, format:

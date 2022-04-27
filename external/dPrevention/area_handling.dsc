@@ -4,7 +4,7 @@ dPrevention_area_creation:
     definitions: area|owner
     script:
     - customevent id:dPrevention_area_created context:[is_userclaim=<[owner].exists>;area=<[area]>]
-    - define config <script[dPrevention_config].data_key[claims]>
+    - define config <server.flag[dPrevention.config.claims]>
     - foreach <[config.flags]> key:flag as:value:
         - flag <[area]> dPrevention.flags.<[flag]>:<[value]>
     - flag <[area]> dPrevention.priority:<[config.priority]>

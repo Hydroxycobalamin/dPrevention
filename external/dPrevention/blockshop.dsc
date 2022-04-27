@@ -5,7 +5,7 @@ dPrevention_blockshop:
     title: BlockShop
     gui: true
     procedural items:
-    - define config <script[dPrevention_config].data_key[shop]>
+    - define config <server.flag[dPrevention.config.shop]>
     - foreach <[config.blocks]> as:blocks:
         - define "items:->:<item[dPrevention_item_blocks].with_flag[dPrevention.blocks:<[blocks]>].with_flag[dPrevention.price:<[blocks].mul[<[config.block-price]>]>].with[lore=<&[base]>Price: <[blocks].mul[<[config.block-price]>].custom_color[emphasis]>|<&[base]>Blocks: <[blocks].custom_color[emphasis]>]>"
     - determine <[items]>
