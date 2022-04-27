@@ -33,7 +33,7 @@ dPrevention_check_intersections:
     #This task script is usually injected via inject command.
     definitions: cuboid|selection
     script:
-    - define area_map <[selection].world.flag[dPrevention.areas]>
+    - define area_map <[selection].world.flag[dPrevention.areas].if_null[<map>]>
     - define cuboids <[area_map.cuboids].if_null[<list>].include[<[area_map.admin.cuboids].if_null[<list>]>].parse[as_cuboid].exclude[<[cuboid].if_null[<empty>]>]>
     - define ellipsoids <[area_map.ellipsoids].if_null[<list>].include[<[area_map.admin.ellipsoids].if_null[<list>]>].parse[as_ellipsoid.bounding_box].exclude[<[cuboid].if_null[<empty>]>]>
     - define polygons <[area_map.polygons].if_null[<list>].include[<[area_map.admin.polygons].if_null[<list>]>].parse[as_polygon.bounding_box].exclude[<[cuboid].if_null[<empty>]>]>
