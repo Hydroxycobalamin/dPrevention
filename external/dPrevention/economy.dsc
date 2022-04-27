@@ -15,7 +15,7 @@ dPrevention_get_blocks:
     - define free_amount <[player].flag[dPrevention.blocks.amount.per_time].if_null[0].add[<[player].flag[dPrevention.blocks.amount.per_block].if_null[0]>].sub[<[player].flag[dPrevention.blocks.amount.in_use].if_null[0]>]>
     - determine <[free_amount]>
 dPrevention_check_affordability:
-    type: procedure
+    type: task
     debug: false
     definitions: cuboid|mode|old_cuboid
     script:

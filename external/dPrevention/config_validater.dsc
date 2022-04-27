@@ -37,10 +37,10 @@ config_validation:
         - define config <script[dPrevention_config].data_key[].if_null[null]>
         #Validate options.vehicle-hijacking
         - if !<[config.options.vehicle-hijacking].exists> || !<[config.options.vehicle-hijacking].is_boolean>:
-            - flag server dPrevention.config.vehicle-hijacking:false
+            - flag server dPrevention.config.options.vehicle-hijacking:false
             - debug error "Config key: options.vehicle-hijacking doesn't exist or is not a valid integer. Check your dPrevention/config.dsc file! Default: false"
         - else:
-            - flag server dPrevention.config.vehicle-hijacking:<[config.options.vehicle-hijacking]>
+            - flag server dPrevention.config.options.vehicle-hijacking:<[config.options.vehicle-hijacking]>
         #Validate claims.depth
         - if !<[config.claims.depth].exists> || !<[config.claims.depth].is_integer>:
             - debug error "Config key: claims.depth doesn't exist or is not a valid integer. Check your dPrevention/config.dsc file! Default: 0"
