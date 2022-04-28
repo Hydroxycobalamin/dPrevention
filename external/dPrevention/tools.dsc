@@ -127,7 +127,11 @@ dPrevention_tool_handler:
                 #Read data from the cuboid linked to the expand mode for later use(read the red comment below).
                 - define cuboid <player.flag[dPrevention.expand_mode]>
                 ##
-                - definemap data dPrevention:<[cuboid].flag[dPrevention]>
+                #Saving flags of the current cuboid for later use.
+                - foreach <server.flag[dPrevention.config.scripters.flags]> as:flag:
+                    - if !<[cuboid].has_flag[<[flag]>]>:
+                        - foreach next
+                    - define data.<[flag]>:<[cuboid].flag[<[flag]>]>
                 ##
                 - define name <[cuboid].note_name>
                 - define selection <player.flag[dPrevention.selection].to_cuboid[<context.location.with_y[<context.location.world.max_height>]>]>
@@ -147,10 +151,11 @@ dPrevention_tool_handler:
                 #Note the selection.
                 - note <[selection]> as:<[name]>
                 - define new_cuboid <cuboid[<[name]>]>
-                #Pass data to the new cuboid.
-                ##If you use your own area flags, make sure to pass them aswell. You can add them to the data map defined above.
+                #Pass flags to the new cuboid.
+                ##
                 - foreach <[data]> key:name as:value:
                     - flag <[new_cuboid]> <[name]>:<[value]>
+                ##
                 - playeffect effect:BARRIER at:<[new_cuboid].outline.parse[center]> offset:0,0,0 visibility:100 targets:<player>
                 - showfake glowstone <[new_cuboid].proc[dPrevention_get_corners].context[<player.location>].values> duration:120s
                 #Remove expand mode.
