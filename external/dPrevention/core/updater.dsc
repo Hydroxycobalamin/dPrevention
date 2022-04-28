@@ -12,26 +12,36 @@ dPrevention_update_teleport:
     #Get all current worlds
     - define worlds <server.flag[dPrevention.config.claims.worlds].parse[as_world].filter[has_flag[dPrevention.areas]]>
     #Get all areas
-    - define area_list <[worlds].parse[flag[dPrevention.areas]]>
-    - foreach <[area_list]> as:data:
-        - foreach <[data]> key:type as:list:
+    - define player_cuboids <[worlds].filter[has_flag[dPrevention.areas.cuboids]].parse[flag[dPrevention.areas.cuboids]].combine>
+    - define player_polygons <[worlds].filter[has_flag[dPrevention.areas.polygons]].parse[flag[dPrevention.areas.polygons]].combine>
+    - define player_ellipsoids <[worlds].filter[has_flag[dPrevention.areas.ellipsoids]].parse[flag[dPrevention.areas.ellipsoids]].combine>
+    - define admin_cuboids <[worlds].filter[has_flag[dPrevention.areas.admin.cuboids]].parse[flag[dPrevention.areas.admin.cuboids]].combine>
+    - define admin_polygons <[worlds].filter[has_flag[dPrevention.areas.admin.polygons]].parse[flag[dPrevention.areas.admin.polygons]].combine>
+    - define admin_ellipsoids <[worlds].filter[has_flag[dPrevention.areas.admin.ellipsoids]].parse[flag[dPrevention.areas.admin.ellipsoids]].combine>
+    - define cuboids <[player_cuboids].include[<[admin_cuboids]>]>
+    - define polygons <[player_polygons].include[<[admin_polygons]>]>
+    - define ellipsoids <[player_ellipsoids].include[<[admin_ellipsoids]>]>
+    - definemap area_map cuboids:<[cuboids]> polygons:<[polygons]> ellipsoids:<[ellipsoids]>
+    #Loop through all areas.
+    - foreach <[area_map]> key:type as:areas:
+        - foreach <[areas]> as:note_name:
+            # Get the area object.
             - choose <[type]>:
                 - case cuboids:
-                    - define areas <[list].parse[as_cuboid]>
+                    - define area <[note_name].as_cuboid>
                 - case ellipsoids:
-                    - define areas <[list].parse[as_ellipsoid]>
+                    - define area <[note_name].as_ellipsoid>
                 - case polygons:
-                    - define areas <[list].parse[as_polygon]>
+                    - define area <[note_name].as_polygon>
                 - default:
                     - debug error "Something went really wrong. Please report it to the author. Found type: <[type]>"
                     - stop
-            - foreach <[areas]> as:area:
-                #Update areas to fix area borks.
-                - announce to_console "Checking area: <[area].note_name.color[aqua]>"
-                - if <[area].has_flag[dPrevention.flags.teleport]>:
-                    - announce to_console "Found <[area].note_name.color[aqua]> with non-existent teleport flag. Renaming flag <element[teleport].color[green]> to <element[teleport-item].color[yellow]>."
-                    - flag <[area]> dPrevention.flags.teleport:!
-                    - flag <[area]> dPrevention.flags.teleport-item
+            #Update areas to fix area borks.
+            - announce to_console "Checking area: <[area].note_name.color[aqua]>"
+            - if <[area].has_flag[dPrevention.flags.teleport]>:
+                - announce to_console "Found <[area].note_name.color[aqua]> with non-existent teleport flag. Renaming flag <element[teleport].color[green]> to <element[teleport-item].color[yellow]>."
+                - flag <[area]> dPrevention.flags.teleport:!
+                - flag <[area]> dPrevention.flags.teleport-item
     - flag server "dPrevention.updated.teleport:Renamed flags teleport to teleport-item"
 dPrevention_manual_update:
     type: command
