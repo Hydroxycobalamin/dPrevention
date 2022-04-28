@@ -40,29 +40,29 @@ dPrevention_config_validation:
         - if !<script[dPrevention_config].exists>:
             - debug error "WARNING: no config file found. You MUST add the config of dPrevention into your server. Using default values Errors will follow."
             - announce to_ops "<&[error]>No dPrevention config file found! Check your console ASAP."
-        - define script_path <script[dPrevention_config].relative_filename>
+        - define script_path "<dark_red><script[dPrevention_config].relative_filename.if_null[config not found!]><white>"
         - define config <script[dPrevention_config].data_key[].if_null[null]>
         #Validate options.vehicle-hijacking
         - if !<[config.options.vehicle-hijacking].exists> || !<[config.options.vehicle-hijacking].is_boolean>:
             - flag server dPrevention.config.options.vehicle-hijacking:false
-            - debug error "Config key: options.vehicle-hijacking doesn't exist or is not a valid integer. Check your <[script_path]> file! Default: false"
+            - debug error "Config key: <yellow>options.vehicle-hijacking<white> doesn't exist or is not a valid integer. Check your <[script_path]> file! <dark_green>Default: false"
         - else:
             - flag server dPrevention.config.options.vehicle-hijacking:<[config.options.vehicle-hijacking]>
         #Validate claims.depth
         - if !<[config.claims.depth].exists> || !<[config.claims.depth].is_integer>:
-            - debug error "Config key: claims.depth doesn't exist or is not a valid integer. Check your <[script_path]> file! Default: 0"
+            - debug error "Config key: <yellow>claims.depth<white> doesn't exist or is not a valid integer. Check your <[script_path]> file! <dark_green>Default: 0"
             - flag server dPrevention.config.claims.depth:0
         - else:
             - flag server dPrevention.config.claims.depth:<[config.claims.depth]>
         #Validate claims.flags
         - if !<[config.claims.flags].exists>:
-            - debug error "Config key: claims.flags doesn't exist. Check your <[script_path]> file! Default: <script.data_key[data.default_options.claims.flags]>"
+            - debug error "Config key: <yellow>claims.flags<white> doesn't exist. Check your <[script_path]> file! <dark_green>Default: <script.data_key[data.default_options.claims.flags]>"
             - flag server dPrevention.config.claims.flags:<script.data_key[data.default_options.claims.flags]>
         - else if <[config.claims.flags]> == <empty>:
-            - debug error "Config key: claims.flags is empty. Check your <[script_path]> file! Default: <script.data_key[data.default_options.claims.flags]>"
+            - debug error "Config key: <yellow>claims.flags<white> is empty. Check your <[script_path]> file! <dark_green>Default: <script.data_key[data.default_options.claims.flags]>"
             - flag server dPrevention.config.claims.flags:<script.data_key[data.default_options.claims.flags]>
         - else if <[config.claims.flags].as_map.if_null[null]> == null:
-            - debug error "Config key: claims.flags is not a valid map of flag: values. Check your <[script_path]> file! Default: <script.data_key[data.default_options.claims.flags]>"
+            - debug error "Config key: <yellow>claims.flags<white> is not a valid map of flag: values. Check your <[script_path]> file! <dark_green>Default: <script.data_key[data.default_options.claims.flags]>"
             - flag server dPrevention.config.claims.flags:<script.data_key[data.default_options.claims.flags]>
         - else:
             - foreach <[config.claims.flags]> key:flag as:value:
@@ -70,21 +70,21 @@ dPrevention_config_validation:
                     - case entities:
                         #Check if the flag has values.
                         - if <[value]> == <empty>:
-                            - debug error "Config key: claims.flags.entities doesn't has a value. Check your <[script_path]> file! Ignoring flag."
+                            - debug error "Config key: <yellow>claims.flags.entities<white> doesn't has a value. Check your <[script_path]> file! Ignoring flag."
                             - foreach next
                         #Filter invalid and valid entities out.
                         - define invalid_entities <[value].filter_tag[<[filter_value].as_entity.if_null[null].equals[null]>]>
                         - define valid_entities <[value].exclude[<[invalid_entities]>]>
                         #Output errors.
                         - if <[invalid_entities].any>:
-                            - debug error "Config key: claims.flags.entities has invalid values: <[invalid_entities].space_separated>. Check your <[script_path]> file! Ignoring them."
+                            - debug error "Config key: <yellow>claims.flags.entities<white> has invalid values: <[invalid_entities].space_separated>. Check your <[script_path]> file! Ignoring them."
                             - flag server dPrevention.config.claims.flags.entities:<[valid_entities]>
                             - foreach next
                         - flag server dPrevention.config.claims.flags.entities:<[valid_entities]>
                     - case vehicle-place:
                         #Check if the flag has values.
                         - if <[value]> == <empty>:
-                            - debug error "Config key: claims.flags.vehicle-place doesn't has a value. Check your <[script_path]> file! Ignoring flag."
+                            - debug error "Config key: <yellow>claims.flags.vehicle-place<white> doesn't has a value. Check your <[script_path]> file! Ignoring flag."
                             - foreach next
                         #Filter invalid and valid vehicles out
                         - define vehicle_types <server.material_types.filter[advanced_matches[*boat|*minecart]].parse[name]>
@@ -92,7 +92,7 @@ dPrevention_config_validation:
                         - define valid_vehicles <[value].exclude[<[invalid_vehicles]>]>
                         #Output errors.
                         - if <[invalid_vehicles].any>:
-                            - debug error "Config key: claims.flags.vehicle-place has invalid values: <[invalid_vehicles].space_separated>. Check your <[script_path]> file! Ignoring them."
+                            - debug error "Config key: <yellow>claims.flags.vehicle-place<white> has invalid values: <[invalid_vehicles].space_separated>. Check your <[script_path]> file! Ignoring them."
                             - flag server dPrevention.config.claims.flags.vehicle-place:<[valid_vehicles]>
                             - foreach next
                         - flag server dPrevention.config.claims.flags.vehicle-place:<[valid_vehicles]>
@@ -103,7 +103,7 @@ dPrevention_config_validation:
                             - foreach next
                         #Check if the value is a boolean.
                         - if !<[value].is_boolean>:
-                            - debug error "Flag <[flag]> need a boolean input. <[value]> is not a boolean. Check your <[script_path]> file! Default: true."
+                            - debug error "Flag <[flag]> need a boolean input. <[value]> is not a boolean. Check your <[script_path]> file! <dark_green>Default: true."
                             - flag server dPrevention.config.claims.flags.<[flag]>:true
                             - foreach next
                         - else:
@@ -111,53 +111,53 @@ dPrevention_config_validation:
         #Validate claims.priority
         - if !<[config.claims.priority].exists> || !<[config.claims.priority].is_integer>:
             - flag server dPrevention.config.claims.priority:0
-            - debug error "Config key: claims.priority doesn't exist or is not a valid integer. Check your <[script_path]> file! Default: 0"
+            - debug error "Config key: <yellow>claims.priority<white> doesn't exist or is not a valid integer. Check your <[script_path]> file! <dark_green>Default: 0"
         - else:
             - flag server dPrevention.config.claims.priority:<[config.claims.priority]>
         #Validate claims.worlds
         - if !<[config.claims.worlds].exists>:
             - flag server dPrevention.config.claims.worlds:<script.data_key[data.default_options.claims.worlds]>
-            - debug error "Config key: claims.worlds doesn't exist. Check your <[script_path]> file! Default: <script.data_key[data.default_options.claims.worlds].space_separated>"
+            - debug error "Config key: <yellow>claims.worlds<white> doesn't exist. Check your <[script_path]> file! <dark_green>Default: <script.data_key[data.default_options.claims.worlds].space_separated>"
         - else if <[config.claims.worlds]> == <empty>:
             - flag server dPrevention.config.claims.worlds:<script.data_key[data.default_options.claims.worlds]>
-            - debug error "Config key: claims.worlds is empty. Check your <[script_path]> file! Default: <script.data_key[data.default_options.claims.worlds].space_separated>"
+            - debug error "Config key: <yellow>claims.worlds<white> is empty. Check your <[script_path]> file! <dark_green>Default: <script.data_key[data.default_options.claims.worlds].space_separated>"
         - else:
             - foreach <[config.claims.worlds]> as:world_name:
                 - define world <world[<[world_name]>].if_null[null]>
                 - if <[world]> == null:
-                    - debug error "World: <[world_name]> doesn't exist or isn't loaded. Check your <[script_path]> file! Ignoring it."
+                    - debug error "World: <[world_name].color[yellow]> doesn't exist or isn't loaded. Check your <[script_path]> file! Ignoring it."
                 - else:
                     - define valid_worlds:->:<[world_name]>
             - flag server dPrevention.config.claims.worlds:<[valid_worlds]>
         #Validate user.max-blocks-per-time
         - if !<[config.user.max-blocks-per-time].exists> || !<[config.user.max-blocks-per-time].is_integer>:
             - flag server dPrevention.config.user.max-blocks-per-time:2000
-            - debug error "Config key: user.max-blocks-per-time doesn't exist or is not a valid integer. Check your <[script_path]> file! Default: 2000"
+            - debug error "Config key: <yellow>user.max-blocks-per-time<white> doesn't exist or is not a valid integer. Check your <[script_path]> file! <dark_green>Default: 2000"
         - else:
             - flag server dPrevention.config.user.max-blocks-per-time:<[config.user.max-blocks-per-time]>
         #Validate user.max-blocks-per-time-per-player
         - if !<[config.user.blocks-per-5-min].exists> || !<[config.user.blocks-per-5-min].is_decimal>:
             - flag server dPrevention.config.user.blocks-per-5-min:25
-            - debug error "Config key: user.blocks-per-5-min doesn't exist or is not a valid decimal. Check your <[script_path]> file! Default: 25"
+            - debug error "Config key: <yellow>user.blocks-per-5-min<white> doesn't exist or is not a valid decimal. Check your <[script_path]> file! <dark_green>Default: 25"
         - else:
             - flag server dPrevention.config.user.blocks-per-5-min:<[config.user.blocks-per-5-min]>
         #Validate shop.block-price
         - if !<[config.shop.block-price].exists> || !<[config.shop.block-price].is_decimal>:
             - flag server dPrevention.config.shop.block-price:1.5
-            - debug error "Config key: shop.block-price doesn't exist or is not a valid decimal. Check your <[script_path]> file! Default: 1.5"
+            - debug error "Config key: <yellow>shop.block-price<white> doesn't exist or is not a valid decimal. Check your <[script_path]> file! <dark_green>Default: 1.5"
         - else:
             - flag server dPrevention.config.shop.block-price:<[config.shop.block-price]>
         #Validate shop.blocks
         - if !<[config.shop.blocks].exists>:
-            - debug error "Config key: shop.blocks doesn't exist. Default: <script.data_key[data.default_options.shop.blocks].space_separated>"
+            - debug error "Config key: <yellow>shop.blocks<white> doesn't exist. <dark_green>Default: <script.data_key[data.default_options.shop.blocks].space_separated>"
             - flag server dPrevention.config.shop.blocks:<script.data_key[data.default_options.shop.blocks]>
         - else if <[config.shop.blocks]> == <empty>:
-            - debug error "Config key: shop.blocks is empty. Default: <script.data_key[data.default_options.shop.blocks].space_separated>"
+            - debug error "Config key: <yellow>shop.blocks<white> is empty. <dark_green>Default: <script.data_key[data.default_options.shop.blocks].space_separated>"
             - flag server dPrevention.config.shop.blocks:<script.data_key[data.default_options.shop.blocks]>
         - else:
             - foreach <[config.shop.blocks]> as:number:
                 - if !<[number].is_integer>:
-                    - debug error "Config key: shop.blocks has invalid values: <[number]>. Check your <[script_path]> file! Ignoring them."
+                    - debug error "Config key: <yellow>shop.blocks<white> has invalid values: <[number]>. Check your <[script_path]> file! Ignoring them."
                     - foreach next
                 - else:
                     - define valid_numbers:->:<[number]>
@@ -166,15 +166,15 @@ dPrevention_config_validation:
         - define item <[config.inventories.filler_item].as_item.if_null[null]>
         - if <[item]> == null:
             - flag server dPrevention.config.inventories.filler_item:air
-            - debug error "Config key: inventories.filler_item doesn't exist or isn't a valid item. Check your <[script_path]> file! Default: air"
+            - debug error "Config key: <yellow>inventories.filler_item<white> doesn't exist or isn't a valid item. Check your <[script_path]> file! <dark_green>Default: air"
         - else:
             - flag server dPrevention.config.inventories.filler_item:<[config.inventories.filler_item]>
         #Validate scripters.flags
         - if !<[config.scripters.flags].exists>:
             - flag server dPrevention.config.scripters.flags:<script.data_key[data.default_options.scripters.flags]>
-            - debug error "Config key: scripters.flags doesn't exist. Check your <[script_path]> file! Default: <script.data_key[data.default_options.scripters.flags].space_separated>"
+            - debug error "Config key: <yellow>scripters.flags<white> doesn't exist. Check your <[script_path]> file! <dark_green>Default: <script.data_key[data.default_options.scripters.flags].space_separated>"
         - else if !<[config.scripters.flags].contains[dPrevention]>:
-            - debug error "Config key: scripters.flags value dPrevention was removed in your config file. Check your <[script_path]> file! Default: <script.data_key[data.default_options.scripters.flags].space_separated>"
+            - debug error "Config key: <yellow>scripters.flags<white> value dPrevention was removed in your config file. Check your <[script_path]> file! <dark_green>Default: <script.data_key[data.default_options.scripters.flags].space_separated>"
             - flag server dPrevention.config.scripters.flags:<script.data_key[data.default_options.scripters.flags]>
         - else:
             - flag server dPrevention.config.scripters.flags:<[config.scripters.flags]>
