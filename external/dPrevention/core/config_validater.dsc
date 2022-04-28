@@ -37,6 +37,13 @@ dPrevention_config_validation:
                     - dPrevention
     events:
         after reload scripts:
+        - run dPrevention_validate_config
+        after server start:
+        - run dPrevention_validate_config
+dPrevention_validate_config:
+    type: task
+    debug: false
+    script:
         - if !<script[dPrevention_config].exists>:
             - debug error "WARNING: no config file found. You MUST add the config of dPrevention into your server. Using default values Errors will follow."
             - announce to_ops "<&[error]>No dPrevention config file found! Check your console ASAP."
