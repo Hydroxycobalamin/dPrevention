@@ -13,15 +13,15 @@ dPrevention_update_teleport:
     - define worlds <server.flag[dPrevention.config.claims.worlds].parse[as_world].filter[has_flag[dPrevention.areas]]>
     #Get all areas
     - define player_cuboids <[worlds].filter[has_flag[dPrevention.areas.cuboids]].parse[flag[dPrevention.areas.cuboids]].combine>
-    - define player_polygons <[worlds].filter[has_flag[dPrevention.areas.polygons]].parse[flag[dPrevention.areas.polygons]].combine>
-    - define player_ellipsoids <[worlds].filter[has_flag[dPrevention.areas.ellipsoids]].parse[flag[dPrevention.areas.ellipsoids]].combine>
+    #- define player_polygons <[worlds].filter[has_flag[dPrevention.areas.polygons]].parse[flag[dPrevention.areas.polygons]].combine>
+    #- define player_ellipsoids <[worlds].filter[has_flag[dPrevention.areas.ellipsoids]].parse[flag[dPrevention.areas.ellipsoids]].combine>
     - define admin_cuboids <[worlds].filter[has_flag[dPrevention.areas.admin.cuboids]].parse[flag[dPrevention.areas.admin.cuboids]].combine>
     - define admin_polygons <[worlds].filter[has_flag[dPrevention.areas.admin.polygons]].parse[flag[dPrevention.areas.admin.polygons]].combine>
     - define admin_ellipsoids <[worlds].filter[has_flag[dPrevention.areas.admin.ellipsoids]].parse[flag[dPrevention.areas.admin.ellipsoids]].combine>
     - define cuboids <[player_cuboids].include[<[admin_cuboids]>]>
-    - define polygons <[player_polygons].include[<[admin_polygons]>]>
-    - define ellipsoids <[player_ellipsoids].include[<[admin_ellipsoids]>]>
-    - definemap area_map cuboids:<[cuboids]> polygons:<[polygons]> ellipsoids:<[ellipsoids]>
+    #- define polygons <[player_polygons].include[<[admin_polygons]>]>
+    #- define ellipsoids <[player_ellipsoids].include[<[admin_ellipsoids]>]>
+    - definemap area_map cuboids:<[cuboids]> polygons:<[admin_polygons]> ellipsoids:<[admin_ellipsoids]>
     #Loop through all areas.
     - foreach <[area_map]> key:type as:areas:
         - foreach <[areas]> as:note_name:
