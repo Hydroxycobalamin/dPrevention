@@ -61,7 +61,7 @@ dPrevention_tool_handler:
             - stop
         - choose <context.click_type>:
             - case LEFT_CLICK_BLOCK:
-                - flag <player> dPrevention.selection:<context.location.with_y[<server.flag[dPrevention.config.claims.depth]>].to_cuboid[<context.location>]>
+                - flag <player> dPrevention.selection:<context.location.with_y[<server.flag[dPrevention.config.claims.depth]>]>
                 - narrate "Selection start set on <context.location.simple.custom_color[emphasis]>" format:dPrevention_format
             - case RIGHT_CLICK_BLOCK:
                 - if !<player.has_flag[dPrevention.selection]>:
@@ -70,9 +70,9 @@ dPrevention_tool_handler:
                 - if <player.flag[dPrevention.selection].world.name> != <context.location.world.name>:
                     - narrate "Worlds doesn't match. Please restart your selection by left clicking." format:dPrevention_format
                     - stop
-                - flag <player> dPrevention.selection:<player.flag[dPrevention.selection].include[<context.location.with_y[<context.location.world.max_height>]>]>
+                - flag <player> dPrevention.selection:<player.flag[dPrevention.selection].to_cuboid[<context.location.with_y[<context.location.world.max_height>]>]>
                 - define selection <player.flag[dPrevention.selection]>
-                - if <server.flag[dPrevention.config.claims.worlds].contains[<[selection].world.name>]>:
+                - if !<server.flag[dPrevention.config.claims.worlds].contains[<[selection].world.name>]>:
                     - narrate "You can't create a claim in this world." format:dPrevention_format
                     - run dPrevention_cancel_mode def:claim
                     - stop
@@ -114,7 +114,7 @@ dPrevention_tool_handler:
                 - if <context.location.flag[dPrevention.expandable_corner]> != <player.uuid>:
                     - narrate "You're not allowed to do that." format:dPrevention_format
                     - stop
-                - flag <player> dPrevention.selection:<context.location.flag[dPrevention.location].with_y[<server.flag[dPrevention.config.claims.depth]>].to_cuboid[<context.location>]>
+                - flag <player> dPrevention.selection:<context.location.flag[dPrevention.location].with_y[<server.flag[dPrevention.config.claims.depth]>]>
                 - narrate "Selection start set on <context.location.flag[dPrevention.location].simple.custom_color[emphasis]>" format:dPrevention_format
                 - stop
             - case RIGHT_CLICK_BLOCK:
@@ -170,9 +170,9 @@ dPrevention_tool_handler:
             - actionbar "<gold>Mode: <yellow>Expand" targets:<server.online_players_flagged[dPrevention.expand_mode]>
         after player steps on block flagged:dPrevention.selection:
         - ratelimit <player> 5s
-        - define selection <player.flag[dprevention.selection].include[<context.location.with_y[<context.location.world.max_height>]>]>
+        - define selection <player.flag[dprevention.selection].to_cuboid[<context.location.with_y[<context.location.world.max_height>]>]>
         - run dPrevention_check_intersections def.selection:<[selection]>
-        - playeffect effect:BARRIER at:<[selection].outline> offset:0,0,0 visibility:100 targets:<player>
+        - playeffect effect:BARRIER at:<[selection].outline.parse[center]> offset:0,0,0 visibility:100 targets:<player>
 dPrevention_expand_mode:
     type: task
     debug: false
