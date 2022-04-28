@@ -4,30 +4,30 @@ dPrevention_config_validation:
     data:
         default_options:
             shop:
-            blocks:
-                - 1
-                - 2
-                - 10
-                - 25
-                - 50
-                - 100
-                - 250
-                - 500
-                - 1000
+                blocks:
+                    - 1
+                    - 2
+                    - 10
+                    - 25
+                    - 50
+                    - 100
+                    - 250
+                    - 500
+                    - 1000
             claims:
-            flags:
-                block-break: true
-                block-place: true
-                tnt: true
-                lighter: true
-                pvp: true
-                piston: true
-                container-access: true
-                teleport-item: true
-                item-frame-rotation: true
-                vehicle-move: true
-                vehicle-place:
-                    - HOPPER_MINECART
+                flags:
+                    block-break: true
+                    block-place: true
+                    tnt: true
+                    lighter: true
+                    pvp: true
+                    piston: true
+                    container-access: true
+                    teleport-item: true
+                    item-frame-rotation: true
+                    vehicle-move: true
+                    vehicle-place:
+                        - HOPPER_MINECART
                 worlds:
                     - world
                     - world_nether
@@ -179,3 +179,27 @@ dPrevention_config_validation:
         - else:
             - flag server dPrevention.config.scripters.flags:<[config.scripters.flags]>
         - run dPrevention_apply_config_depth
+dPrevention_apply_config_depth:
+    type: task
+    debug: false
+    script:
+    #Get all current worlds
+    - define worlds <server.flag[dPrevention.config.claims.worlds].parse[as_world]>
+    #Get all cuboid shaped player areas
+    - define cuboid_areas <[worlds].filter_tag[<[filter_value].has_flag[dPrevention.areas.cuboids]>].parse_tag[<[parse_value].flag[dPrevention.areas.cuboids]>].combine>
+    - foreach <[cuboid_areas]> as:note_name:
+        - define cuboid <cuboid[<[note_name]>]>
+        #If the cuboid min y is equal depth config, skip.
+        - if <[cuboid].min.y> == <server.flag[dPrevention.config.claims.depth]>:
+            - foreach next
+        #Else, save the flags for later use
+        - foreach <server.flag[dPrevention.config.scripters.flags]> as:flag:
+            - if !<[cuboid].has_flag[<[flag]>]>:
+                - foreach next
+            - define data.<[flag]>:<[cuboid].flag[<[flag]>]>
+        #Note the new cuboid
+        - note <[cuboid].with_min[<[cuboid].min.with_y[<server.flag[dPrevention.config.claims.depth]>]>]> as:<[note_name]>
+        - define new_cuboid <cuboid[<[note_name]>]>
+        #Apply flags on the new cuboid
+        - foreach <[data]> key:name as:value:
+            - flag <[new_cuboid]> <[name]>:<[value]>
