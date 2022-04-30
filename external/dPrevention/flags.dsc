@@ -62,8 +62,9 @@ dPrevention_player_flag_handlers:
         ##container-access
         on player opens inventory in:world_flagged:dPrevention.flags.container-access priority:100:
         - define id_holder <context.inventory.id_holder>
-        #Allow opening of enderchests.
-        - if <[id_holder]> == ender_chest:
+        - define id_type <context.inventory.id_type>
+        #Allow opening of enderchests, grindstones, smithing tables, workbenchs, cartography tables and looms.
+        - if <[id_holder]> in grindstone|ender_chest|smithing|loom|cartography || <[id_type]> == workbench:
             - stop
         #Allow any script inventories.
         - if <context.inventory.id_type> == script:
@@ -72,8 +73,9 @@ dPrevention_player_flag_handlers:
         - inject dPrevention_initial_check
         on player opens inventory in:area_flagged:dPrevention.flags.container-access priority:50:
         - define id_holder <context.inventory.id_holder>
-        #Allow opening of enderchests.
-        - if <[id_holder]> == ender_chest:
+        - define id_type <context.inventory.id_type>
+        #Allow opening of enderchests, grindstones, smithing tables, workbenchs, cartography tables and looms.
+        - if <[id_holder]> in grindstone|ender_chest|smithing|loom|cartography || <[id_type]> == workbench:
             - stop
         #Allow any script inventories.
         - if <context.inventory.id_type> == script:
