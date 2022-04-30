@@ -75,7 +75,7 @@ dPrevention_player_flag_handlers:
         - define id_holder <context.inventory.id_holder>
         - define id_type <context.inventory.id_type>
         #Allow opening of enderchests, grindstones, smithing tables, workbenchs, cartography tables and looms.
-        - if <[id_holder]> in grindstone|ender_chest|smithing|loom|cartography || <[id_type]> == workbench:
+        - if <[id_holder]> in grindstone|ender_chest|smithing|loom|cartography|anvil || <[id_type]> == workbench:
             - stop
         #Allow any script inventories.
         - if <context.inventory.id_type> == script:
