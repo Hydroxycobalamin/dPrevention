@@ -70,8 +70,7 @@ dPrevention_tool_handler:
                 - if <player.flag[dPrevention.selection].world.name> != <context.location.world.name>:
                     - narrate "Worlds doesn't match. Please restart your selection by left clicking." format:dPrevention_format
                     - stop
-                - flag <player> dPrevention.selection:<player.flag[dPrevention.selection].to_cuboid[<context.location.with_y[<context.location.world.max_height>]>]>
-                - define selection <player.flag[dPrevention.selection]>
+                - define selection <player.flag[dPrevention.selection].to_cuboid[<context.location.with_y[<context.location.world.max_height>]>]>
                 - if !<server.flag[dPrevention.config.claims.worlds].contains[<[selection].world.name>]>:
                     - narrate "You can't create a claim in this world." format:dPrevention_format
                     - run dPrevention_cancel_mode def:claim
@@ -88,12 +87,12 @@ dPrevention_tool_handler:
                 - flag <player> dPrevention.areas.count:++
                 #Note the selection.
                 - define name <player.uuid>_cuboid_<player.flag[dPrevention.areas.count]>
-                - note <player.flag[dPrevention.selection]> as:<[name]>
+                - note <[selection]> as:<[name]>
                 #Link the area to the player and the cuboids world.
                 - flag <player> dPrevention.areas.cuboids:->:<[name]>
                 - flag <cuboid[<[name]>].world> dPrevention.areas.cuboids:->:<[name]>
                 - narrate "Selection claimed" format:dPrevention_format
-                - playeffect effect:BARRIER at:<player.flag[dPrevention.selection].outline.parse[center]> offset:0,0,0 visibility:100 targets:<player>
+                - playeffect effect:BARRIER at:<[selection].outline.parse[center]> offset:0,0,0 visibility:100 targets:<player>
                 #Make the area to a dPrevention area. Add the player as owner.
                 - run dPrevention_area_creation def.area:<cuboid[<[name]>]> def.owner:<player.uuid>
                 #Remove claim mode.
