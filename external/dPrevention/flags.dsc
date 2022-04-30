@@ -88,13 +88,6 @@ dPrevention_player_flag_handlers:
             - stop
         - definemap arguments flag:container-access "reason:You can't open that here." location:<[id_holder].location.if_null[<[id_holder]>]>
         - inject dPrevention_initial_check
-        #Prevent anvils from being used.
-        on player right clicks anvil in:world_flagged:dPrevention.flags.container-access priority:100:
-        - definemap arguments flag:container-access "reason:You can't use this anvil here." location:<context.location>
-        - inject dPrevention_initial_check
-        on player right clicks anvil in:area_flagged:dPrevention.flags.container-access priority:50:
-        - definemap arguments flag:container-access "reason:You can't use this anvil here." location:<context.location>
-        - inject dPrevention_initial_check
         #Prevent the player from taking items out of item frames.
         on *item_frame damaged by player in:area_flagged:dPrevention.flags.container-access priority:50:
         - definemap arguments flag:container-access "reason:You can't take this item." location:<context.entity.location>
