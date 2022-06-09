@@ -36,9 +36,7 @@ dPrevention_config_validation:
                 flags:
                     - dPrevention
     events:
-        after reload scripts:
-        - run dPrevention_validate_config
-        after server start:
+        after scripts loaded:
         - run dPrevention_validate_config
 dPrevention_validate_config:
     type: task
