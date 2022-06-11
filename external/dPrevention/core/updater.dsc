@@ -1,3 +1,4 @@
+# The usage of this script is to update areas automatically, if breaking changes were made.
 dPrevention_updater:
     type: world
     debug: false
