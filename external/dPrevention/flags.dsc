@@ -39,10 +39,16 @@ dPrevention_player_flag_handlers:
         - definemap arguments flag:block-place "reason:You can't put your item into this item frame." location:<context.entity.location>
         - inject dPrevention_initial_check
         ##use
-        on player right clicks *door|lever|*_button|*_pressure_plate|anvil|*campfire in:world_flagged:dPrevention.flags.use priority:100:
+        on player right clicks *door|lever|*_button|anvil|*campfire in:world_flagged:dPrevention.flags.use priority:100:
         - definemap arguments flag:use "reason:You can't use this block here." location:<context.location>
         - inject dPrevention_initial_check
-        on player right clicks *door|lever|*_button|*_pressure_plate|anvil|*campfire in:area_flagged:dPrevention.flags.use priority:50:
+        on player right clicks *door|lever|*_button|anvil|*campfire in:area_flagged:dPrevention.flags.use priority:50:
+        - definemap arguments flag:use "reason:You can't use this block here." location:<context.location>
+        - inject dPrevention_initial_check
+        on player stands on material in:world_flagged:dPrevention.flags.use priority:100:
+        - definemap arguments flag:use "reason:You can't use this block here." location:<context.location>
+        - inject dPrevention_initial_check
+        on player stands on material in:area_flagged:dPrevention.flags.use priority:50:
         - definemap arguments flag:use "reason:You can't use this block here." location:<context.location>
         - inject dPrevention_initial_check
         ##lighter
@@ -206,6 +212,13 @@ dPrevention_generic_flag_handlers:
         - inject dPrevention_initial_block_check
         on entity damaged in:area_flagged:dPrevention.flags.entity-damage priority:50:
         - definemap arguments flag:entity-damage location:<context.entity.location>
+        - inject dPrevention_initial_block_check
+        ##use
+        on entity interacts with material in:world_flagged:dPrevention.flags.use priority:100:
+        - definemap arguments flag:use location:<context.location>
+        - inject dPrevention_initial_block_check
+        on entity interacts with material in:area_flagged:dPrevention.flags.use priority:50:
+        - definemap arguments flag:use location:<context.location>
         - inject dPrevention_initial_block_check
         ##piston
         on piston extends priority:100:
