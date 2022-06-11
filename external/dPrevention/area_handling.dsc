@@ -43,5 +43,7 @@ dPrevention_check_intersections:
     #If the selection intersects another claim which he the player doesn't own, he's not allowed to claim.
     - if !<[intersections].is_empty>:
         - narrate "Your selection intersects <[intersections].size.custom_color[emphasis]> other claims." format:dPrevention_format
-        - playeffect effect:BARRIER at:<[intersections].parse[bounding_box.outline].combine> offset:0,0,0 targets:<player>
-        - stop
+        - foreach <[intersections].parse[bounding_box]> as:intersection:
+            - define corners:|:<[intersection].proc[dPrevention_create_corner].context[<[intersection].min>]>
+            - define corners:|:<[intersection].proc[dPrevention_create_corner].context[<[intersection].max>]>
+        - debugblock <[corners]> color:white alpha:0.5
