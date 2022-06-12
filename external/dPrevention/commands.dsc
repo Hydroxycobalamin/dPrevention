@@ -105,7 +105,7 @@ dPrevention_main:
                 - case polygon:
                     - inject dPrevention_check_adminclaim_creation
                 - default:
-                    - narrate <script.data_key[usage].custom_color[emphasis]><script[seltool_command].exists.if_true[<empty>].if_false[<n><script.parsed_key[data.tools]>]> format:dPrevention_format
+                    - narrate <[syntax]> format:dPrevention_format
         - default:
             - narrate <[syntax]> format:dPrevention_format
 dPrevention_check_adminclaim_creation:
