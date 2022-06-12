@@ -30,20 +30,30 @@ dPrevention_area_admin_removal:
 dPrevention_check_intersections:
     type: task
     debug: false
-    #This task script is usually injected via inject command.
+    # This task script is usually injected via inject command.
     definitions: cuboid|selection
     script:
+    # Get all dPrevention areas, as cuboid.
     - define area_map <[selection].world.flag[dPrevention.areas].if_null[<map>]>
-    - define cuboids <[area_map.cuboids].if_null[<list>].include[<[area_map.admin.cuboids].if_null[<list>]>].parse[as_cuboid].exclude[<[cuboid].if_null[<empty>]>]>
-    - define ellipsoids <[area_map.ellipsoids].if_null[<list>].include[<[area_map.admin.ellipsoids].if_null[<list>]>].parse[as_ellipsoid.bounding_box].exclude[<[cuboid].if_null[<empty>]>]>
-    - define polygons <[area_map.polygons].if_null[<list>].include[<[area_map.admin.polygons].if_null[<list>]>].parse[as_polygon.bounding_box].exclude[<[cuboid].if_null[<empty>]>]>
-    - define intersections <[cuboids].include[<[ellipsoids]>].include[<[polygons]>].filter_tag[<[filter_value].intersects[<[selection]>]>]>
-    - define owned_areas <[intersections].filter_tag[<[filter_value].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>]>
-    - define intersections <[intersections].exclude[<[owned_areas]>]>
-    #If the selection intersects another claim which he the player doesn't own, he's not allowed to claim.
+    - definemap admin_areas:
+        admin_cuboids: <[area_map.admin.cuboids].if_null[<list>].parse[as_cuboid]>
+        admin_ellipsoids: <[area_map.admin.ellipsoids].if_null[<list>].parse[as_ellipsoid.bounding_box]>
+        admin_polygons: <[area_map.admin.polygons].if_null[<list>].parse[as_polygon.bounding_box]>
+    - definemap player_areas:
+        cuboids: <[area_map.cuboids].if_null[<list>].parse[as_cuboid]>
+        ellipsoids: <[area_map.ellipsoids].if_null[<list>].parse[as_ellipsoid.bounding_box]>
+        polygons: <[area_map.polygons].if_null[<list>].parse[as_polygon.bounding_box]>
+    - define cuboids <[player_areas].values.combine>
+    # Exclude owned areas.
+    - define owned_areas <[cuboids].filter_tag[<player.uuid.is_in[<[filter_value].flag[dPrevention.owners]>]>]>
+    - define cuboids <[cuboids].exclude[<[owned_areas]>].include[<[admin_areas].values.combine>]>
+    # Check for intersections.
+    - define intersections <[cuboids].filter_tag[<[filter_value].intersects[<[selection]>]>]>
+    # If the selection intersects another claim which he the player doesn't own, he's not allowed to claim.
     - if !<[intersections].is_empty>:
         - narrate "Your selection intersects <[intersections].size.custom_color[emphasis]> other claims." format:dPrevention_format
-        - foreach <[intersections].parse[bounding_box]> as:intersection:
-            - define corners:|:<[intersection].proc[dPrevention_create_corner].context[<[intersection].min>]>
-            - define corners:|:<[intersection].proc[dPrevention_create_corner].context[<[intersection].max>]>
+        - foreach <[intersections]> as:intersection:
+            - define created_corner <[intersection].proc[dPrevention_create_corner].context[<[intersection].min>]>
+            - define corners:|:<[created_corner].proc[dPrevention_copy_corner].context[<[intersection].max.y>].include[<[created_corner]>]>
         - debugblock <[corners]> color:white alpha:0.5
+        - stop

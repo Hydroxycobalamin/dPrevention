@@ -172,7 +172,7 @@ dPrevention_tool_handler:
         - ratelimit <player> 1s
         - define selection <player.flag[dprevention.selection].to_cuboid[<player.cursor_on.if_null[<context.location>].with_y[<context.location.world.max_height>]>]>
         - run dPrevention_show_debugblocks def.locations:<[selection].proc[dPrevention_generate_outline]> def.color:green
-        - run dPrevention_check_intersections def.selection:<[selection]>
+        - inject dPrevention_check_intersections
 dPrevention_expand_mode:
     type: task
     debug: false
@@ -182,7 +182,7 @@ dPrevention_expand_mode:
     - flag <player> dPrevention.expand_mode:<[cuboid]> expire:120s
     - run dPrevention_show_debugblocks def.locations:<[cuboid].proc[dPrevention_generate_outline]> def.color:green
     # Define the fake_block locations and mark them.
-    - define locations <[cuboid].proc[dPrevention_get_corners].context[<[location]>].parse_value_tag[<[parse_value].highest>]>
+    - define locations <[cuboid].proc[dPrevention_get_corners].context[<[location].y>].parse_value_tag[<[parse_value].highest>]>
     - flag <player> dPrevention.show_fake_locations:<[locations].values>
     - foreach <[locations]> key:direction as:location:
         - showfake glowstone <[location]> duration:120s
@@ -200,17 +200,14 @@ dPrevention_expand_mode:
 dPrevention_get_corners:
     type: procedure
     debug: false
-    definitions: cuboid|location
+    definitions: cuboid|y
     script:
-    - define size <[cuboid].size.sub[1,1,1]>
-    - define min <[cuboid].min>
-    - define max <[cuboid].max>
-    - define y <[location].y>
+    - define corners <[cuboid].corners>
     - definemap locations:
-        north_west: <[min].with_y[<[y]>]>
-        south_east: <[max].with_y[<[y]>]>
-        north_east: <[min].add[<[size].x>,0,0].with_y[<[y]>]>
-        south_west: <[max].sub[<[size].x>,0,0].with_y[<[y]>]>
+        north_west: <[corners].get[1].with_y[<[y]>]>
+        south_east: <[corners].get[4].with_y[<[y]>]>
+        north_east: <[corners].get[2].with_y[<[y]>]>
+        south_west: <[corners].get[3].with_y[<[y]>]>
     - determine <[locations]>
 dPrevention_cancel_mode:
     type: task
@@ -242,7 +239,7 @@ dPrevention_generate_outline:
     definitions: selection
     script:
     # Get the lowest 4 corners of the selection.
-    - define corners <[selection].proc[dPrevention_get_corners].context[<[selection].min>]>
+    - define corners <[selection].proc[dPrevention_get_corners].context[<[selection].min.y>]>
     # Generate edges as cuboids from the corners to return the edges of the selection.
     - define edges <[corners].values.parse_tag[<[parse_value].to_cuboid[<[parse_value].with_y[<[selection].max.y>]>].blocks>]>
     # Generate a list of numbers for calculations.
@@ -250,24 +247,41 @@ dPrevention_generate_outline:
     # Get only specific locations from the edges for client-performance reasons.
     - define outline <[edges].parse_tag[<[parse_value].get[<[numbers]>]>].combine>
     # Create corners on a specific y level.
-    - foreach <player.location>|<[selection].max>|<[selection].min> as:location:
-        - define outline:|:<[selection].proc[dPrevention_create_corner].context[<[location]>]>
+    - define created_corner <[selection].proc[dPrevention_create_corner].context[<[selection].min>]>
+    - foreach <player.location.y>|<[selection].max.y> as:y:
+        - define outline:|:<[created_corner].proc[dPrevention_copy_corner].context[<[y]>]>
     # Return the outline.
-    - determine <[outline]>
+    - determine <[outline].include[<[created_corner]>]>
+dPrevention_copy_corner:
+    type: procedure
+    debug: false
+    definitions: corners|y
+    script:
+    # Copies corners over to another y level.
+    - determine <[corners].parse[with_y[<[y]>]]>
 dPrevention_create_corner:
     type: procedure
     debug: false
     definitions: selection|location
     script:
-    - define corners <[selection].proc[dPrevention_get_corners].context[<[location]>]>
+    - define size <[selection].size>
+    # If the cuboid is small enough, just use the whole 2d outline.
+    - if <[size].x> <= 10 && <[size].z> <= 10:
+        - determine <[selection].outline_2d[<[location].y>]>
+    # Define x and z, to prevent overlapping if the cuboid is on one side > 10.
+    - define x <[size].x.is_less_than[10].if_true[<[size].x.div[2]>].if_false[4]>
+    - define z <[size].z.is_less_than[10].if_true[<[size].z.div[2]>].if_false[4]>
+    # Get the 4 corners of the cuboid.
+    - define corners <[selection].proc[dPrevention_get_corners].context[<[location].y>]>
+    # Generate corners.
     - foreach <[corners]> key:direction as:location:
         - choose <[direction]>:
             - case north_west:
-                - define corner:|:<[location].add[0,0,4].points_between[<[location]>].include[<[location].add[4,0,0].points_between[<[location]>]>]>
+                - define corner:|:<[location].add[0,0,<[z]>].points_between[<[location]>].include[<[location].add[<[x]>,0,0].points_between[<[location]>]>]>
             - case south_east:
-                - define corner:|:<[location].sub[0,0,4].points_between[<[location]>].include[<[location].sub[4,0,0].points_between[<[location]>]>]>
+                - define corner:|:<[location].sub[0,0,<[z]>].points_between[<[location]>].include[<[location].sub[<[x]>,0,0].points_between[<[location]>]>]>
             - case north_east:
-                - define corner:|:<[location].add[0,0,4].points_between[<[location]>].include[<[location].sub[4,0,0].points_between[<[location]>]>]>
+                - define corner:|:<[location].add[0,0,<[z]>].points_between[<[location]>].include[<[location].sub[<[x]>,0,0].points_between[<[location]>]>]>
             - case south_west:
-                - define corner:|:<[location].sub[0,0,4].points_between[<[location]>].include[<[location].add[4,0,0].points_between[<[location]>]>]>
-    - determine <[corner].filter_tag[<[filter_value].is_within[<[selection]>]>]>
+                - define corner:|:<[location].sub[0,0,<[z]>].points_between[<[location]>].include[<[location].add[<[x]>,0,0].points_between[<[location]>]>]>
+    - determine <[corner]>
