@@ -7,7 +7,7 @@ dPrevention_open_gui:
     permission: dPrevention.command.flags
     script:
     - define location <player.location>
-    - define areas <[location].cuboids.include[<[location].ellipsoids>].include[<[location].polygons>]>
+    - define areas <[location].areas>
     #If the player is an admin, let him access all claims.
     - if <player.has_permission[dPrevention.admin]>:
         #If he's not inside an area, open the world flag GUI.
