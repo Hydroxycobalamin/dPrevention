@@ -243,7 +243,7 @@ dPrevention_generate_outline:
     # Generate edges as cuboids from the corners to return the edges of the selection.
     - define edges <[corners].values.parse_tag[<[parse_value].to_cuboid[<[parse_value].with_y[<[selection].max.y>]>].blocks>]>
     # Generate a list of numbers for calculations.
-    - define numbers <util.list_numbers_to[<[edges].first.size.div[6].round_down>].parse[mul[6]]>
+    - define numbers <util.list_numbers[to=<[edges].first.size>;every=6]>
     # Get only specific locations from the edges for client-performance reasons.
     - define outline <[edges].parse_tag[<[parse_value].get[<[numbers]>]>].combine>
     # Create corners on a specific y level.
