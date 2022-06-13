@@ -130,25 +130,25 @@ dPrevention_info_data:
     - foreach <[areas]> key:type as:areas:
         - choose <[type]>:
             - case cuboids:
-                - repeat <[areas].size>:
-                    - define area <[areas].get[<[value]>]>
+                - repeat <[areas].size> as:n:
+                    - define area <[areas].get[<[n]>]>
                     - definemap data "min:<[area].min.xyz.replace_text[,].with[ ]>" "max:<[area].max.xyz.replace_text[,].with[ ]>" world:<[area].world.name> "size:<[area].size.xyz.replace_text[,].with[ ]>" costs:<[area].proc[dPrevention_get_costs]> priority:<[area].flag[dPrevention.priority]> name:<[area].flag[dPrevention.name].parse_color.if_null[<white>Claim]>
                     - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[display=<[data.name]>;lore=<script.parsed_key[data.cuboid]>].with_flag[claim:<[area]>].with_flag[holder:<[player]>].with_flag[type:<[type]>]>
-                    - if <[loop_index].mod[45]> == 0:
+                    - if <[n].mod[45]> == 0:
                         - define page:++
             - case polygons:
-                - repeat <[areas].size>:
-                    - define area <[areas].get[<[value]>]>
+                - repeat <[areas].size> as:n:
+                    - define area <[areas].get[<[n]>]>
                     - definemap data "corner:<[area].corners.parse_tag[<[parse_value].xyz.replace_text[,].with[ ]>]>" world:<[area].world.name> min_y:<[area].min_y> max_y:<[area].max_y> priority:<[area].flag[dPrevention.priority]> name:<[area].flag[dPrevention.name].parse_color.if_null[<white>Claim]>
                     - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[display=<[data.name]>;lore=<script.parsed_key[data.polygon]>].with_flag[claim:<[area]>].with_flag[holder:<[player]>].with_flag[type:<[type]>]>
-                    - if <[loop_index].mod[45]> == 0:
+                    - if <[n].mod[45]> == 0:
                         - define page:++
             - case ellipsoids:
-                - repeat <[areas].size>:
-                    - define area <[areas].get[<[value]>]>
+                - repeat <[areas].size> as:n:
+                    - define area <[areas].get[<[n]>]>
                     - definemap data "location:<[area].location.xyz.replace_text[,].with[ ]>" world:<[area].world.name> priority:<[area].flag[dPrevention.priority]> name:<[area].flag[dPrevention.name].parse_color.if_null[<white>Claim]>
                     - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[display=<[data.name]>;lore=<script.parsed_key[data.ellipsoid]>].with_flag[claim:<[area]>].with_flag[holder:<[player]>].with_flag[type:<[type]>]>
-                    - if <[loop_index].mod[45]> == 0:
+                    - if <[n].mod[45]> == 0:
                         - define page:++
     #Dummy if there aren't any claims yet.
     - if !<[inventory_menu.pages.1].exists>:
@@ -224,7 +224,7 @@ dPrevention_menu_handler:
     - define max <player.flag[dPrevention.inventory_menu.pages].keys.highest>
     - if !<player.has_flag[dPrevention.inventory_menu.pages.<[page]>]>:
         - stop
-    - inventory set origin:<player.flag[dPrevention.inventory_menu.pages.<[page]>]> destination:<player.open_inventory>
+    - inventory set origin:<player.flag[dPrevention.inventory_menu.pages.<[page]>].pad_right[45].with[air]> destination:<player.open_inventory>
     - inventory flag slot:<context.slot> page:<[page]> destination:<player.open_inventory>
     - inventory set "origin:<context.item.with[lore=Current Page:<[page]>/<[max]>].with_flag[page:<[page]>]>" slot:<context.slot> destination:<player.open_inventory>
     events:
