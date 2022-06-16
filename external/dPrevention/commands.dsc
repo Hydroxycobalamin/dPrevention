@@ -59,7 +59,7 @@ dPrevention_main:
                     - give dPrevention_tool slot:hand
                     - narrate "You've obtained the <element[<item[dPrevention_tool].display>].on_hover[<item[dPrevention_tool]>].type[SHOW_ITEM]>." format:dPrevention_format
                 - case info:
-                    - run dPrevention_info_formatter def.cuboids:<player.flag[dPrevention.areas.cuboids].parse[as_cuboid].sort_by_value[world.name].if_null[<list>].exclude[null]> def.player:<player>
+                    - run dPrevention_info_formatter def.cuboids:<player.flag[dPrevention.areas.cuboids].sort_by_value[world.name].if_null[<list>].exclude[null]> def.player:<player>
                 - case admininfo:
                     - if !<player.has_permission[dPrevention.admin]>:
                         - narrate "You don't have permission to do that" format:dPrevention_format
@@ -68,9 +68,9 @@ dPrevention_main:
                         - define data <[world].flag[dPrevention.areas.admin].if_null[null]>
                         - if <[data]> == null:
                             - foreach next
-                        - define cuboids <[cuboids].if_null[<list>].include[<[data.cuboids].parse[as_cuboid].if_null[<list>]>]>
-                        - define polygons <[polygons].if_null[<list>].include[<[data.polygons].parse[as_polygon].if_null[<list>]>]>
-                        - define ellipsoids <[ellipsoids].if_null[<list>].include[<[data.ellipsoids].parse[as_ellipsoid].if_null[<list>]>]>
+                        - define cuboids <[cuboids].if_null[<list>].include[<[data.cuboids].if_null[<list>]>]>
+                        - define polygons <[polygons].if_null[<list>].include[<[data.polygons].if_null[<list>]>]>
+                        - define ellipsoids <[ellipsoids].if_null[<list>].include[<[data.ellipsoids].if_null[<list>]>]>
                     - run dPrevention_info_formatter def.cuboids:<[cuboids].if_null[<list>]> def.polygons:<[polygons].if_null[<list>]> def.ellipsoids:<[ellipsoids].if_null[<list>]> def.player:null
                 - default:
                     - narrate <[syntax]> format:dPrevention_format
@@ -86,7 +86,7 @@ dPrevention_main:
             - if <[player]> == null:
                 - narrate "This player doesn't exist!" format:dPrevention_format
                 - stop
-            - run dPrevention_info_formatter def.cuboids:<[player].flag[dPrevention.areas.cuboids].parse[as_cuboid].sort_by_value[world.name].if_null[<list>].exclude[null]> def.player:<[player]>
+            - run dPrevention_info_formatter def.cuboids:<[player].flag[dPrevention.areas.cuboids].sort_by_value[world.name].if_null[<list>].exclude[null]> def.player:<[player]>
         - case 3:
             - if !<player.has_permission[dPrevention.admin]>:
                 - narrate "You don't have permission to do that" format:dPrevention_format
@@ -133,7 +133,6 @@ dPrevention_check_adminclaim_creation:
         - narrate "An object with this name already exists." format:dPrevention_format
         - stop
     - inject selector_tool_status_task path:<[type]>
-    - flag <[area].world> dPrevention.areas.admin.<[type]>s:->:<[id]>
     - note <[area]> as:<[id]>
     #Get the noted object.
     - choose <[type]>:
@@ -145,6 +144,7 @@ dPrevention_check_adminclaim_creation:
             - define note <polygon[<[id]>]>
         - default:
             - debug error "Something went wrong. Please report it to the author. Type: <[type]>"
+    - flag <[area].world> dPrevention.areas.admin.<[type]>s:->:<[note]>
     #Make the noted object a dPrevention admin area.
     - run dPrevention_area_creation def.area:<[note]>
     - narrate "You've created an admin claim called <[id].custom_color[emphasis]>!" format:dPrevention_format

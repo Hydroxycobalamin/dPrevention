@@ -2,14 +2,45 @@
 dPrevention_updater:
     type: world
     debug: false
+    version: 2
+    updates:
+        1: teleport
+        2: object_storage
     events:
         after server start:
-        - if !<server.flag[dPrevention.updated].keys.contains[teleport].if_null[false]>:
-            - run dPrevention_update_teleport
-dPrevention_update_teleport:
+        # If it's a server, updated from a pre-cache version, which haven't updated teleports flags yet.
+        - if !<server.has_flag[dPrevention.update.version]> && <server.has_flag[dPrevention.updated.teleport]>:
+            - flag server dPrevention.update.version:1
+        # Try updates.
+        - repeat <script.data_key[version]> as:n:
+            - if <server.flag[dPrevention.update.version].if_null[0]> < <[n]>:
+                - ~run dPrevention_update_task def.path:<script.data_key[updates.<[n]>]>
+        # Set version as cache to prevent further updates.
+        - flag server dPrevention.update.version:<script.data_key[version]>
+dPrevention_update_task:
     type: task
     debug: false
-    script:
+    definitions: path
+    object_storage:
+    # Get all current worlds
+    - define worlds <server.flag[dPrevention.config.claims.worlds].parse[as_world].filter[has_flag[dPrevention.areas]]>
+    # Convert the note_name to the object and save it.
+    - foreach <[worlds]> as:world:
+        - if <[world].has_flag[dPrevention.areas.cuboids]>:
+            - flag <[world]> dPrevention.areas.cuboids:<[world].flag[dPrevention.areas.cuboids].parse[as_cuboid]>
+        - if <[world].has_flag[dPrevention.areas.ellipsoids]>:
+            - flag <[world]> dPrevention.areas.ellipsoids:<[world].flag[dPrevention.areas.ellipsoids].parse[as_ellipsoid]>
+        - if <[world].has_flag[dPrevention.areas.polygons]>:
+            - flag <[world]> dPrevention.areas.polygons:<[world].flag[dPrevention.areas.polygons].parse[as_polygon]>
+        - if <[world].has_flag[dPrevention.areas.admin.cuboids]>:
+            - flag <[world]> dPrevention.areas.admin.cuboids:<[world].flag[dPrevention.areas.admin.cuboids].parse[as_cuboid]>
+        - if <[world].has_flag[dPrevention.areas.admin.ellipsoids]>:
+            - flag <[world]> dPrevention.areas.admin.ellipsoids:<[world].flag[dPrevention.areas.admin.ellipsoids].parse[as_ellipsoid]>
+        - if <[world].has_flag[dPrevention.areas.admin.polygons]>:
+            - flag <[world]> dPrevention.areas.admin.polygons:<[world].flag[dPrevention.areas.admin.polygons].parse[as_polygon]>
+    - foreach <server.players_flagged[dPrevention.areas.cuboids]> as:player:
+        - flag <[player]> dPrevention.areas.cuboids:<[player].flag[dPrevention.areas.cuboids].parse[as_cuboid]>
+    teleport:
     #Get all current worlds
     - define worlds <server.flag[dPrevention.config.claims.worlds].parse[as_world].filter[has_flag[dPrevention.areas]]>
     #Get all areas
@@ -43,34 +74,6 @@ dPrevention_update_teleport:
                 - announce to_console "Found <[area].note_name.color[aqua]> with non-existent teleport flag. Renaming flag <element[teleport].color[green]> to <element[teleport-item].color[yellow]>."
                 - flag <[area]> dPrevention.flags.teleport:!
                 - flag <[area]> dPrevention.flags.teleport-item
-    - flag server "dPrevention.updated.teleport:Renamed flags teleport to teleport-item"
-dPrevention_manual_update:
-    type: command
-    debug: false
-    name: update_dPrevention
-    usage: /update_dPrevention [type]
-    description: Updates dPrevention manually.
-    tab completions:
-        1: teleport|show
-    permission: dPrevention.update
+    - flag server dPrevention.updated:!
     script:
-    - if <context.source_type> != SERVER:
-        - narrate "<&[error]>This command must be run from the console!" format:dPrevention_format
-    - if <context.args.size> != 1:
-        - announce to_console "Syntax: <script.data_key[usage].custom_color[emphasis]>"
-        - stop
-    - choose <context.args.first>:
-        - case teleport:
-            - if <server.has_flag[dPrevention.update.teleport]>:
-                - run dPrevention_update_teleport
-                - flag server dPrevention.update.teleport:!
-                - announce to_console "Updating teleport flags. Watch your console!"
-                - stop
-            - flag server dPrevention.update.teleport duration:10s
-            - announce to_console "Are you sure you want manually updating teleport flags? This checks all current areas and renames the flag 'teleport' to 'teleport-item'. This will take a few seconds. Type the command again, to continue." format:dPrevention_format
-        - case show:
-            - announce to_console "Printing out applied updated"
-            - foreach <server.flag[dPrevention.updated].if_null[<map>]> key:type as:description:
-                - announce to_console "Updated <element[<[type]>].color[green]>: <element[<[description]>].color[yellow]>"
-        - default:
-            - announce to_console "Syntax: <script.data_key[usage].custom_color[emphasis]>"
+    - inject <script> path:<[path]>

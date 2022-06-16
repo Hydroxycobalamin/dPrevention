@@ -16,8 +16,8 @@ dPrevention_area_removal:
     definitions: cuboid|player
     script:
     - run dPrevention_cancel_mode def:expand player:<[player]>
-    - flag <[cuboid].world> dPrevention.areas.cuboids:<-:<[cuboid].note_name>
-    - flag <[player]> dPrevention.areas.cuboids:<-:<[cuboid].note_name>
+    - flag <[cuboid].world> dPrevention.areas.cuboids:<-:<[cuboid]>
+    - flag <[player]> dPrevention.areas.cuboids:<-:<[cuboid]>
     - note remove as:<[cuboid].note_name>
     - run dPrevention_take_blocks def.type:in_use def.amount:<[cuboid].proc[dPrevention_get_costs]> player:<[player]>
 dPrevention_area_admin_removal:
@@ -25,7 +25,7 @@ dPrevention_area_admin_removal:
     debug: false
     definitions: data
     script:
-    - flag <[data.claim].world> dPrevention.areas.admin.<[data.path]>:<-:<[data.claim].note_name>
+    - flag <[data.claim].world> dPrevention.areas.admin.<[data.path]>:<-:<[data.claim]>
     - note remove as:<[data.claim].note_name>
 dPrevention_check_intersections:
     type: task
@@ -36,13 +36,13 @@ dPrevention_check_intersections:
     # Get all dPrevention areas, as cuboid.
     - define area_map <[selection].world.flag[dPrevention.areas].if_null[<map>]>
     - definemap admin_areas:
-        admin_cuboids: <[area_map.admin.cuboids].if_null[<list>].parse[as_cuboid]>
-        admin_ellipsoids: <[area_map.admin.ellipsoids].if_null[<list>].parse[as_ellipsoid.bounding_box]>
-        admin_polygons: <[area_map.admin.polygons].if_null[<list>].parse[as_polygon.bounding_box]>
+        admin_cuboids: <[area_map.admin.cuboids].if_null[<list>]>
+        admin_ellipsoids: <[area_map.admin.ellipsoids].if_null[<list>].parse[bounding_box]>
+        admin_polygons: <[area_map.admin.polygons].if_null[<list>].parse[bounding_box]>
     - definemap player_areas:
-        cuboids: <[area_map.cuboids].if_null[<list>].parse[as_cuboid]>
-        ellipsoids: <[area_map.ellipsoids].if_null[<list>].parse[as_ellipsoid.bounding_box]>
-        polygons: <[area_map.polygons].if_null[<list>].parse[as_polygon.bounding_box]>
+        cuboids: <[area_map.cuboids].if_null[<list>]>
+        ellipsoids: <[area_map.ellipsoids].if_null[<list>].parse[bounding_box]>
+        polygons: <[area_map.polygons].if_null[<list>].parse[bounding_box]>
     - define cuboids <[player_areas].values.combine>
     # Exclude owned areas.
     - define owned_areas <[cuboids].filter_tag[<player.uuid.is_in[<[filter_value].flag[dPrevention.owners]>]>]>
@@ -56,4 +56,3 @@ dPrevention_check_intersections:
             - define created_corner <[intersection].proc[dPrevention_create_corner].context[<[intersection].min>]>
             - define corners:|:<[created_corner].proc[dPrevention_copy_corner].context[<[intersection].max.y>].include[<[created_corner]>]>
         - debugblock <[corners]> color:white alpha:0.5
-        - stop

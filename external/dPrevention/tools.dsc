@@ -89,11 +89,12 @@ dPrevention_tool_handler:
                 - define name <player.uuid>_cuboid_<player.flag[dPrevention.areas.count]>
                 - note <[selection]> as:<[name]>
                 # Link the area to the player and the cuboids world.
-                - flag <player> dPrevention.areas.cuboids:->:<[name]>
-                - flag <cuboid[<[name]>].world> dPrevention.areas.cuboids:->:<[name]>
+                - define cuboid <cuboid[<[name]>]>
+                - flag <player> dPrevention.areas.cuboids:->:<[cuboid]>
+                - flag <[cuboid].world> dPrevention.areas.cuboids:->:<[cuboid]>
                 - narrate "Selection claimed" format:dPrevention_format
                 # Make the area to a dPrevention area. Add the player as owner.
-                - run dPrevention_area_creation def.area:<cuboid[<[name]>]> def.owner:<player.uuid>
+                - run dPrevention_area_creation def.area:<[cuboid]> def.owner:<player.uuid>
                 # Remove claim mode.
                 - run dPrevention_cancel_mode def:claim
                 - run dPrevention_show_debugblocks def.locations:<[selection].proc[dPrevention_generate_outline]> def.color:green
