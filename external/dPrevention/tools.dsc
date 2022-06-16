@@ -77,15 +77,13 @@ dPrevention_tool_handler:
                     - stop
                 - inject dPrevention_check_intersections
                 # If the player can't afford the region, stop. Else define the costs.
-                - ~run dPrevention_check_affordability def:<list_single[<[selection]>].include[claim]> save:queue
-                - if <entry[queue].created_queue.has_flag[stop]>:
+                - define costs <[selection].proc[dPrevention_check_affordability].context[claim]>
+                - if !<[costs].is_decimal>:
                     - narrate "You can't afford that." format:dPrevention_format
                     - stop
-                - else:
-                    - define costs <entry[queue].created_queue.determination.first>
                 - run dPrevention_add_blocks def.type:in_use def.amount:<[costs]>
-                - flag <player> dPrevention.areas.count:++
                 # Note the selection.
+                - flag <player> dPrevention.areas.count:++
                 - define name <player.uuid>_cuboid_<player.flag[dPrevention.areas.count]>
                 - note <[selection]> as:<[name]>
                 # Link the area to the player and the cuboids world.
@@ -138,12 +136,11 @@ dPrevention_tool_handler:
                 - define selection <player.flag[dPrevention.selection].to_cuboid[<context.location.with_y[<context.location.world.max_height>]>]>
                 - inject dPrevention_check_intersections
                 # If the player can't afford the region, stop. Else define the costs.
-                - ~run dPrevention_check_affordability def:<list_single[<[selection]>].include[expand].include_single[<[cuboid]>]> save:queue
-                - if <entry[queue].created_queue.has_flag[stop]>:
+                - define costs <[selection].proc[dPrevention_check_affordability].context[expand|<[cuboid]>]>
+                - if !<[costs].is_decimal>:
                     - narrate "You can't afford that." format:dPrevention_format
                     - stop
                 - else:
-                    - define costs <entry[queue].created_queue.determination.first>
                     # Check if the cuboid is smaller or larger, to take or give him blocks back.
                     - if <[costs]> < 0:
                         - run dPrevention_take_blocks def.type:in_use def.amount:<[costs].mul[-1]>

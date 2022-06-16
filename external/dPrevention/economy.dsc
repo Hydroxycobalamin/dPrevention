@@ -15,7 +15,7 @@ dPrevention_get_blocks:
     - define free_amount <[player].flag[dPrevention.blocks.amount.per_time].if_null[0].add[<[player].flag[dPrevention.blocks.amount.per_block].if_null[0]>].sub[<[player].flag[dPrevention.blocks.amount.in_use].if_null[0]>]>
     - determine <[free_amount]>
 dPrevention_check_affordability:
-    type: task
+    type: procedure
     debug: false
     definitions: cuboid|mode|old_cuboid
     script:
@@ -23,16 +23,14 @@ dPrevention_check_affordability:
         - case claim:
             - define costs <proc[dPrevention_get_costs].context[<[cuboid]>]>
             - if <[costs]> > <proc[dPrevention_get_blocks]>:
-                - flag <queue> stop
-                - stop
+                - determine false
             - determine <[costs]>
         - case expand:
             - define used_blocks <proc[dPrevention_get_costs].context[<[old_cuboid]>]>
             - define current_costs <proc[dPrevention_get_costs].context[<[cuboid]>]>
             - define costs <[current_costs].sub[<[used_blocks]>]>
             - if <[costs]> > <proc[dPrevention_get_blocks]>:
-                - flag <queue> stop
-                - stop
+                - determine false
             - determine <[costs]>
 dPrevention_blocks_handler:
     type: world
