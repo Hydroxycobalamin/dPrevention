@@ -46,12 +46,12 @@ dPrevention_tool_handler:
         # If there are multiple areas which the player owns, select one.
         - if <[owned_areas].size> > 1:
             - foreach <[owned_areas]> as:cuboid:
-                - clickable dPrevention_expand_mode def:<list_single[<[cuboid]>].include[<[location]>]> for:<player> until:1m save:<[loop_index]>
+                - clickable dPrevention_expand_mode def.cuboid:<[cuboid]> def.location:<[location]> for:<player> until:1m save:<[loop_index]>
                 - define clickables:->:<[cuboid].note_name.on_click[<entry[<[loop_index]>].command>].on_hover[<[cuboid].note_name>]>
             - narrate <[clickables].space_separated.custom_color[emphasis]> format:dPrevention_format
             - stop
         # If there's only a single area, set the player in expand mode.
-        - run dPrevention_expand_mode def:<list_single[<[owned_areas].first>].include[<[location]>]>
+        - run dPrevention_expand_mode def.cuboid:<[owned_areas]> def.location:<[location]>
         on player clicks block with:dPrevention_tool flagged:dPrevention.claim_mode priority:-1:
         - determine passively cancelled
         # If the player sneaks while he clicks a block, claim mode will be removed.

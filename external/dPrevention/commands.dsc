@@ -17,7 +17,7 @@ dPrevention_open_gui:
             - stop
         #If he's inside multiple areas, he can select one.
         - if <[areas].size> > 1:
-            - run dPrevention_generate_clickables def:<list_single[<[areas]>]>
+            - run dPrevention_generate_clickables def.areas:<[areas]>
             - stop
         #Open the GUI if he's only in one.
         - run dPrevention_fill_flag_GUI def:<[areas].first>
@@ -31,7 +31,7 @@ dPrevention_open_gui:
     #If the user has multiple ownerships, he can select one.
     - if <[ownerships].size> > 1:
         - narrate "There are multiple areas with ownerships at your location, please choose one." format:dPrevention_format
-        - run dPrevention_generate_clickables def:<list_single[<[ownerships]>]>
+        - run dPrevention_generate_clickables def.areas:<[ownerships]>
         - stop
     #Open the GUI if he has only one.
     - run dPrevention_fill_flag_GUI def:<[ownerships].first>

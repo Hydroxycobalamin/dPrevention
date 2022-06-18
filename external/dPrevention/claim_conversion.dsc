@@ -4,7 +4,7 @@ dPrevention_check_dclaim:
     definitions: area
     script:
     - narrate "This area is not a dPrevention claim yet. Do you want to convert it to an admin claim? You wont loose any data applied on it due conversion." format:dPrevention_format
-    - clickable dPrevention_convert_dclaim def:<list_single[<[area]>]> usages:1 for:<player> until:30s save:yes
+    - clickable dPrevention_convert_dclaim def.area:<[area]> usages:1 for:<player> until:30s save:yes
     - narrate <element[Yes].custom_color[emphasis].on_click[<entry[yes].command>].on_hover[Yes]> format:dPrevention_format
 dPrevention_convert_dclaim:
     type: task
