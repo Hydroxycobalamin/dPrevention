@@ -55,4 +55,4 @@ dPrevention_check_intersections:
         - foreach <[intersections]> as:intersection:
             - define created_corner <[intersection].proc[dPrevention_create_corner].context[<[intersection].min>]>
             - define corners:|:<[created_corner].proc[dPrevention_copy_corner].context[<[intersection].max.y>].include[<[created_corner]>]>
-        - debugblock <[corners]> color:white alpha:0.5
+        - debugblock <[corners]> color:<color[0,170,0,255]>
