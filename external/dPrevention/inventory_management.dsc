@@ -113,58 +113,46 @@ dPrevention_info_data:
     type: procedure
     debug: false
     data:
-        cuboid:
-        - <&[base]>Location: <[data.min].custom_color[emphasis]> to <[data.max].custom_color[emphasis]> in <[data.world].custom_color[emphasis]>
-        - <&[base]>Size: <[data.size].color[#00ccff]> Priority: <[data.priority].custom_color[emphasis]>
-        - <&[base]>Costs: <[data.costs].color[#cc0066]>
-        polygon:
-        - <[data.corner].parse_tag[<&[base]>Corner: <[parse_value].custom_color[emphasis]>].separated_by[<n>]>
-        - <&[base]>World: <[data.world].custom_color[emphasis]> Priority: <[data.priority].custom_color[emphasis]>
-        - <&[base]>Height: <[data.min_y].custom_color[emphasis]> to <[data.max_y].custom_color[emphasis]>
-        ellipsoid:
-        - <&[base]>Priority: <[data.priority].custom_color[emphasis]>
-        - <&[base]>Location: <[data.location].custom_color[emphasis]> in <[data.world].custom_color[emphasis]>
-    definitions: areas|player
+        cuboids:
+        - <&[base]>Location: <[parse_value].min.xyz.replace_text[,].with[ ].custom_color[emphasis]> to <[parse_value].max.xyz.replace_text[,].with[ ].custom_color[emphasis]> in <[parse_value].world.name.custom_color[emphasis]>
+        - <&[base]>Size: <[parse_value].size.xyz.replace_text[,].with[ ].color[#00ccff]> Priority: <[parse_value].flag[dPrevention.priority].custom_color[emphasis]>
+        - <&[base]>Costs: <[parse_value].proc[dPrevention_get_costs].color[#cc0066]>
+        polygons:
+        - <[area].corners.parse_tag[<&[base]>Corner: <[parse_value].xyz.replace_text[,].with[ ].custom_color[emphasis]><n>]>
+        - <&[base]>World: <[parse_value].world.name.custom_color[emphasis]> Priority: <[parse_value].flag[dPrevention.priority].custom_color[emphasis]>
+        - <&[base]>Height: <[parse_value].min_y.custom_color[emphasis]> to <[parse_value].max_y.custom_color[emphasis]>
+        ellipsoids:
+        - <&[base]>Priority: <[parse_value].flag[dPrevention.priority].custom_color[emphasis]>
+        - <&[base]>Location: <[parse_value].location.xyz.replace_text[,].with[ ].custom_color[emphasis]> in <[parse_value].world.name.custom_color[emphasis]>
+    definitions: areas_map|player
     script:
     - define page 1
-    - foreach <[areas]> key:type as:areas:
+    # Save data from key to increase speed.
+    - define data <script.data_key[data]>
+    - foreach <[areas_map]> key:type as:areas:
         - choose <[type]>:
             - case cuboids:
-                - repeat <[areas].size> as:n:
-                    - define area <[areas].get[<[n]>]>
-                    - definemap data "min:<[area].min.xyz.replace_text[,].with[ ]>" "max:<[area].max.xyz.replace_text[,].with[ ]>" world:<[area].world.name> "size:<[area].size.xyz.replace_text[,].with[ ]>" costs:<[area].proc[dPrevention_get_costs]> priority:<[area].flag[dPrevention.priority]> name:<[area].flag[dPrevention.name].parse_color.if_null[<white>Claim]>
-                    - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[display=<[data.name]>;lore=<script.parsed_key[data.cuboid]>].with_flag[claim:<[area]>].with_flag[holder:<[player]>].with_flag[type:<[type]>]>
-                    - if <[n].mod[45]> == 0:
-                        - define page:++
+                - define list:|:<[areas].parse_tag[dPrevention_menu_item[display=<[area].flag[dPrevention.name].parse_color.if_null[<white>Claim]>;lore=<[data.<[type]>].unescaped.parsed>]]>
             - case polygons:
-                - repeat <[areas].size> as:n:
-                    - define area <[areas].get[<[n]>]>
-                    - definemap data "corner:<[area].corners.parse_tag[<[parse_value].xyz.replace_text[,].with[ ]>]>" world:<[area].world.name> min_y:<[area].min_y> max_y:<[area].max_y> priority:<[area].flag[dPrevention.priority]> name:<[area].flag[dPrevention.name].parse_color.if_null[<white>Claim]>
-                    - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[display=<[data.name]>;lore=<script.parsed_key[data.polygon]>].with_flag[claim:<[area]>].with_flag[holder:<[player]>].with_flag[type:<[type]>]>
-                    - if <[n].mod[45]> == 0:
-                        - define page:++
+                - define list:|:<[areas].parse_tag[dPrevention_menu_item[display=<[area].flag[dPrevention.name].parse_color.if_null[<white>Claim]>;lore=<[data.<[type]>].unescaped.parsed>]]>
             - case ellipsoids:
-                - repeat <[areas].size> as:n:
-                    - define area <[areas].get[<[n]>]>
-                    - definemap data "location:<[area].location.xyz.replace_text[,].with[ ]>" world:<[area].world.name> priority:<[area].flag[dPrevention.priority]> name:<[area].flag[dPrevention.name].parse_color.if_null[<white>Claim]>
-                    - define inventory_menu.pages.<[page]>:->:<item[dPrevention_menu_item].with[display=<[data.name]>;lore=<script.parsed_key[data.ellipsoid]>].with_flag[claim:<[area]>].with_flag[holder:<[player]>].with_flag[type:<[type]>]>
-                    - if <[n].mod[45]> == 0:
-                        - define page:++
+                - define list:|:<[areas].parse_tag[dPrevention_menu_item[display=<[area].flag[dPrevention.name].parse_color.if_null[<white>Claim]>;lore=<[data.<[type]>].unescaped.parsed>]]>
+    - define pages <[list].sub_lists[45].if_null[<list>]>
     #Dummy if there aren't any claims yet.
-    - if !<[inventory_menu.pages.1].exists>:
-        - define inventory_menu.pages.1:<list[air]>
-    - determine <[inventory_menu]>
+    - if <[pages].is_empty>:
+        - define pages:->:air
+    - determine <[pages]> passively
 dPrevention_info_formatter:
     debug: false
     type: task
     definitions: cuboids|polygons|ellipsoids|player
     script:
     - definemap areas cuboids:<[cuboids].if_null[<list>]> polygons:<[polygons].if_null[<list>]> ellipsoids:<[ellipsoids].if_null[<list>]>
-    - define data <[areas].proc[dPrevention_info_data].context[<[player]>]>
-    - flag <player> dPrevention.inventory_menu:<[data]>
+    - define pages <[areas].proc[dPrevention_info_data].context[<[player]>]>
+    - flag <player> dPrevention.inventory_menu:<[pages]>
     - inventory open destination:dPrevention_menu
     - wait 1t
-    - inventory set origin:<[data.pages.1]> destination:<player.open_inventory>
+    - inventory set origin:<[pages].first> destination:<player.open_inventory>
 dPrevention_menu:
     type: inventory
     data:
@@ -189,7 +177,7 @@ dPrevention_menu:
     definitions:
         x: <server.flag[dPrevention.config.inventories.filler_item]>
         blocks: <item[dPrevention_block_item].with[lore=<script.parsed_key[data.block_lore]>]>
-        page: <item[dPrevention_page_item].with[display=<white>Page;lore=<&[base]>Current Page:1/<player.flag[dPrevention.inventory_menu.pages].keys.highest>].with_flag[page:1]>
+        page: <item[dPrevention_page_item].with[lore=<&[base]>Current Page - 1/<player.flag[dPrevention.inventory_menu].size>]>
         info: <item[light].with[display=<white>Info;lore=<script.parsed_key[data.info_lore]>]>
         horse: <item[dPrevention_ride_whitelist_item].with[lore=<[player].if_null[<player>].flag[dPrevention.ride_whitelist].parse_tag[<&[base]><player[<[parse_value]>].name>].if_null[<empty>]>].with_flag[holder:<[player]>]>
     slots:
@@ -207,6 +195,9 @@ dPrevention_page_item:
     type: item
     debug: false
     material: stone
+    display name: <white>Page
+    flags:
+        page: 1
 dPrevention_ride_whitelist_item:
     type: item
     debug: false
@@ -221,12 +212,15 @@ dPrevention_menu_handler:
     type: world
     debug: false
     pager:
-    - define max <player.flag[dPrevention.inventory_menu.pages].keys.highest>
-    - if !<player.has_flag[dPrevention.inventory_menu.pages.<[page]>]>:
+    - define pages <player.flag[dPrevention.inventory_menu]>
+    - define max <[pages].size>
+    - if <[max]> < <[page]>:
         - stop
-    - inventory set origin:<player.flag[dPrevention.inventory_menu.pages.<[page]>].pad_right[45].with[air]> destination:<player.open_inventory>
+    - if <[page]> < 1:
+        - stop
+    - inventory set origin:<[pages].get[<[page]>].pad_right[45].with[air]> destination:<player.open_inventory>
     - inventory flag slot:<context.slot> page:<[page]> destination:<player.open_inventory>
-    - inventory set "origin:<context.item.with[lore=Current Page:<[page]>/<[max]>].with_flag[page:<[page]>]>" slot:<context.slot> destination:<player.open_inventory>
+    - inventory adjust slot:<context.slot> destination:<player.open_inventory> "lore:<&[base]>Current Page - <[page]>/<[max]>"
     events:
         #Changes the page.
         after player left clicks dPrevention_page_item in dPrevention_menu:
