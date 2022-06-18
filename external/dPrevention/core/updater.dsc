@@ -38,8 +38,10 @@ dPrevention_update_task:
             - flag <[world]> dPrevention.areas.admin.ellipsoids:<[world].flag[dPrevention.areas.admin.ellipsoids].parse[as_ellipsoid]>
         - if <[world].has_flag[dPrevention.areas.admin.polygons]>:
             - flag <[world]> dPrevention.areas.admin.polygons:<[world].flag[dPrevention.areas.admin.polygons].parse[as_polygon]>
+        - announce to_console "Updated areas of <[world].name.color[aqua]> to objects."
     - foreach <server.players_flagged[dPrevention.areas.cuboids]> as:player:
         - flag <[player]> dPrevention.areas.cuboids:<[player].flag[dPrevention.areas.cuboids].parse[as_cuboid]>
+        - announce to_console "Updated areas of <[player].name.color[aqua]> to objects."
     teleport:
     #Get all current worlds
     - define worlds <server.flag[dPrevention.config.claims.worlds].parse[as_world].filter[has_flag[dPrevention.areas]]>
