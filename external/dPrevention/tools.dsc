@@ -95,7 +95,7 @@ dPrevention_tool_handler:
                 - run dPrevention_area_creation def.area:<[cuboid]> def.owner:<player.uuid>
                 # Remove claim mode.
                 - run dPrevention_cancel_mode def:claim
-                - run dPrevention_show_debugblocks def.locations:<[selection].proc[dPrevention_generate_outline]> def.color:<color[85,255,85,255]>
+                - run dPrevention_show_debugblocks def.locations:<[selection].proc[dPrevention_generate_outline]> def.color:<color[0,100,0,255]>
         on player clicks block with:dPrevention_tool flagged:dPrevention.expand_mode priority:-1:
         - determine passively cancelled
         # If the player sneaks while he clicks a block, expand mode will be cancelled.
@@ -157,7 +157,7 @@ dPrevention_tool_handler:
                 - showfake glowstone <[new_cuboid].proc[dPrevention_get_corners].context[<player.location>].values.parse[highest]> duration:120s
                 # Remove expand mode.
                 - run dPrevention_cancel_mode def:expand
-                - run dPrevention_show_debugblocks def.locations:<[new_cuboid].proc[dPrevention_generate_outline]> def.color:<color[85,255,85,255]>
+                - run dPrevention_show_debugblocks def.locations:<[new_cuboid].proc[dPrevention_generate_outline]> def.color:<color[0,100,0,255]>
                 - narrate "Your claim was expanded." format:dPrevention_format
         after player drops dPrevention_tool:
         - remove <context.entity>
@@ -169,7 +169,7 @@ dPrevention_tool_handler:
         after player steps on block flagged:dPrevention.selection:
         - ratelimit <player> 1s
         - define selection <player.flag[dprevention.selection].to_cuboid[<player.cursor_on.if_null[<context.location>].with_y[<context.location.world.max_height>]>]>
-        - run dPrevention_show_debugblocks def.locations:<[selection].proc[dPrevention_generate_outline]> def.color:<color[85,255,85,255]>
+        - run dPrevention_show_debugblocks def.locations:<[selection].proc[dPrevention_generate_outline]> def.color:<color[0,100,0,255]>
         - inject dPrevention_check_intersections
 dPrevention_expand_mode:
     type: task
@@ -178,7 +178,7 @@ dPrevention_expand_mode:
     script:
     - narrate "Expand mode activated" format:dPrevention_format
     - flag <player> dPrevention.expand_mode:<[cuboid]> expire:120s
-    - run dPrevention_show_debugblocks def.locations:<[cuboid].proc[dPrevention_generate_outline]> def.color:<color[85,255,85,255]>
+    - run dPrevention_show_debugblocks def.locations:<[cuboid].proc[dPrevention_generate_outline]> def.color:<color[0,100,0,255]>
     # Define the fake_block locations and mark them.
     - define locations <[cuboid].proc[dPrevention_get_corners].context[<[location].y>].parse_value_tag[<[parse_value].highest>]>
     - flag <player> dPrevention.show_fake_locations:<[locations].values>
