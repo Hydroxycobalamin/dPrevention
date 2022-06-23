@@ -32,26 +32,29 @@ dPrevention_tool_handler:
         - if <player.has_flag[dPrevention.claim_mode]> || <player.has_flag[dPrevention.expand_mode]>:
             - stop
         - define location <player.location>
-        - define cuboids <[location].cuboids>
+        - define areas <[location].areas.filter[has_flag[dPrevention]]>
         # If the player is not inside an area, set the player in claim mode.
-        - if <[cuboids].is_empty>:
+        - if <[areas].is_empty>:
             - flag <player> dPrevention.claim_mode expire:120s
             - narrate "Claim mode activated" format:dPrevention_format
             - stop
+        - define owned_areas <[areas].filter_tag[<[filter_value].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>]>
+        # If the player is an admin, include admin areas.
+        - if <player.has_permission[dPrevention.admin]>:
+            - define owned_areas:|:<[areas].filter_tag[<[filter_value].has_flag[dPrevention.owners].not>]>
         # If he isn't owner of any area, he's not allowed.
-        - define owned_areas <[cuboids].filter_tag[<[filter_value].flag[dPrevention.owners].contains[<player.uuid>].if_null[false]>]>
         - if <[owned_areas].is_empty>:
             - narrate "You're not allowed to do that" format:dPrevention_format
             - stop
         # If there are multiple areas which the player owns, select one.
         - if <[owned_areas].size> > 1:
-            - foreach <[owned_areas]> as:cuboid:
-                - clickable dPrevention_expand_mode def.cuboid:<[cuboid]> def.location:<[location]> for:<player> until:1m save:<[loop_index]>
-                - define clickables:->:<[cuboid].note_name.on_click[<entry[<[loop_index]>].command>].on_hover[<[cuboid].note_name>]>
+            - foreach <[owned_areas]> as:area:
+                - clickable dPrevention_expand_mode def.cuboid:<[area]> def.location:<[location]> for:<player> until:1m save:<[loop_index]>
+                - define clickables:->:<[area].note_name.on_click[<entry[<[loop_index]>].command>].on_hover[<[area].note_name>]>
             - narrate <[clickables].space_separated.custom_color[emphasis]> format:dPrevention_format
             - stop
         # If there's only a single area, set the player in expand mode.
-        - run dPrevention_expand_mode def.cuboid:<[owned_areas]> def.location:<[location]>
+        - run dPrevention_expand_mode def.cuboid:<[areas].first> def.location:<[location]>
         on player clicks block with:dPrevention_tool flagged:dPrevention.claim_mode priority:-1:
         - determine passively cancelled
         # If the player sneaks while he clicks a block, claim mode will be removed.
@@ -103,24 +106,30 @@ dPrevention_tool_handler:
             - run dPrevention_cancel_mode def:expand
             - narrate "Expand mode cancelled" format:dPrevention_format
             - stop
+        - define location <context.location.if_null[null]>
         - choose <context.click_type>:
             - case LEFT_CLICK_BLOCK:
                 - if <player.has_flag[dPrevention.selection]>:
                     - stop
-                - if !<context.location.has_flag[dPrevention.expandable_corner]>:
+                - if !<[location].has_flag[dPrevention.expandable_corner]>:
                     - narrate "You must select a corner first." format:dPrevention_format
                     - stop
                 # Prevent the player from expanding a claim that he doesn't own.
-                - if <context.location.flag[dPrevention.expandable_corner]> != <player.uuid>:
+                - if <[location].flag[dPrevention.expandable_corner]> != <player.uuid>:
                     - narrate "You're not allowed to do that." format:dPrevention_format
                     - stop
-                - flag <player> dPrevention.selection:<context.location.flag[dPrevention.location].with_y[<server.flag[dPrevention.config.claims.depth]>]> expire:<player.flag_expiration[dPrevention.expand_mode]>
-                - narrate "Selection start set on <context.location.flag[dPrevention.location].simple.custom_color[emphasis]>" format:dPrevention_format
+                - if !<player.flag[dPrevention.expand_mode].proc[dPrevention_is_adminclaim]>:
+                    - define min <server.flag[dPrevention.config.claims.depth]>
+                - else:
+                    - define min <player.flag[dPrevention.expand_mode].min.y>
+                - flag <player> dPrevention.selection:<[location].flag[dPrevention.location].with_y[<[min]>]> expire:<player.flag_expiration[dPrevention.expand_mode]>
+                - narrate "Selection start set on <[location].flag[dPrevention.location].simple.custom_color[emphasis]>" format:dPrevention_format
             - case RIGHT_CLICK_BLOCK:
                 - if !<player.has_flag[dPrevention.selection]>:
                     - narrate "You must select a corner first." format:dPrevention_format
                     - stop
-                - if <player.flag[dPrevention.selection].world.name> != <context.location.world.name>:
+                - define selection <player.flag[dPrevention.selection]>
+                - if <[selection].world.name> != <[location].world.name>:
                     - narrate "World's doesnt match. Please don't change worlds while expanding your cuboid." format:dPrevention_format
                     - stop
                 # Read data from the cuboid linked to the expand mode for later use(read the red comment below).
@@ -133,19 +142,23 @@ dPrevention_tool_handler:
                     - define data.<[flag]>:<[cuboid].flag[<[flag]>]>
                 ##
                 - define name <[cuboid].note_name>
-                - define selection <player.flag[dPrevention.selection].to_cuboid[<context.location.with_y[<context.location.world.max_height>]>]>
-                - inject dPrevention_check_intersections
-                # If the player can't afford the region, stop. Else define the costs.
-                - define costs <[selection].proc[dPrevention_check_affordability].context[expand|<[cuboid]>]>
-                - if !<[costs].is_decimal>:
-                    - narrate "You can't afford that." format:dPrevention_format
-                    - stop
+                - if !<[cuboid].proc[dPrevention_is_adminclaim]>:
+                    - define selection <[selection].to_cuboid[<[location].with_y[<[location].world.max_height>]>]>
                 - else:
-                    # Check if the cuboid is smaller or larger, to take or give him blocks back.
-                    - if <[costs]> < 0:
-                        - run dPrevention_take_blocks def.type:in_use def.amount:<[costs].mul[-1]>
+                    - define selection <[selection].to_cuboid[<[location]>]>
+                - inject dPrevention_check_intersections
+                - if !<[cuboid].proc[dPrevention_is_adminclaim]>:
+                    # If the player can't afford the region, stop. Else define the costs.
+                    - define costs <[selection].proc[dPrevention_check_affordability].context[expand|<[cuboid]>]>
+                    - if !<[costs].is_decimal>:
+                        - narrate "You can't afford that." format:dPrevention_format
+                        - stop
                     - else:
-                        - run dPrevention_add_blocks def.type:in_use def.amount:<[costs]>
+                        # Check if the cuboid is smaller or larger, to take or give him blocks back.
+                        - if <[costs]> < 0:
+                            - run dPrevention_take_blocks def.type:in_use def.amount:<[costs].mul[-1]>
+                        - else:
+                            - run dPrevention_add_blocks def.type:in_use def.amount:<[costs]>
                 # Note the selection.
                 - note <[selection]> as:<[name]>
                 - define new_cuboid <cuboid[<[name]>]>
@@ -154,23 +167,35 @@ dPrevention_tool_handler:
                 - foreach <[data]> key:name as:value:
                     - flag <[new_cuboid]> <[name]>:<[value]>
                 ##
-                - showfake glowstone <[new_cuboid].proc[dPrevention_get_corners].context[<player.location>].values.parse[highest]> duration:120s
+                - define glowstones <[new_cuboid].proc[dPrevention_get_corners].context[<player.location.y>].values>
+                - chunkload <[glowstones].parse[chunk]> duration:1t
+                - showfake glowstone <[glowstones].parse[highest]> duration:120s
                 # Remove expand mode.
                 - run dPrevention_cancel_mode def:expand
                 - run dPrevention_show_debugblocks def.locations:<[new_cuboid].proc[dPrevention_generate_outline]> def.color:<color[0,100,0,255]>
                 - narrate "Your claim was expanded." format:dPrevention_format
         after player drops dPrevention_tool:
         - remove <context.entity>
+        after player steps on block flagged:dPrevention.selection:
+        - ratelimit <player> 1s
+        # If the player expands an admin claim, generate the admin claim. Else, use the worlds max height.
+        - define cuboid <player.flag[dPrevention.expand_mode].proc[dPrevention_is_adminclaim].if_null[null]>
+        - if <[cuboid].is_truthy>:
+            - define max <player.cursor_on.if_null[<context.location>].with_y[<player.flag[dPrevention.expand_mode].max.y>]>
+        - else:
+            - define max <player.cursor_on.if_null[<context.location>].with_y[<context.location.world.max_height>]>
+        - define selection <player.flag[dPrevention.selection].to_cuboid[<[max]>]>
+        - run dPrevention_show_debugblocks def.locations:<[selection].proc[dPrevention_generate_outline]> def.color:<color[0,100,0,255]>
+        - inject dPrevention_check_intersections
+timer:
+    type: world
+    debug: false
+    events:
         after delta time secondly every:2:
         - if <server.online_players_flagged[dPrevention.claim_mode].any>:
             - actionbar "<gold>Mode: <yellow>Claim" targets:<server.online_players_flagged[dPrevention.claim_mode]>
         - if <server.online_players_flagged[dPrevention.expand_mode].any>:
             - actionbar "<gold>Mode: <yellow>Expand" targets:<server.online_players_flagged[dPrevention.expand_mode]>
-        after player steps on block flagged:dPrevention.selection:
-        - ratelimit <player> 1s
-        - define selection <player.flag[dprevention.selection].to_cuboid[<player.cursor_on.if_null[<context.location>].with_y[<context.location.world.max_height>]>]>
-        - run dPrevention_show_debugblocks def.locations:<[selection].proc[dPrevention_generate_outline]> def.color:<color[0,100,0,255]>
-        - inject dPrevention_check_intersections
 dPrevention_expand_mode:
     type: task
     debug: false
@@ -180,7 +205,9 @@ dPrevention_expand_mode:
     - flag <player> dPrevention.expand_mode:<[cuboid]> expire:120s
     - run dPrevention_show_debugblocks def.locations:<[cuboid].proc[dPrevention_generate_outline]> def.color:<color[0,100,0,255]>
     # Define the fake_block locations and mark them.
-    - define locations <[cuboid].proc[dPrevention_get_corners].context[<[location].y>].parse_value_tag[<[parse_value].highest>]>
+    - define locations <[cuboid].proc[dPrevention_get_corners].context[<[location].y>]>
+    - chunkload <[locations].values.parse[chunk]> duration:1t
+    - define locations <[locations].parse_value_tag[<[parse_value].highest>]>
     - flag <player> dPrevention.show_fake_locations:<[locations].values>
     - foreach <[locations]> key:direction as:location:
         - showfake glowstone <[location]> duration:120s
@@ -283,3 +310,11 @@ dPrevention_create_corner:
             - case south_west:
                 - define corner:|:<[location].sub[0,0,<[z]>].points_between[<[location]>].include[<[location].add[<[x]>,0,0].points_between[<[location]>]>]>
     - determine <[corner]>
+dPrevention_is_adminclaim:
+    type: procedure
+    debug: false
+    definitions: area
+    script:
+    - if <[area].has_flag[dPrevention.owners]>:
+        - determine false
+    - determine true

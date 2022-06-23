@@ -45,8 +45,12 @@ dPrevention_check_intersections:
         polygons: <[area_map.polygons].if_null[<list>].parse[bounding_box]>
     - define cuboids <[player_areas].values.combine>
     # Exclude owned areas.
-    - define owned_areas <[cuboids].filter_tag[<player.uuid.is_in[<[filter_value].flag[dPrevention.owners]>]>]>
-    - define cuboids <[cuboids].exclude[<[owned_areas]>].include[<[admin_areas].values.combine>]>
+    - define owned_areas <[cuboids].filter_tag[<player.uuid.is_in[<[filter_value].flag[dPrevention.owners].if_null[<list>]>]>]>
+    # If an admin claim is expanded, ignore admin claims and don't ignore any player area, to prevent that admin claims include player claims.
+    - if <[cuboid].flag[dPrevention.owners].exists>:
+        - define cuboids <[cuboids].exclude[<[owned_areas]>].include[<[admin_areas].values.combine>]>
+    - else:
+        - define cuboids <[cuboids]>
     # Check for intersections.
     - define intersections <[cuboids].filter_tag[<[filter_value].intersects[<[selection]>]>]>
     # If the selection intersects another claim which he the player doesn't own, he's not allowed to claim.
@@ -56,3 +60,4 @@ dPrevention_check_intersections:
             - define created_corner <[intersection].proc[dPrevention_create_corner].context[<[intersection].min>]>
             - define corners:|:<[created_corner].proc[dPrevention_copy_corner].context[<[intersection].max.y>].include[<[created_corner]>]>
         - debugblock <[corners]> color:<color[0,255,0,255]>
+        - stop
