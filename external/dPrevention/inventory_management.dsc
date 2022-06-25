@@ -132,11 +132,11 @@ dPrevention_info_data:
     - foreach <[areas_map]> key:type as:areas:
         - choose <[type]>:
             - case cuboids:
-                - define list:|:<[areas].parse_tag[dPrevention_menu_item[display=<[area].flag[dPrevention.name].parse_color.if_null[<white>Claim]>;lore=<[data.<[type]>].unescaped.parsed>]]>
+                - define list:|:<[areas].parse_tag[dPrevention_menu_item[display=<[parse_value].flag[dPrevention.name].parse_color.if_null[<white>Claim]>;lore=<[data.<[type]>].unescaped.parsed>;flag=claim:<[parse_value]>;flag=holder:<[player]>;flag=type:<[type]>]]>
             - case polygons:
-                - define list:|:<[areas].parse_tag[dPrevention_menu_item[display=<[area].flag[dPrevention.name].parse_color.if_null[<white>Claim]>;lore=<[data.<[type]>].unescaped.parsed>]]>
+                - define list:|:<[areas].parse_tag[dPrevention_menu_item[display=<[parse_value].flag[dPrevention.name].parse_color.if_null[<white>Claim]>;lore=<[data.<[type]>].unescaped.parsed>;flag=claim:<[parse_value]>;flag=holder:<[player]>;flag=type:<[type]>]]>
             - case ellipsoids:
-                - define list:|:<[areas].parse_tag[dPrevention_menu_item[display=<[area].flag[dPrevention.name].parse_color.if_null[<white>Claim]>;lore=<[data.<[type]>].unescaped.parsed>]]>
+                - define list:|:<[areas].parse_tag[dPrevention_menu_item[display=<[parse_value].flag[dPrevention.name].parse_color.if_null[<white>Claim]>;lore=<[data.<[type]>].unescaped.parsed>;flag=claim:<[parse_value]>;flag=holder:<[player]>;flag=type:<[type]>]]>
     - define pages <[list].sub_lists[45].if_null[<list>]>
     #Dummy if there aren't any claims yet.
     - if <[pages].is_empty>:
