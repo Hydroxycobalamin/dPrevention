@@ -160,7 +160,8 @@ dPrevention_tool_handler:
                         - else:
                             - run dPrevention_add_blocks def.type:in_use def.amount:<[costs]>
                 # Note the selection.
-                - note <[selection]> as:<[name]>
+                ##- note <[selection]> as:<[name]>
+                - adjust <[cuboid]> set_member:<[selection]>
                 - define new_cuboid <cuboid[<[name]>]>
                 # Pass flags to the new cuboid.
                 ##
@@ -179,12 +180,11 @@ dPrevention_tool_handler:
         after player steps on block flagged:dPrevention.selection:
         - ratelimit <player> 1s
         # If the player expands an admin claim, generate the admin claim. Else, use the worlds max height.
-        - define cuboid <player.flag[dPrevention.expand_mode].proc[dPrevention_is_adminclaim].if_null[null]>
-        - if <[cuboid].is_truthy>:
-            - define max <player.cursor_on.if_null[<context.location>].with_y[<player.flag[dPrevention.expand_mode].max.y>]>
-        - else:
-            - define max <player.cursor_on.if_null[<context.location>].with_y[<context.location.world.max_height>]>
-        - define selection <player.flag[dPrevention.selection].to_cuboid[<[max]>]>
+        - define cuboid <player.flag[dPrevention.expand_mode].if_null[null]>
+        - if <[cuboid]> != null:
+            - if <[cuboid].proc[dPrevention_is_adminclaim]>:
+                - define max <player.cursor_on.if_null[<context.location>].with_y[<player.location.y>]>
+        - define selection <player.flag[dPrevention.selection].to_cuboid[<[max].if_null[<player.cursor_on.if_null[<context.location>].with_y[<context.location.world.max_height>]>]>]>
         - run dPrevention_show_debugblocks def.locations:<[selection].proc[dPrevention_generate_outline]> def.color:<color[0,100,0,255]>
         - inject dPrevention_check_intersections
 timer:
@@ -201,7 +201,7 @@ dPrevention_expand_mode:
     debug: false
     definitions: cuboid|location
     script:
-    - narrate "Expand mode activated" format:dPrevention_format
+    - narrate "Expand mode activated for <[cuboid].flag[dPrevention.name].if_null[<[cuboid].note_name>].custom_color[emphasis]>!" format:dPrevention_format
     - flag <player> dPrevention.expand_mode:<[cuboid]> expire:120s
     - run dPrevention_show_debugblocks def.locations:<[cuboid].proc[dPrevention_generate_outline]> def.color:<color[0,100,0,255]>
     # Define the fake_block locations and mark them.

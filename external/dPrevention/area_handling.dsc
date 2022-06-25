@@ -29,7 +29,7 @@ dPrevention_area_admin_removal:
     - note remove as:<[data.claim].note_name>
 dPrevention_check_intersections:
     type: task
-    debug: false
+    debug: true
     # This task script is usually injected via inject command.
     definitions: cuboid|selection
     script:
@@ -44,15 +44,19 @@ dPrevention_check_intersections:
         ellipsoids: <[area_map.ellipsoids].if_null[<list>].parse[bounding_box]>
         polygons: <[area_map.polygons].if_null[<list>].parse[bounding_box]>
     - define cuboids <[player_areas].values.combine>
-    # Exclude owned areas.
+    # Define owned areas.
     - define owned_areas <[cuboids].filter_tag[<player.uuid.is_in[<[filter_value].flag[dPrevention.owners].if_null[<list>]>]>]>
-    # If an admin claim is expanded, ignore admin claims and don't ignore any player area, to prevent that admin claims include player claims.
-    - if <[cuboid].flag[dPrevention.owners].exists>:
-        - define cuboids <[cuboids].exclude[<[owned_areas]>].include[<[admin_areas].values.combine>]>
+    # If a cuboid is expanded
+    - if <[cuboid].if_null[null]> != null:
+        # If a user claim is expanded, exclude owned areas and include admin areas.
+        - if <[cuboid].flag[dPrevention.owners].exists>:
+            - define cuboids <[cuboids].exclude[<[owned_areas]>].include[<[admin_areas].values.combine>]>
+        # Elsewise, admin claims are ignored because it's an admin claim.
+    # If a cuboid is created, exclude owned areas and include admin areas.
     - else:
-        - define cuboids <[cuboids]>
+        - define cuboids <[cuboids].exclude[<[owned_areas]>].include[<[admin_areas].values.combine>]>
     # Check for intersections.
-    - define intersections <[cuboids].filter_tag[<[filter_value].intersects[<[selection]>]>]>
+    - define intersections <[cuboids].exclude[<[cuboid].if_null[null]>].filter_tag[<[filter_value].intersects[<[selection]>]>]>
     # If the selection intersects another claim which he the player doesn't own, he's not allowed to claim.
     - if !<[intersections].is_empty>:
         - narrate "Your selection intersects <[intersections].size.custom_color[emphasis]> other claims." format:dPrevention_format
