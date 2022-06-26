@@ -134,13 +134,6 @@ dPrevention_tool_handler:
                     - stop
                 # Read data from the cuboid linked to the expand mode for later use(read the red comment below).
                 - define cuboid <player.flag[dPrevention.expand_mode]>
-                ##
-                # Saving flags of the current cuboid for later use.
-                - foreach <server.flag[dPrevention.config.scripters.flags]> as:flag:
-                    - if !<[cuboid].has_flag[<[flag]>]>:
-                        - foreach next
-                    - define data.<[flag]>:<[cuboid].flag[<[flag]>]>
-                ##
                 - define name <[cuboid].note_name>
                 - if !<[cuboid].proc[dPrevention_is_adminclaim]>:
                     - define selection <[selection].to_cuboid[<[location].with_y[<[location].world.max_height>]>]>
@@ -160,14 +153,8 @@ dPrevention_tool_handler:
                         - else:
                             - run dPrevention_add_blocks def.type:in_use def.amount:<[costs]>
                 # Note the selection.
-                ##- note <[selection]> as:<[name]>
                 - adjust <[cuboid]> set_member:<[selection]>
                 - define new_cuboid <cuboid[<[name]>]>
-                # Pass flags to the new cuboid.
-                ##
-                - foreach <[data]> key:name as:value:
-                    - flag <[new_cuboid]> <[name]>:<[value]>
-                ##
                 - define glowstones <[new_cuboid].proc[dPrevention_get_corners].context[<player.location.y>].values>
                 - chunkload <[glowstones].parse[chunk]> duration:1t
                 - showfake glowstone <[glowstones].parse[highest]> duration:120s
