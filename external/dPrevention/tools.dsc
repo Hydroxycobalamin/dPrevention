@@ -132,7 +132,6 @@ dPrevention_tool_handler:
                 - if <[selection].world.name> != <[location].world.name>:
                     - narrate "World's doesnt match. Please don't change worlds while expanding your cuboid." format:dPrevention_format
                     - stop
-                # Read data from the cuboid linked to the expand mode for later use(read the red comment below).
                 - define cuboid <player.flag[dPrevention.expand_mode]>
                 - define name <[cuboid].note_name>
                 - if !<[cuboid].proc[dPrevention_is_adminclaim]>:
