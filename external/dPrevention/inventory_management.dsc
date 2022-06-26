@@ -52,6 +52,8 @@ dPrevention_flag_GUI_handler:
         - flag <player> dPrevention.chat_input:<[data]> expire:30s
         - narrate "Type the name of the player into the chat, to add or remove him. Write cancel, to cancel it." format:dPrevention_format
         - inventory close
+        after player closes dPrevention_flag_GUI flagged:dPrevention.flaggui:
+        - flag <player.flag[dPrevention.flaggui]> dPrevention.in_use.<player.uuid>:!
 dPrevention_flag_GUI:
     type: inventory
     data:
@@ -90,15 +92,18 @@ dPrevention_fill_flag_GUI:
     debug: false
     definitions: area
     script:
-    #Check if it's already a dclaim first.
+    # Check if it's already a dclaim first.
     - if !<[area].has_flag[dPrevention]> && !<world[<[area]>].exists>:
         - inject dPrevention_check_dclaim
         - stop
-    #Loop through all existing flags.
+    # If the claim is in deletion, stop.
+    - inject dPrevention_in_delete
+    - flag <[area]> dPrevention.in_use.<player.uuid>
+    # Loop through all existing flags.
     - foreach <script[dPrevention_flag_data].data_key[flags]> key:item as:flag:
         - if <[area].has_flag[dPrevention.flags.<[flag]>]>:
             - define lore <script.parsed_key[data.format.denied]>
-            #If the flag has additional input, separate it into three entries per line.
+            # If the flag has additional input, separate it into three entries per line.
             - if <[flag].is_in[<script[dPrevention_flag_GUI_handler].data_key[data.chat_input]>]>:
                 - define status <[area].flag[dPrevention.flags.<[flag]>].alphabetical.space_separated.split_lines_by_width[240]>
                 - define lore <script.parsed_key[data.format.input]>
@@ -222,39 +227,54 @@ dPrevention_menu_handler:
     - inventory flag slot:<context.slot> page:<[page]> destination:<player.open_inventory>
     - inventory adjust slot:<context.slot> destination:<player.open_inventory> "lore:<&[base]>Current Page - <[page]>/<[max]>"
     events:
-        #Changes the page.
+        ## Changes the page.
         after player left clicks dPrevention_page_item in dPrevention_menu:
         - define page <context.item.flag[page].add[1]>
         - inject <script> path:pager
         after player right clicks dPrevention_page_item in dPrevention_menu:
         - define page <context.item.flag[page].sub[1]>
         - inject <script> path:pager
-        #Opens the relevant flag menu.
+        ## Opens the  flag menu.
         after player left clicks dPrevention_menu_item in dPrevention_menu:
-        - run dPrevention_fill_flag_GUI def:<context.item.flag[claim]>
-        #Delete an area.
+        - define area <context.item.flag[claim]>
+        - run dPrevention_fill_flag_GUI def:<[area]>
+        ## Delete an area.
         after player shift_right clicks dPrevention_menu_item in dPrevention_menu:
-        - definemap data claim:<context.item.flag[claim]> holder:<context.item.flag[holder]> path:<context.item.flag[type]> type:remove_area
+        - define area <context.item.flag[claim]>
+        # Check if the claim is going to be configured by another player.
+        - inject dPrevention_in_use
+        # Check if another player is going to delete it.
+        - inject dPrevention_in_delete
+        - definemap data area:<[area]> holder:<context.item.flag[holder]> path:<context.item.flag[type]> type:remove_area
         - flag <player> dPrevention.chat_input:<[data]> expire:30s
+        - flag <[area]> dPrevention.in_delete expire:30s
         - inventory close
         - narrate "Type 'delete' if want to remove this area." format:dPrevention_format
-        #Change the area's priority.
+        ## Change the area's priority.
         after player shift_left clicks dPrevention_menu_item in dPrevention_menu:
         - if !<player.has_permission[dPrevention.admin]>:
             - narrate "You're not allowed to change the priority of your claim." format:dPrevention_format
             - inventory close
             - stop
+        - define area <context.item.flag[claim]>
+        # If the claim is in deletion, stop.
+        - inject dPrevention_in_delete
         - narrate "Type an integer to change it's priority." format:dPrevention_format
-        - definemap data claim:<context.item.flag[claim]> type:set_priority
+        - definemap data area:<[area]> type:set_priority
         - flag <player> dPrevention.chat_input:<[data]> expire:30s
+        - flag <[area]> dPrevention.in_use.<player.uuid> expire:30s
         - inventory close
-        #Rename an area.
+        ## Rename an area.
         after player right clicks dPrevention_menu_item in dPrevention_menu:
-        - definemap data claim:<context.item.flag[claim]> holder:<context.item.flag[holder]> type:rename_area
+        - define area <context.item.flag[claim]>
+        # If the claim is in deletion, stop.
+        - inject dPrevention_in_delete
+        - definemap data area:<[area]> holder:<context.item.flag[holder]> type:rename_area
         - flag <player> dPrevention.chat_input:<[data]> expire:30s
+        - flag <[area]> dPrevention.in_use.<player.uuid> expire:30s
         - inventory close
         - narrate "Type the new name of your area. Type 'cancel' if you want to cancel the rename or wait 30 seconds." format:dPrevention_format
-        #Add a player to the ride whitelist.
+        ## Add a player to the ride whitelist.
         after player left clicks dPrevention_ride_whitelist_item in dPrevention_menu:
         - if <context.item.flag[holder]> != <player>:
             - narrate "It's not possible to edit the ride-whitelist of another player." format:dPrevention_format
@@ -272,3 +292,21 @@ dPrevention_menu_handler:
         - flag <player> dPrevention.chat_input.type:remove_ride_whitelist expire:30s
         - narrate "Type the player's name you want to remove the access to your tamed entities. Type 'cancel' to cancel or wait 30 seconds." format:dPrevention_format
         - inventory close
+dPrevention_in_use:
+    type: task
+    debug: false
+    definitions: area
+    script:
+    - if <[area].flag[dPrevention.in_use].any.if_null[false]>:
+        - narrate "You can't delete this claim since another player configures it." format:dPrevention_format
+        - inventory close
+        - stop
+dPrevention_in_delete:
+    type: task
+    debug: false
+    definitions: area
+    script:
+    - if <[area].has_flag[dPrevention.in_delete]>:
+        - narrate "You can't edit this claim because another player is going to delete it." format:dPrevention_format
+        - inventory close
+        - stop

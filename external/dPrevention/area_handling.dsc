@@ -29,7 +29,7 @@ dPrevention_area_admin_removal:
     - note remove as:<[data.claim].note_name>
 dPrevention_check_intersections:
     type: task
-    debug: true
+    debug: false
     # This task script is usually injected via inject command.
     definitions: cuboid|selection
     script:

@@ -202,6 +202,7 @@ dPrevention_expand_mode:
     definitions: cuboid|location
     script:
     - narrate "Expand mode activated for <[cuboid].flag[dPrevention.name].if_null[<[cuboid].note_name>].custom_color[emphasis]>!" format:dPrevention_format
+    - flag <[cuboid]> dPrevention.in_use.<player.uuid> expire:120s
     - flag <player> dPrevention.expand_mode:<[cuboid]> expire:120s
     - run dPrevention_show_debugblocks def.locations:<[cuboid].proc[dPrevention_generate_outline]> def.color:<color[0,100,0,255]>
     # Define the fake_block locations and mark them.
@@ -246,6 +247,7 @@ dPrevention_cancel_mode:
     - else:
         - if <player.flag[dPrevention.show_fake_locations].exists>:
             - showfake cancel <player.flag[dPrevention.show_fake_locations]>
+        - flag <player.flag[dPrevention.expand_mode]> dPrevention.in_use.<player.uuid>:!
         - flag <player> dPrevention.expand_mode:!
         - flag <player> dPrevention.selection:!
         - flag <player> dPrevention.show_fake_locations:!
