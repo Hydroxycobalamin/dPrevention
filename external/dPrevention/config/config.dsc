@@ -54,12 +54,6 @@ dPrevention_config:
     inventories:
         #The filler item, which will be shown in unused spots of inventories. Handy if you're using a resource pack to hide the slot.
         filler_item: air
-    ##Shouldn't be touched if you don't know what you're doing.
-    #List of flag paths which will be reapplied, when the size of the area changes. Useful for scripters when they add their own flags to AreaObjects.
-    #DO NOT REMOVE dPrevention!
-    scripters:
-        flags:
-            - dPrevention
 dPrevention_format:
     type: format
     debug: false

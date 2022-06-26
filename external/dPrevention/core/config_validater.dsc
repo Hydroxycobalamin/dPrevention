@@ -32,9 +32,6 @@ dPrevention_config_validation:
                     - world
                     - world_nether
                     - world_the_end
-            scripters:
-                flags:
-                    - dPrevention
     events:
         after scripts loaded:
         - run dPrevention_validate_config
@@ -174,15 +171,6 @@ dPrevention_validate_config:
             - debug error "Config key: <yellow>inventories.filler_item<white> doesn't exist or isn't a valid item. Check your <[script_path]> file! <dark_green>Default: air"
         - else:
             - flag server dPrevention.config.inventories.filler_item:<[config.inventories.filler_item]>
-        #Validate scripters.flags
-        - if !<[config.scripters.flags].exists>:
-            - flag server dPrevention.config.scripters.flags:<script.data_key[data.default_options.scripters.flags]>
-            - debug error "Config key: <yellow>scripters.flags<white> doesn't exist. Check your <[script_path]> file! <dark_green>Default: <script.data_key[data.default_options.scripters.flags].space_separated>"
-        - else if !<[config.scripters.flags].contains[dPrevention]>:
-            - debug error "Config key: <yellow>scripters.flags<white> value dPrevention was removed in your config file. Check your <[script_path]> file! <dark_green>Default: <script.data_key[data.default_options.scripters.flags].space_separated>"
-            - flag server dPrevention.config.scripters.flags:<script.data_key[data.default_options.scripters.flags]>
-        - else:
-            - flag server dPrevention.config.scripters.flags:<[config.scripters.flags]>
         - run dPrevention_apply_config_depth
 dPrevention_apply_config_depth:
     type: task
