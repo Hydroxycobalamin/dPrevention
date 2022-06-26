@@ -26,22 +26,40 @@ dPrevention_update_task:
     - define worlds <server.flag[dPrevention.config.claims.worlds].parse[as_world].filter[has_flag[dPrevention.areas]]>
     # Convert the note_name to the object and save it.
     - foreach <[worlds]> as:world:
+        # areas.cuboids
         - if <[world].has_flag[dPrevention.areas.cuboids]>:
+            - debug log "Updated areas of world <[world].name.color[green]>:<n><[world].flag[dPrevention.areas.cuboids].separated_by[<n>].color[aqua]>"
             - flag <[world]> dPrevention.areas.cuboids:<[world].flag[dPrevention.areas.cuboids].parse[as_cuboid]>
+            - debug log "To objects:<n><[world].flag[dPrevention.areas.cuboids].separated_by[<n>].color[aqua]>"
+        # areas.ellipsoids
         - if <[world].has_flag[dPrevention.areas.ellipsoids]>:
+            - debug log "Updated areas of world <[world].name.color[green]>:<n><[world].flag[dPrevention.areas.ellipsoids].separated_by[<n>].color[aqua]>"
             - flag <[world]> dPrevention.areas.ellipsoids:<[world].flag[dPrevention.areas.ellipsoids].parse[as_ellipsoid]>
+            - debug log "To objects:<n><[world].flag[dPrevention.areas.ellipsoids].separated_by[<n>].color[aqua]>"
+        # areas.polygons
         - if <[world].has_flag[dPrevention.areas.polygons]>:
+            - debug log "Updated areas of world <[world].name.color[green]>:<n><[world].flag[dPrevention.areas.polygons].separated_by[<n>].color[aqua]>"
             - flag <[world]> dPrevention.areas.polygons:<[world].flag[dPrevention.areas.polygons].parse[as_polygon]>
+            - debug log "To objects:<n><[world].flag[dPrevention.areas.polygons].separated_by[<n>].color[aqua]>"
+        # areas.admin.cuboids
         - if <[world].has_flag[dPrevention.areas.admin.cuboids]>:
+            - debug log "Updated areas of world <[world].name.color[green]>:<n><[world].flag[dPrevention.areas.admin.cuboids].separated_by[<n>].color[aqua]>"
             - flag <[world]> dPrevention.areas.admin.cuboids:<[world].flag[dPrevention.areas.admin.cuboids].parse[as_cuboid]>
+            - debug log "To objects:<n><[world].flag[dPrevention.areas.admin.cuboids].separated_by[<n>].color[aqua]>"
+        # areas.admin.ellipsoids
         - if <[world].has_flag[dPrevention.areas.admin.ellipsoids]>:
+            - debug log "Updated areas of world <[world].name.color[green]>:<n><[world].flag[dPrevention.areas.admin.ellipsoids].separated_by[<n>].color[aqua]>"
             - flag <[world]> dPrevention.areas.admin.ellipsoids:<[world].flag[dPrevention.areas.admin.ellipsoids].parse[as_ellipsoid]>
+            - debug log "To objects:<n><[world].flag[dPrevention.areas.admin.ellipsoids].separated_by[<n>].color[aqua]>"
+        # areas.admin.polygons
         - if <[world].has_flag[dPrevention.areas.admin.polygons]>:
+            - debug log "Updated areas of world <[world].name.color[green]>:<n><[world].flag[dPrevention.areas.admin.polygons].separated_by[<n>].color[aqua]>"
             - flag <[world]> dPrevention.areas.admin.polygons:<[world].flag[dPrevention.areas.admin.polygons].parse[as_polygon]>
-        - announce to_console "Updated areas of <[world].name.color[aqua]> to objects."
+            - debug log "To objects:<n><[world].flag[dPrevention.areas.admin.polygons].separated_by[<n>].color[aqua]>"
     - foreach <server.players_flagged[dPrevention.areas.cuboids]> as:player:
+        - debug log "Updated areas of <[player].name.color[green]>:<n><[player].flag[dPrevention.areas.cuboids].separated_by[<n>].color[aqua]>"
         - flag <[player]> dPrevention.areas.cuboids:<[player].flag[dPrevention.areas.cuboids].parse[as_cuboid]>
-        - announce to_console "Updated areas of <[player].name.color[aqua]> to objects."
+        - debug log "To objects:<n><[player].flag[dPrevention.areas.cuboids].separated_by[<n>].color[aqua]>"
     teleport:
     #Get all current worlds
     - define worlds <server.flag[dPrevention.config.claims.worlds].parse[as_world].filter[has_flag[dPrevention.areas]]>
