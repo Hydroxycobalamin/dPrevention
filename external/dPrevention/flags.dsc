@@ -15,6 +15,12 @@ dPrevention_player_flag_handlers:
         on player breaks hanging in:area_flagged:dPrevention.flags.block-break priority:50:
         - definemap arguments flag:block-break "reason:You can't break this hanging here." location:<context.hanging.location>
         - inject dPrevention_initial_check
+        on player fills bucket in:world_flagged:dPrevention.flags.block-break priority:100:
+        - definemap arguments flag:block-break "reason:You can't break this block here." location:<context.location>
+        - inject dPrevention_initial_check
+        on player fills bucket in:area_flagged:dPrevention.flags.block-break priority:50:
+        - definemap arguments flag:block-break "reason:You can't break this block here." location:<context.location>
+        - inject dPrevention_initial_check
         ##block-place
         on player places hanging in:area_flagged:dPrevention.flags.block-place priority:50:
         - definemap arguments flag:block-place "reason:You can't place this block here." location:<context.location>
