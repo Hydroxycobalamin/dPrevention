@@ -155,7 +155,7 @@ dPrevention_chat_handler:
     type: world
     debug: false
     events:
-        on player chats flagged:dPrevention.chat_input:
+        on player chats flagged:dPrevention.chat_input ignorecancelled:true:
         - determine cancelled passively
         - define data <player.flag[dPrevention.chat_input]>
         - inject dPrevention_chat_tasks
