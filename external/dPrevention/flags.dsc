@@ -38,6 +38,12 @@ dPrevention_player_flag_handlers:
             - stop
         - definemap arguments flag:block-place "reason:You can't put your item into this item frame." location:<context.entity.location>
         - inject dPrevention_initial_check
+        on player empties bucket in:world_flagged:dPrevention.flags.block-place priority:100:
+        - definemap arguments flag:block-place "reason: You can't place this block here." location:<context.relative>
+        - inject dPrevention_initial_check
+        on player empties bucket in:area_flagged:dPrevention.flags.block-place priority:50:
+        - definemap arguments flag:block-place "reason: You can't place this block here." location:<context.relative>
+        - inject dPrevention_initial_check
         ##use
         on player right clicks *door|lever|*_button|anvil|*campfire in:world_flagged:dPrevention.flags.use priority:100:
         - definemap arguments flag:use "reason:You can't use this block here." location:<context.location>
@@ -56,6 +62,7 @@ dPrevention_player_flag_handlers:
         - definemap arguments flag:lighter "reason:You can't use this item here." location:<context.location>
         - inject dPrevention_initial_check
         on player right clicks block with:flint_and_steel|fire_charge in:area_flagged:dPrevention.flags.lighter priority:50:
+        #todo: nullcheck on context.location clicks block
         - definemap arguments flag:lighter "reason:You can't use this item here." location:<context.location>
         - inject dPrevention_initial_check
         ##pvp
