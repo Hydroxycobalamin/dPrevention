@@ -64,11 +64,10 @@ dPrevention_player_flag_handlers:
         - definemap arguments flag:use "reason:You can't use this block here." location:<context.location>
         - inject dPrevention_initial_check
         ##lighter
-        on player right clicks block with:flint_and_steel|fire_charge in:world_flagged:dPrevention.flags.lighter priority:100:
+        on player right clicks !*air with:flint_and_steel|fire_charge in:world_flagged:dPrevention.flags.lighter priority:100:
         - definemap arguments flag:lighter "reason:You can't use this item here." location:<context.location>
         - inject dPrevention_initial_check
-        on player right clicks block with:flint_and_steel|fire_charge in:area_flagged:dPrevention.flags.lighter priority:50:
-        #todo: nullcheck on context.location clicks block
+        on player right clicks !*air with:flint_and_steel|fire_charge in:area_flagged:dPrevention.flags.lighter priority:50:
         - definemap arguments flag:lighter "reason:You can't use this item here." location:<context.location>
         - inject dPrevention_initial_check
         ##pvp
@@ -130,10 +129,10 @@ dPrevention_player_flag_handlers:
         - definemap arguments flag:vehicle-ride "reason:You can't enter this vehicle here." location:<context.entity.location>
         - inject dPrevention_prevent_vehicle_hijacking
         ##vehicle-placed
-        on player right clicks block with:*boat|*minecart in:world_flagged:dPrevention.flags.vehicle-place priority:100:
+        on player right clicks !*air with:*boat|*minecart in:world_flagged:dPrevention.flags.vehicle-place priority:100:
         - definemap arguments flag:vehicle-place "reason:You can't place this here." location:<context.location>
         - inject dPrevention_prevent_vehicle_placing
-        on player right clicks block with:*boat|*minecart in:area_flagged:dPrevention.flags.vehicle-place priority:50:
+        on player right clicks !*air with:*boat|*minecart in:area_flagged:dPrevention.flags.vehicle-place priority:50:
         - definemap arguments flag:vehicle-place "reason:You can't place this here." location:<context.location>
         - inject dPrevention_prevent_vehicle_placing
 dPrevention_generic_flag_handlers:
