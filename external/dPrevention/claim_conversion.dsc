@@ -16,7 +16,7 @@ dPrevention_convert_dclaim:
         - define type cuboids
     - else if <polygon[<[area]>].exists>:
         - define type polygons
-    - else <ellipsoid[<[area]>].exists>:
+    - else:
         - define type ellipsoids
     #If the area is already a dPrevention claim, stop.
     - if <[area].world.flag[dPrevention.areas.admin.<[type]>].contains[<[area]>].if_null[false]>:
