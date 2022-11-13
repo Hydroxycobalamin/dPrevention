@@ -172,6 +172,8 @@ dPrevention_validate_config:
         - else:
             - flag server dPrevention.config.inventories.filler_item:<[config.inventories.filler_item]>
         - run dPrevention_apply_config_depth
+        # Validate inventories.filler-item
+        - run dPrevention_validate_check_item def.path:inventories.filler-item def.file_path:<[file_path]>
 dPrevention_apply_config_depth:
     type: task
     debug: false

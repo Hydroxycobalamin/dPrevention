@@ -52,8 +52,8 @@ dPrevention_config:
             - 500
             - 1000
     inventories:
-        #The filler item, which will be shown in unused spots of inventories. Handy if you're using a resource pack to hide the slot.
-        filler_item: air
+        # The filler item, which will be shown in unused spots of inventories. Handy if you're using a resource pack to hide the slot.
+        filler-item: air
 dPrevention_format:
     type: format
     debug: false
