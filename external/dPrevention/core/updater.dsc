@@ -80,11 +80,11 @@ dPrevention_update_task:
             # Get the area object.
             - choose <[type]>:
                 - case cuboids:
-                    - define area <[note_name].as_cuboid>
+                    - define area <[note_name].as[cuboid]>
                 - case ellipsoids:
-                    - define area <[note_name].as_ellipsoid>
+                    - define area <[note_name].as[ellipsoid]>
                 - case polygons:
-                    - define area <[note_name].as_polygon>
+                    - define area <[note_name].as[polygon]>
                 - default:
                     - debug error "Something went really wrong. Please report it to the author. Found type: <[type]>"
                     - stop

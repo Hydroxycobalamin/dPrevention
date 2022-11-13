@@ -129,7 +129,7 @@ dPrevention_check_adminclaim_creation:
         - narrate "A <[type].custom_color[emphasis]> with the id <[id].custom_color[emphasis]> already exists!" format:dPrevention_format
         - stop
     #If a noted object already exists with this name, stop.
-    - if <server.notes.parse[note_name].contains[<[id]>]>:
+    - if <util.notes.parse[note_name].contains[<[id]>]>:
         - narrate "An object with this name already exists." format:dPrevention_format
         - stop
     - inject selector_tool_status_task path:<[type]>
