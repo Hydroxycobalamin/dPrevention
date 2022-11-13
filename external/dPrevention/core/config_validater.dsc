@@ -174,6 +174,10 @@ dPrevention_validate_config:
         - run dPrevention_apply_config_depth
         # Validate inventories.filler-item
         - run dPrevention_validate_check_item def.path:inventories.filler-item def.file_path:<[file_path]>
+        # Validate inventories.hide-flag-permissions
+        - run dPrevention_validate_check_boolean def.path:inventories.hide-flag-permissions def.file_path:<[file_path]>
+        # Validate inventories.hide-flag-item
+        - run dPrevention_validate_check_item def.path:inventories.hide-flag-item def.file_path:<[file_path]>
 dPrevention_apply_config_depth:
     type: task
     debug: false

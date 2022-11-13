@@ -54,6 +54,9 @@ dPrevention_config:
     inventories:
         # The filler item, which will be shown in unused spots of inventories. Handy if you're using a resource pack to hide the slot.
         filler-item: air
+        # If true, flags where the player don't have permission to change will be changed into the hide-flag-item specified below.
+        hide-flag-permissions: true
+        hide-flag-item: gray_stained_glass_pane
 dPrevention_format:
     type: format
     debug: false

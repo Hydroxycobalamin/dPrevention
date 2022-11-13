@@ -92,6 +92,7 @@ dPrevention_fill_flag_GUI:
     debug: false
     definitions: area
     script:
+    - define config <server.flag[dPrevention.config.inventories]>
     # Check if it's already a dclaim first.
     - if !<[area].has_flag[dPrevention]> && !<world[<[area]>].exists>:
         - inject dPrevention_check_dclaim
@@ -109,6 +110,9 @@ dPrevention_fill_flag_GUI:
                 - define lore <script.parsed_key[data.format.input]>
         - else:
             - define lore <script.parsed_key[data.format.allowed]>
+        # Config option hide-flag-permissions
+        - if <[config.hide-flag-permissions]> && !<player.has_permission[dPrevention.flag.<[flag]>]>:
+            - define item <[config.hide-flag-item]>
         - define items:->:<item[<[item]>].with[display=<script.parsed_key[data.format.display]>;lore=<[lore]>;hides=ALL].with_flag[flag:<[flag]>]>
     - flag <player> dPrevention.flaggui:<[area]>
     - inventory open destination:dPrevention_flag_GUI
