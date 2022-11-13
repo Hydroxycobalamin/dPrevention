@@ -83,30 +83,23 @@ dPrevention_validate_config:
         - run dPrevention_validate_check_boolean def.path:inventories.hide-flag-permissions def.file_path:<[file_path]>
         # Validate inventories.hide-flag-item
         - run dPrevention_validate_check_item def.path:inventories.hide-flag-item def.file_path:<[file_path]>
+        # Apply reconfig depth
+        - run dPrevention_apply_config_depth
 dPrevention_apply_config_depth:
     type: task
     debug: false
     script:
-    #Get all current worlds
-    - define worlds <server.flag[dPrevention.config.claims.worlds].parse[as_world]>
-    #Get all cuboid shaped player areas
+    # Get all current worlds
+    - define worlds <server.flag[dPrevention.config.claims.worlds].parse[as[world]]>
+    # Get all cuboid shaped player areas
     - define cuboid_areas <[worlds].filter_tag[<[filter_value].has_flag[dPrevention.areas.cuboids]>].parse_tag[<[parse_value].flag[dPrevention.areas.cuboids]>].combine>
     - foreach <[cuboid_areas]> as:note_name:
         - define cuboid <cuboid[<[note_name]>]>
-        #If the cuboid min y is equal depth config, skip.
+        # If the cuboid min y is equal depth config, skip.
         - if <[cuboid].min.y> == <server.flag[dPrevention.config.claims.depth]>:
             - foreach next
-        #Else, save the flags for later use
-        - foreach <server.flag[dPrevention.config.scripters.flags]> as:flag:
-            - if !<[cuboid].has_flag[<[flag]>]>:
-                - foreach next
-            - define data.<[flag]>:<[cuboid].flag[<[flag]>]>
-        #Note the new cuboid
-        - note <[cuboid].with_min[<[cuboid].min.with_y[<server.flag[dPrevention.config.claims.depth]>]>]> as:<[note_name]>
-        - define new_cuboid <cuboid[<[note_name]>]>
-        #Apply flags on the new cuboid
-        - foreach <[data]> key:name as:value:
-            - flag <[new_cuboid]> <[name]>:<[value]>
+        # Adjust y of the new cuboid
+        - adjust <[cuboid]> set_member:<[cuboid].with_min[<[cuboid].min.with_y[<server.flag[dPrevention.config.claims.depth]>]>]>
 dPrevention_validate_get_options:
     type: task
     debug: false
