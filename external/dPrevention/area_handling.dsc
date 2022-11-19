@@ -3,13 +3,13 @@ dPrevention_area_creation:
     debug: false
     definitions: area|owner
     script:
-    - customevent id:dPrevention_area_created context:[is_userclaim=<[owner].exists>;area=<[area]>]
     - define config <server.flag[dPrevention.config.claims]>
     - foreach <[config.flags]> key:flag as:value:
         - flag <[area]> dPrevention.flags.<[flag]>:<[value]>
     - flag <[area]> dPrevention.priority:<[config.priority]>
     - if <[owner].exists>:
         - flag <[area]> dPrevention.owners:->:<[owner]>
+    - customevent id:dPrevention_area_created context:[is_userclaim=<[owner].exists>;area=<[area]>]
 dPrevention_area_removal:
     type: task
     debug: false
