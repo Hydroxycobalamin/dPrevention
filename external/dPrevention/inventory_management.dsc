@@ -16,10 +16,11 @@ dPrevention_flag_GUI_handler:
         - if <script.data_key[data.chat_input].contains[<[flag]>]>:
             - definemap data area:<player.flag[dPrevention.flaggui]> flag:<[flag]> type:add_flag
             - flag <player> dPrevention.chat_input:<[data]> expire:30s
-            - if <[flag]> == entities:
-                - narrate "Type the entity type in chat. Seperate multiple by space. Valid matchers are: monster, animal, mob, living." format:dPrevention_format
-            - if <[flag]> == vehicle-place:
-                - narrate "Type the vehicle type in chat. Seperate multiple by space. Valid matcher is: all" format:dPrevention_format
+            - choose <[flag]>:
+                - case entities:
+                    - narrate "Type the entity type in chat. Seperate multiple by space. Valid matchers are: monster, animal, mob, living." format:dPrevention_format
+                - case vehicle-place:
+                    - narrate "Type the vehicle type in chat. Seperate multiple by space. Valid matcher is: all" format:dPrevention_format
             - inventory close
             - stop
         - define area <player.flag[dPrevention.flaggui]>

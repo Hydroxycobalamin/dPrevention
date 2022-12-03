@@ -7,6 +7,7 @@ dPrevention_chat_tasks:
     chat_input_reapply:
     - flag <player> dPrevention.chat_input:<player.flag[dPrevention.chat_input]> expire:30s
     - flag <[data.area]> dPrevention.in_use.<player.uuid> expire:30s
+    ## Add Bypass User
     add_bypass_user:
     - define message <context.message.split.first>
     - define flag <[data.flag]>
@@ -33,6 +34,7 @@ dPrevention_chat_tasks:
     - flag <[data.area]> dPrevention.name:<white><[name].parse_color>
     - narrate "You're claim was renamed to '<white><[name].parse_color><&[base]>'" format:dPrevention_format
     - inject <script> path:chat_input_cancel
+    ## Set Priority
     set_priority:
     - define integer <context.message.split.first>
     - if !<[integer].is_integer>:
@@ -42,6 +44,7 @@ dPrevention_chat_tasks:
     - flag <[data.area]> dPrevention.priority:<[integer]>
     - narrate "The Claims priority was set to <[integer].custom_color[emphasis]>" format:dPrevention_format
     - inject <script> path:chat_input_cancel
+    ## Remove Area
     remove_area:
     - if <context.message.split.first> != delete:
         - narrate "This claim was not removed." format:dPrevention_format
@@ -58,6 +61,7 @@ dPrevention_chat_tasks:
     - run dPrevention_area_removal def:<[data.area]>|<[data.holder]>
     - flag <player> dPrevention.chat_input:!
     - flag <[data.area]> dPrevention.in_delete:!
+    ## Add Flag with custom input.
     add_flag:
     - if <context.message.split.first> == cancel:
         - narrate "Adding or removing flags cancelled." format:dPrevention_format

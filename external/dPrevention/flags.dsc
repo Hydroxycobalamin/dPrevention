@@ -64,10 +64,10 @@ dPrevention_player_flag_handlers:
         - definemap arguments flag:use "reason:You can't use this block here." location:<context.location>
         - inject dPrevention_initial_check
         ##lighter
-        on player right clicks !*air with:flint_and_steel|fire_charge in:world_flagged:dPrevention.flags.lighter priority:100:
+        on player right clicks block with:flint_and_steel|fire_charge type:!*air in:world_flagged:dPrevention.flags.lighter priority:100:
         - definemap arguments flag:lighter "reason:You can't use this item here." location:<context.location>
         - inject dPrevention_initial_check
-        on player right clicks !*air with:flint_and_steel|fire_charge in:area_flagged:dPrevention.flags.lighter priority:50:
+        on player right clicks block with:flint_and_steel|fire_charge type:!*air in:area_flagged:dPrevention.flags.lighter priority:50:
         - definemap arguments flag:lighter "reason:You can't use this item here." location:<context.location>
         - inject dPrevention_initial_check
         ##pvp
@@ -129,10 +129,10 @@ dPrevention_player_flag_handlers:
         - definemap arguments flag:vehicle-ride "reason:You can't enter this vehicle here." location:<context.entity.location>
         - inject dPrevention_prevent_vehicle_hijacking
         ##vehicle-placed
-        on player right clicks !*air with:*boat|*minecart in:world_flagged:dPrevention.flags.vehicle-place priority:100:
+        on player right clicks block with:*boat|*minecart type:!*air in:world_flagged:dPrevention.flags.vehicle-place priority:100:
         - definemap arguments flag:vehicle-place "reason:You can't place this here." location:<context.location>
         - inject dPrevention_prevent_vehicle_placing
-        on player right clicks !*air with:*boat|*minecart in:area_flagged:dPrevention.flags.vehicle-place priority:50:
+        on player right clicks block with:*boat|*minecart type:!*air in:area_flagged:dPrevention.flags.vehicle-place priority:50:
         - definemap arguments flag:vehicle-place "reason:You can't place this here." location:<context.location>
         - inject dPrevention_prevent_vehicle_placing
 dPrevention_generic_flag_handlers:
@@ -267,13 +267,13 @@ dPrevention_generic_flag_handlers:
         - if <[area].flag[dPrevention.flags.entities].contains[<context.entity.entity_type>].if_null[false]>:
             - determine cancelled
         ##vehicle move
-        on vehicle collides with entity in:world_flagged:dPrevention.flags.vehicle-move priority:100:
+        on vehicle collides with entity type:entity in:world_flagged:dPrevention.flags.vehicle-move priority:100:
         - definemap arguments flag:vehicle-move "reason:You can't move this here" location:<context.vehicle.location>
         - if <context.entity.entity_type> == PLAYER:
             - inject dPrevention_initial_check
         - else:
             - inject dPrevention_initial_block_check
-        on vehicle collides with entity in:area_flagged:dPrevention.flags.vehicle-move priority:50:
+        on vehicle collides with entity type:entity in:area_flagged:dPrevention.flags.vehicle-move priority:50:
         - definemap arguments flag:vehicle-move "reason:You can't move this here" location:<context.vehicle.location>
         - if <context.entity.entity_type> == PLAYER:
             - inject dPrevention_initial_check
