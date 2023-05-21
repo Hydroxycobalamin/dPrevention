@@ -12,6 +12,7 @@ dPrevention_get_costs:
 ## @description
 ## Returns the amount of free blocks the player has left.
 ## @Group dPrevention
+## @Script dPrevention
 ## -->
 dPrevention_get_blocks:
     type: procedure

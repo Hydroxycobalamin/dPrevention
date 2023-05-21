@@ -1,3 +1,26 @@
+## <--[script]
+## @name BlockArchitect
+## @group LargeScripts
+## @description
+## dPrevention is an script that prevents grief and let your players claim their land on your Minecraft server.
+##
+## Players can claim their areas by using a currency called "blocks". These blocks can be obtained through playtime or can be purchased in a shop.
+## Players can expand and shrink the areas using the dPrevention tool, which they can acquire by executing the "/dPrevention tool" command.
+## They also have the ability to add or remove flags to their claims, if they have the appropriate permission to do so. Also it's possible to let specific players bypass these flags.
+## To view information about their blocks and current claims, players can utilize the "/dPrevention info" command.
+## There are limitations on the number of blocks players can obtain. They can acquire a maximum of 2000 blocks at a time and receive 25 blocks every 5 minutes. These values can be adjusted in the configuration settings.
+##
+## Administrators have additional privileges in the dPrevention system. They can create admin claims using commands such as /dPrevention [cuboid/ellipsoid/polygon] [<name>].
+## Admin claims can be managed through the /dprevention admininfo command.
+## Administrators can access information about player claims by using the /dprevention info <name> command.
+## Administrators can bypass flags if they possess the necessary permission, which follows the format: dPrevention.bypass.<flag>.
+##
+## By default, a claim extends from ground level to the maximum height limit. However, the default depth can be adjusted in the configuration settings, which is particularly useful for 1.18 servers.
+## Claims have a priority system, primarily beneficial for admin claims. However, this feature is currently unavailable to players.
+## Vehicles are protected as long as the vehicle-hijacking configuration option is set to false.
+##
+## @Download https://forum.denizenscript.com/resources/dprevention.76/
+## -->
 dPrevention_initial_block_check:
     #This task MUST be injected. Provide a map called arguments, with flag:<ElementTag> and location:<LocationTag>
     #It's called by dPrevention_generic_flag_handlers
