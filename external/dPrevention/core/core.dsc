@@ -1,5 +1,5 @@
 ## <--[script]
-## @name BlockArchitect
+## @name dPrevention
 ## @group LargeScripts
 ## @description
 ## dPrevention is an script that prevents grief and let your players claim their land on your Minecraft server.
