@@ -6,6 +6,13 @@ dPrevention_get_costs:
     - define math <[cuboid].size>
     - define costs <[math].x.mul[<[math].z>]>
     - determine <[costs]>
+## <--[procedure]
+## @attribute <PlayerTag.proc[dPrevention_get_blocks]>
+## @returns ElementTag(Number)
+## @description
+## Returns the amount of free blocks the player has left.
+## @Group dPrevention
+## -->
 dPrevention_get_blocks:
     type: procedure
     debug: false
