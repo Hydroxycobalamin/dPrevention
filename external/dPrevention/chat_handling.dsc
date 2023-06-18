@@ -55,7 +55,6 @@ dPrevention_chat_tasks:
         - narrate "The claim <[data.area].note_name.custom_color[emphasis]> was removed." format:dPrevention_format
         - run dPrevention_area_admin_removal def.data:<[data]>
         - flag <player> dPrevention.chat_input:!
-        - flag <[data.area]> dPrevention.in_delete:!
         - stop
     - narrate "This claim was removed. You received <[data.area].proc[dPrevention_get_costs].custom_color[emphasis]> blocks back!" format:dPrevention_format
     - run dPrevention_area_removal def:<[data.area]>|<[data.holder]>

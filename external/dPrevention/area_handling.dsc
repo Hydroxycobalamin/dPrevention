@@ -25,8 +25,8 @@ dPrevention_area_admin_removal:
     debug: false
     definitions: data
     script:
-    - flag <[data.claim].world> dPrevention.areas.admin.<[data.path]>:<-:<[data.claim]>
-    - note remove as:<[data.claim].note_name>
+    - flag <[data.area].world> dPrevention.areas.admin.<[data.path]>:<-:<[data.area]>
+    - note remove as:<[data.area].note_name>
 dPrevention_check_intersections:
     type: task
     debug: false
