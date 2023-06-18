@@ -35,7 +35,7 @@ dPrevention_blockshop_handler:
             - narrate "You don't have enough space in your inventory." format:dPrevention_format
             - stop
         - money take quantity:<[price]>
-        - give "<context.item.with[lore=<&[base]>[Rightclick to use]|<element[Blocks: <context.item.flag[dPrevention.blocks]>].color_gradient[from=#009933;to=#00ff55]>]>"
+        - give <context.item.with[lore=<&[base]>[Rightclick to use]|<element[Blocks: <context.item.flag[dPrevention.blocks]>].color_gradient[from=#009933;to=#00ff55]>]>
         - narrate "You've got <context.item.flag[dPrevention.blocks].custom_color[emphasis]>" format:dPrevention_format
 dPrevention_blockshop_command:
     type: command

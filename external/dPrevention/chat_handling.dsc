@@ -30,7 +30,7 @@ dPrevention_chat_tasks:
     - inject <script> path:chat_input_cancel
     ## Rename
     rename_area:
-    - define name "<context.message.trim_to_character_set[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890&# ]>"
+    - define name <context.message.trim_to_character_set[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890&# ]>
     - flag <[data.area]> dPrevention.name:<white><[name].parse_color>
     - narrate "You're claim was renamed to '<white><[name].parse_color><&[base]>'" format:dPrevention_format
     - inject <script> path:chat_input_cancel

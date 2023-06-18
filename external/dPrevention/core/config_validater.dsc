@@ -55,7 +55,7 @@ dPrevention_validate_config:
         - if !<script[dPrevention_config].exists>:
             - debug error "WARNING: no config file found. You MUST add the config of dPrevention into your server. Using default values Errors will follow."
             - announce to_ops "<&[error]>No dPrevention config file found! Check your console ASAP."
-        - define file_path "<dark_red><script[dPrevention_config].relative_filename.if_null[Config file is missing!]><white>"
+        - define file_path <dark_red><script[dPrevention_config].relative_filename.if_null[Config file is missing!]><white>
         #Validate options.vehicle-hijacking
         - run dPrevention_validate_check_boolean def.path:options.vehicle-hijacking def.file_path:<[file_path]>
         #Validate claims.depth
