@@ -128,7 +128,7 @@ dPrevention_info_data:
         - <&[base]>Size: <[parse_value].size.xyz.replace_text[,].with[ ].color[#00ccff]> Priority: <[parse_value].flag[dPrevention.priority].custom_color[emphasis]>
         - <&[base]>Costs: <[parse_value].proc[dPrevention_get_costs].color[#cc0066]>
         polygons:
-        - <[area].corners.parse_tag[<&[base]>Corner: <[parse_value].xyz.replace_text[,].with[ ].custom_color[emphasis]><n>]>
+        - <[parse_value].corners.parse_tag[<&[base]>Corner: <[parse_value].xyz.replace_text[,].with[ ].custom_color[emphasis]>].separated_by[<n>]>
         - <&[base]>World: <[parse_value].world.name.custom_color[emphasis]> Priority: <[parse_value].flag[dPrevention.priority].custom_color[emphasis]>
         - <&[base]>Height: <[parse_value].min_y.custom_color[emphasis]> to <[parse_value].max_y.custom_color[emphasis]>
         ellipsoids:
