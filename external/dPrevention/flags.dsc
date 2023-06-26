@@ -306,8 +306,8 @@ dPrevention_prevent_piston_grief:
     #If the piston makes changes in another area, cancel it.
     - if <[modified_areas].size> > 1:
         - determine cancelled
-    #If the piston makes changes in another area and is not inside an area cancel it.
-    - if <[modified_areas].size> == 1 && <world[<[area]>].exists>:
+    #If the piston makes changes in another area and is not inside a dPrevention claim cancel it.
+    - if <[modified_areas].size> > 1 && <[area].as[WorldTag].exists>:
         - determine cancelled
     #If the area allows pistons, allow it.
     - if <[area].proc[dPrevention_check_flag].context[piston]>:
