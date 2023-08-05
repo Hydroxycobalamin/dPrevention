@@ -380,3 +380,66 @@ dPrevention_flag_data:
         - vehicle-move
         - item-frame-rotation
         - vehicle-ride
+    # Used in api.
+    toggleable_flags:
+        - block-break
+        - block-place
+        - use
+        - fire-damage
+        - lighter
+        - block-ignites
+        - block-fades
+        - block-growth
+        - block-spreads
+        - tnt
+        - vehicle-break
+        - vehicle-move
+        - vehicle-ride
+        - pvp
+        - entity-damage
+        - container-access
+        - piston
+        - teleport-item
+        - water-spread
+        - lava-spread
+        - item-frame-rotation
+        - block-change
+    input_flags:
+        - entities
+        - vehicle-place
+## <--[information]
+## @name dPrevention Flag types
+## @group dPrevention
+## @description
+## dPrevention comes with some flag types. You can use them to granular allowing or forbid specific actions on dPrevention claims.
+## Valid flags are: block-break, block-place, use, fire-damage, lighter, block-ignites, block-fades, block-growth, block-spreads, tnt, vehicle-break
+## vehicle-move, vehicle-ride, pvp, entity-damage, container-access, piston, teleport-item, water-spread, lava-spread, item-frame-rotation, block-change,
+## entities, vehicle-place
+##
+## Toggleable flags:
+## block-break: Prevents players to break blocks.
+## block-place: Prevents players from placing blocks and hanging entities.
+## use: Prevents players from using doors, levers, buttons, pressure_plates, and anvils.
+## lighter: Prevents players from using flint_and_steel and fire_charges.
+## pvp: Prevents PvP.
+## container-access: Prevents players from accessing containers.
+## teleport-item: Prevents players from teleporting into a claim.
+## item-frame-rotation: Prevents players from rotating item_frames.
+## vehicle-ride: Prevents players from accessing vehicles. Get bypassed by the users ride-whitelist.
+## fire-damage: Prevents blocks from burning.
+## block-fades: Prevents blocks from fading.
+## block-grows: Prevents blocks from growing.
+## block-ignites: Prevents blocks from igniting.
+## tnt: Prevents blocks from exploding. Prevents also explosions from entities.
+## vehicle-break: Prevents the breaking of vehicles.
+## block-change: Prevents entities from changing blocks.
+## entity-damage: Prevents damage by entities.
+## piston: Prevents pistons from modifying blocks.
+## lava-spread: Prevents lava from spreading.
+## water-spread: Prevents water from spreading.
+##
+## Flags with input:
+## entities: Prevents entities(or specific ones) from spawning.
+## vehicle-place: Prevents Dispensers and Players from placing vehicles(or specific ones).
+##
+## -->

@@ -15,7 +15,7 @@
 ## Administrators can access information about player claims by using the /dprevention info <name> command.
 ## Administrators can bypass flags if they possess the necessary permission, which follows the format: dPrevention.bypass.<flag>.
 ##
-## By default, a claim extends from ground level to the maximum height limit. However, the default depth can be adjusted in the configuration settings, which is particularly useful for 1.18 servers.
+## By default, a claim extends from ground level to the maximum height limit. However, the default depth can be adjusted in the configuration settings, which is particularly useful for 1.18+ servers.
 ## Claims have a priority system, primarily beneficial for admin claims. However, this feature is currently unavailable to players.
 ## Vehicles are protected as long as the vehicle-hijacking configuration option is set to false.
 ##
