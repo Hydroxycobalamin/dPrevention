@@ -1,8 +1,8 @@
 ## <--[task]
 ## @name dPrevention_api_convert_claim_player
-## @input area:<AreaTag> owner:<PlayerTag>
+## @input area:<CuboidTag> owner:<PlayerTag>
 ## @description
-## Converts an already noted AreaObject into a dPrevention claim.
+## Converts an already noted CuboidTag into a dPrevention player claim.
 ## @Usage
 ## # Use to convert an area into a dPrevention claim.
 ## - run dPrevention_api_convert_claim_player def.area:<cuboid[MyFancyCuboid]> def.owner:<player>
@@ -14,8 +14,8 @@ dPrevention_api_convert_claim_player:
     definitions: area|owner
     script:
     - define type <[area].proc[dp_get_area]>
-    - if <[type]> == null:
-        - debug error "<&[error]>Area '<[area].custom_color[emphasis]>' is not a valid AreaTag."
+    - if <[type]> == null || <[type]> == cuboids:
+        - debug error "<&[error]>Area '<[area].custom_color[emphasis]>' is not a valid CuboidTag."
         - stop
     - if !<[area].note_name.exists>:
         - debug error "<&[error]>Area is not a valid noted object. Did you forget to note it?"
