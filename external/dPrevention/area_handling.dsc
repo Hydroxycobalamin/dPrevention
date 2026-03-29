@@ -63,5 +63,5 @@ dPrevention_check_intersections:
         - foreach <[intersections]> as:intersection:
             - define created_corner <[intersection].proc[dPrevention_create_corner].context[<[intersection].min>]>
             - define corners:|:<[created_corner].proc[dPrevention_copy_corner].context[<[intersection].max.y>].include[<[created_corner]>]>
-        - debugblock <[corners]> color:<color[0,255,0,255]>
+        - run dprevention_show_debugblocks def.locations:<[corners]> def.material:lime_stained_glass
         - stop

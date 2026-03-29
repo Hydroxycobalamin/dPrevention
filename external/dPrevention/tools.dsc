@@ -98,7 +98,7 @@ dPrevention_tool_handler:
                 - run dPrevention_area_creation def.area:<[cuboid]> def.owner:<player.uuid>
                 # Remove claim mode.
                 - run dPrevention_cancel_mode def:claim
-                - run dPrevention_show_debugblocks def.locations:<[selection].proc[dPrevention_generate_outline]> def.color:<color[0,100,0,255]>
+                - run dPrevention_show_debugblocks def.locations:<[selection].proc[dPrevention_generate_outline]> def.material:green_stained_glass
         on player clicks block with:dPrevention_tool flagged:dPrevention.expand_mode priority:-1:
         - determine passively cancelled
         # If the player sneaks while he clicks a block, expand mode will be cancelled.
@@ -159,7 +159,7 @@ dPrevention_tool_handler:
                 - showfake glowstone <[glowstones].parse[highest]> duration:120s
                 # Remove expand mode.
                 - run dPrevention_cancel_mode def:expand
-                - run dPrevention_show_debugblocks def.locations:<[new_cuboid].proc[dPrevention_generate_outline]> def.color:<color[0,100,0,255]>
+                - run dPrevention_show_debugblocks def.locations:<[new_cuboid].proc[dPrevention_generate_outline]> def.color:green_stained_glass
                 - narrate "Your claim was expanded." format:dPrevention_format
         after player drops dPrevention_tool:
         - remove <context.entity>
@@ -171,7 +171,7 @@ dPrevention_tool_handler:
             - if <[cuboid].proc[dPrevention_is_adminclaim]>:
                 - define max <player.cursor_on.if_null[<context.location>].with_y[<player.location.y>]>
         - define selection <player.flag[dPrevention.selection].to_cuboid[<[max].if_null[<player.cursor_on.if_null[<context.location>].with_y[<context.location.world.max_height>]>]>]>
-        - run dPrevention_show_debugblocks def.locations:<[selection].proc[dPrevention_generate_outline]> def.color:<color[0,100,0,255]>
+        - run dPrevention_show_debugblocks def.locations:<[selection].proc[dPrevention_generate_outline]> def.color:green_stained_glass
         - inject dPrevention_check_intersections
 timer:
     type: world
@@ -190,7 +190,7 @@ dPrevention_expand_mode:
     - narrate "Expand mode activated for <[cuboid].flag[dPrevention.name].if_null[<[cuboid].note_name>].custom_color[emphasis]>!" format:dPrevention_format
     - flag <[cuboid]> dPrevention.in_use.<player.uuid> expire:120s
     - flag <player> dPrevention.expand_mode:<[cuboid]> expire:120s
-    - run dPrevention_show_debugblocks def.locations:<[cuboid].proc[dPrevention_generate_outline]> def.color:<color[0,100,0,255]>
+    - run dPrevention_show_debugblocks def.locations:<[cuboid].proc[dPrevention_generate_outline]> def.material:green_stained_glass
     # Define the fake_block locations and mark them.
     - define locations <[cuboid].proc[dPrevention_get_corners].context[<[location].y>]>
     - chunkload <[locations].values.parse[chunk]> duration:1t
@@ -229,7 +229,7 @@ dPrevention_cancel_mode:
     - if <[mode]> == claim:
         - flag <player> dPrevention.claim_mode:!
         - flag <player> dPrevention.selection:!
-        - debugblock clear
+        - inject dprevention_remove_debugblocks
     - else:
         - if <player.flag[dPrevention.show_fake_locations].exists>:
             - showfake cancel <player.flag[dPrevention.show_fake_locations]>
@@ -237,15 +237,33 @@ dPrevention_cancel_mode:
         - flag <player> dPrevention.expand_mode:!
         - flag <player> dPrevention.selection:!
         - flag <player> dPrevention.show_fake_locations:!
-        - debugblock clear
+        - inject dprevention_remove_debugblocks
+dPrevention_remove_debugblocks:
+    type: task
+    debug: false
+    script:
+    - define faked_entities <player.fake_entities.filter[has_flag[dPrevention.debugblock]]>
+    - foreach <[faked_entities]> as:faked_entity:
+        - fakespawn <[faked_entity]> cancel
 dPrevention_show_debugblocks:
     type: task
     debug: false
     definitions: locations|color
     script:
     # Clears debug blocks before applying new ones.
-    - debugblock clear
-    - debugblock <[locations]> color:<[color]>
+    - inject dprevention_remove_debugblocks
+    - foreach <[locations]> as:location:
+        - fakespawn dprevention_debugblock[material=lime_stained_glass] <[location]> save:debugblock
+        - flag <entry[debugblock].faked_entity> dPrevention.debugblock
+dPrevention_debugblock:
+    type: entity
+    debug: false
+    entity_type: block_display
+    mechanisms:
+        brightness:
+            sky: 15
+            block: 15
+        view_range: 300
 dPrevention_generate_outline:
     type: procedure
     debug: false
